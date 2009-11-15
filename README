@@ -1,0 +1,17 @@
+Eclipse project for an Android application. You'll probably need Eclipse
+and the Android SDK and ADT plugin to make sense of it.
+
+WhenDidI helps with cyclical events and tasks by:
+* Logging when an item (event or task) was performed
+* Alerting when and item has not been performed for a specified period.
+* Hopefully, someday serving as input to a website for the same purpose
+  but with greater abilities like graphical log analysis.
+
+Perhaps it will merge later with a more generic task/calendar app, not sure.
+
+Examples of use cases:
+* When did I last change the filters on my furnace?
+* When did I get an oil change for my car?
+* Reminder to call home every so often.
+* When was my (or her) last period?
+* How often have we eaten out in the last month?
