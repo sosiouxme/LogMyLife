@@ -1,3 +1,5 @@
+*** Development underway, but not in a useful state yet ***
+
 Eclipse project for an Android application. You'll probably need Eclipse
 and the Android SDK and ADT plugin to make sense of it.
 
@@ -10,6 +12,7 @@ WhenDidI helps with cyclical events and tasks by:
 Perhaps it will merge later with a more generic task/calendar app, not sure.
 
 Examples of use cases:
+* How long has it been since I watered the plants?
 * When did I last change the filters on my furnace?
 * When did I get an oil change for my car?
 * Reminder to call home every so often.

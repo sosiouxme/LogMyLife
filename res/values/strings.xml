@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Howdy</string>
+    <string name="app_name">When Did I</string>
+    <string name="first_list">General</string>
+<string name="menu_new_item">New item</string>
+<string name="menu_save_item">Save</string>
+<string name="menu_cancel_item">Cancel</string>
+<string name="menu_revert_item">Cancel changes</string><string name="menu_delete_item">Delete</string>
+
+</resources>
