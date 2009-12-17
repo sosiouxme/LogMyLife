@@ -23,8 +23,7 @@ public class ItemList extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.item_list);
 
-		mDba = new DbAdapter(this);
-		mDba.open();
+		mDba = new DbAdapter(this).open();
 		fillListSpinner();
 		fillItemList();
 	}
@@ -70,17 +69,15 @@ public class ItemList extends ListActivity {
 				R.layout.item_list_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { DbAdapter.ITEM_TITLE },
-				new int[] { R.id.itemTitle });
+				new int[] { R.id.ilr_itemTitle });
 		
 		this.setListAdapter(adapter);
 	}
 	
-	public static final int MENU_CREATE_ITEM_ID = 0;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		Log.d(TAG, "onCreateOptionsMenu");
-        super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE, MENU_CREATE_ITEM_ID, 0, R.string.menu_new_item);
+        getMenuInflater().inflate(R.menu.item_list, menu);
         return true;
     }
     
@@ -88,8 +85,14 @@ public class ItemList extends ListActivity {
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Log.d(TAG, "onMenuItemSelected");
     	switch(item.getItemId()) {
-    		case MENU_CREATE_ITEM_ID:
+    		case R.id.ilmenu_new_item:
     			newItem();
+    			return true;
+    		case R.id.ilmenu_manage_lists:
+    			startActivity(new Intent(this, ListEdit.class));
+    			return true;
+    		case R.id.ilmenu_settings:
+    			startActivity(new Intent(this, Prefs.class));
     			return true;
     	}
     	return super.onMenuItemSelected(featureId, item);
