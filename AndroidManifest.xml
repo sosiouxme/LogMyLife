@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="net.sosiouxme.WhenDidI"
       android:versionName="1.0" android:versionCode="1">
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <activity android:name=".ItemList"
                   android:label="@string/app_name">
             <intent-filter>
@@ -10,6 +10,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<activity android:name="ItemEdit"></activity>
+<activity android:name="Prefs"></activity>
+<activity android:name="ListEdit"></activity>
 </application>
     <uses-sdk android:minSdkVersion="4" />
 

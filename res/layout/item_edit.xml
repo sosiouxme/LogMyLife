@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="fill_parent">
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical">
 <TextView android:layout_height="wrap_content" 
 	android:layout_width="fill_parent" 
 	android:text="Editing an item" />
-<TextView android:text="@+id/TextView02" 
-	android:id="@+id/TextView02" 
-	android:layout_width="wrap_content" 
-	android:layout_height="wrap_content" />
+<TextView android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" android:text="Title"/>
 <EditText android:text="Item text" 
 	android:id="@+id/item_title"
 	android:layout_height="wrap_content"
 	android:layout_width="fill_parent" />
-<TextView android:text="@+id/TextView03" 
-	android:id="@+id/TextView03" 
-	android:layout_width="fill_parent" 
-	android:layout_height="wrap_content" />
+<TextView android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" android:text="Notes"/>
 <EditText android:id="@+id/item_body" 
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content" 

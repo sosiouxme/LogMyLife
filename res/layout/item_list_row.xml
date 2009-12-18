@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/doItNow" android:clickable="true"></Button>
-<TextView android:layout_height="wrap_content" android:id="@+id/itemTitle" android:layout_width="fill_parent"></TextView>
-
-</LinearLayout>
+<RelativeLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="fill_parent" 
+ android:layout_height="wrap_content">
+<Button
+ android:layout_width="wrap_content" 
+ android:layout_height="wrap_content" 
+ android:id="@+id/ilr_doItNow" 
+ android:clickable="true" 
+ android:text="Log"></Button>
+<TextView
+ android:layout_height="wrap_content" 
+ android:id="@+id/ilr_itemTitle"
+ android:layout_width="fill_parent"
+ android:layout_toRightOf="@id/ilr_doItNow"
+ android:layout_alignTop="@id/ilr_doItNow"
+ android:layout_marginTop="2px"
+ android:text="Title" android:textSize="18sp"></TextView>
+ <TextView
+ android:layout_height="wrap_content" 
+ android:id="@+id/ilr_itemLog"
+ android:layout_width="fill_parent"
+ android:layout_below="@id/ilr_itemTitle"
+ android:layout_alignLeft="@id/ilr_itemTitle"
+ android:text="No log entries" android:textSize="12sp"></TextView>
+</RelativeLayout>
