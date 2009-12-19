@@ -8,7 +8,6 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,8 +28,6 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 	private DbAdapter mDba;
 	private long mCurrentListId = 0;
 
-	private final static int DELETE_DIALOG = 1;
-	private long mContextItemId = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -137,7 +134,11 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long itemId) {
 		Log.d(TAG, "onItemClick " + itemId);
-	
+		Intent intent = new Intent(this, ItemEdit.class);
+		intent.setAction(Intent.ACTION_EDIT);
+		intent.putExtra(DbAdapter.ITEM_LIST, mCurrentListId);
+		intent.putExtra(DbAdapter._ID, itemId);
+		startActivity(intent);
 	}
 
 	@Override
@@ -146,7 +147,6 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 		Log.d(TAG, "onCreateContextMenu");
 		super.onCreateContextMenu(menu, v, menuInfo);
         getMenuInflater().inflate(R.menu.item_list_context, menu);
-        mContextItemId = 1;
 	}
 
     @Override
@@ -155,64 +155,33 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 		long itemId = ((AdapterContextMenuInfo) item.getMenuInfo()).id;
 		switch(item.getItemId()) {
 		case R.id.ilc_menu_quicklog:
-			mDba.createLog(mContextItemId, null, "");
+			mDba.createLog(itemId, null, "");
 			return true;
 		case R.id.ilc_menu_delete:
-			mContextItemId = itemId; // stash this until the dialog is called
-			showDialog(DELETE_DIALOG);
+			showDeleteDialog(itemId);
 			return true;
 		}
 		return super.onContextItemSelected(item);
 	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Log.d(TAG, "onCreateDialog");
-
-		switch(id) {
-		case DELETE_DIALOG:
-			Dialog d = new DeleteDialog(mDba,mContextItemId).dialog();
-			mContextItemId = 0; // reset now that dialog has it
-			return d;
-		}
-		return null;
-	}
 	
+	private void showDeleteDialog(final long itemId) {
+		Log.d(TAG, "showDeleteDialog");
+		Dialog d = new AlertDialog.Builder(this)
+		.setTitle(R.string.ilc_dialog_delete_title)
+		.setMessage(R.string.ilc_dialog_delete_msg)
+		.setNegativeButton(R.string.ilc_dialog_cancel_button, null)
+		.setPositiveButton(R.string.ilc_dialog_delete_button, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Log.d(TAG, "DeleteDialog onClick " + itemId);
+						mDba.deleteItem(itemId);
+						fillItemList();
+					}
+				})
+		.create();
+		d.setOwnerActivity(this); // why can't the builder do this?
+		d.show();
 
-	private class DeleteDialog implements OnClickListener, OnDismissListener {
-		private DbAdapter mDba = null;
-		private long mItemId = 0;
-		
-		public DeleteDialog(DbAdapter dba, long itemId) {
-			mDba = dba;
-			this.mItemId = itemId;
-		}
-		
-		public Dialog dialog() {
-			Log.d(TAG, "deleteDialog");
-			Dialog d = new AlertDialog.Builder(ItemList.this)
-			.setTitle(R.string.ilc_dialog_delete_title)
-			.setMessage(R.string.ilc_dialog_delete_msg)
-			.setNegativeButton(R.string.ilc_dialog_cancel_button, null)
-			.setPositiveButton(R.string.ilc_dialog_delete_button, this)
-			.create();
-			d.setOnDismissListener(this); // why can't the builder do this?
-			return d;
-		}
-		@Override
-		public void onClick(DialogInterface dialog, int which) {
-			Log.d(TAG, "DeleteDialog " + mItemId);
-			if (mItemId > 0) {
-				mDba.deleteItem(mItemId);
-				fillItemList();
-			}
-		}
-
-		@Override
-		public void onDismiss(DialogInterface di) {
-			// the dialog's listener refers to a specific item to be
-			// deleted - don't want to keep this state. 
-			removeDialog(DELETE_DIALOG);
-		}
 	}
+
 }
