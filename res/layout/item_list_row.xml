@@ -2,26 +2,20 @@
 <RelativeLayout
  xmlns:android="http://schemas.android.com/apk/res/android"
  android:layout_width="fill_parent" 
- android:layout_height="wrap_content">
-<Button
- android:layout_width="wrap_content" 
  android:layout_height="wrap_content" 
- android:id="@+id/ilr_doItNow" 
- android:clickable="true" 
- android:text="Log"></Button>
+ android:id="@+id/ilr_item" >
 <TextView
  android:layout_height="wrap_content" 
  android:id="@+id/ilr_itemTitle"
  android:layout_width="fill_parent"
- android:layout_toRightOf="@id/ilr_doItNow"
- android:layout_alignTop="@id/ilr_doItNow"
- android:layout_marginTop="2px"
- android:text="Title" android:textSize="18sp"></TextView>
+ android:layout_marginTop="2sp"
+ android:text="Title" android:textSize="18sp"  />
  <TextView
  android:layout_height="wrap_content" 
  android:id="@+id/ilr_itemLog"
  android:layout_width="fill_parent"
  android:layout_below="@id/ilr_itemTitle"
  android:layout_alignLeft="@id/ilr_itemTitle"
- android:text="No log entries" android:textSize="12sp"></TextView>
+ android:layout_marginLeft="10sp"
+ android:text="No log entries" android:textSize="12sp" />
 </RelativeLayout>

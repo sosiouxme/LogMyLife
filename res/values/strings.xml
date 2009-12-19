@@ -8,4 +8,8 @@
 <string name="menu_cancel_item">Cancel</string>
 <string name="menu_revert_item">Cancel changes</string><string name="menu_delete_item">Delete</string>
 
+<string name="ilc_dialog_delete_title">Really delete?</string>
+<string name="ilc_dialog_delete_msg">This will delete the item and any log entries.</string>
+<string name="ilc_dialog_delete_button">Delete</string>
+<string name="ilc_dialog_cancel_button">Cancel</string>
 </resources>

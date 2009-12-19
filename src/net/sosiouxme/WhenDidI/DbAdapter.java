@@ -109,9 +109,9 @@ public class DbAdapter {
     public boolean deleteList(long listId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting list " + listId);
-        return deleteListLogs(listId) &&
-        mDb.delete(ITEM_TABLE, ITEM_LIST + "=" + listId, null) > 0 &&
-        mDb.delete(LIST_TABLE, _ID + "=" + listId, null) > 0;
+        deleteListLogs(listId);
+        mDb.delete(ITEM_TABLE, ITEM_LIST + "=" + listId, null);
+        return mDb.delete(LIST_TABLE, _ID + "=" + listId, null) > 0;
     }
 
     
@@ -166,8 +166,8 @@ public class DbAdapter {
     public boolean deleteItem(long itemId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting item " + itemId);
-        return deleteItemLogs(itemId) &&
-        	mDb.delete(ITEM_TABLE, _ID + "=" + itemId, null) > 0;
+        deleteItemLogs(itemId);
+        return mDb.delete(ITEM_TABLE, _ID + "=" + itemId, null) > 0;
     }
 
     
