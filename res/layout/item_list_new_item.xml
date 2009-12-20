@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  >
+
+<TextView android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" android:text="Title"/>
+<EditText android:id="@+id/lini_dialog_item_title"
+	android:layout_height="wrap_content"
+	android:layout_width="fill_parent" 
+	android:contentDescription="Item title"
+	android:hint="Item title"/>
+<TextView android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" android:text="Notes"/>
+<EditText android:id="@+id/lini_dialog_item_body" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:hint="Optional notes about this item" 
+	android:minLines="3" 
+	android:maxLines="5" 
+	/>
+<TableLayout
+ android:layout_width="fill_parent" 
+ android:layout_height="wrap_content"
+ android:layout_gravity="center"
+ android:stretchColumns="*"
+ >
+ <TableRow>
+<Button
+ android:text="Cancel" 
+ android:id="@+id/lini_dialog_cancel" 
+ />
+<Button
+ android:text="Create" 
+ android:id="@+id/lini_dialog_create"
+ android:enabled="false" 
+ />
+  </TableRow>
+</TableLayout>
+</LinearLayout>

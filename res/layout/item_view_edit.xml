@@ -6,20 +6,34 @@
   android:orientation="vertical">
 <TextView android:layout_height="wrap_content" 
 	android:layout_width="fill_parent" 
-	android:text="Editing an item" />
+	android:text="Viewing an item" />
 <TextView android:layout_width="wrap_content" 
 	android:layout_height="wrap_content" android:text="Title"/>
-<EditText android:text="Item text" 
+<TextView android:text="Item text" 
 	android:id="@+id/item_title"
 	android:layout_height="wrap_content"
 	android:layout_width="fill_parent" />
+<EditText android:text="Item text" 
+	android:id="@+id/item_title_edit"
+	android:layout_height="wrap_content"
+	android:layout_width="fill_parent"
+	android:visibility="invisible"
+	/>
 <TextView android:layout_width="fill_parent" 
 	android:layout_height="wrap_content" android:text="Notes"/>
-<EditText android:id="@+id/item_body" 
+<TextView android:id="@+id/item_body" 
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content" 
 	android:text="Item body" 
 	android:minLines="3" 
 	android:maxLines="5" />
+<EditText android:id="@+id/item_body_edit" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:text="Item body" 
+	android:minLines="3" 
+	android:maxLines="5" 
+	android:visibility="invisible"
+	/>
 
 </LinearLayout>

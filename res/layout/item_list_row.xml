@@ -11,11 +11,20 @@
  android:layout_marginTop="2sp"
  android:text="Title" android:textSize="18sp"  />
  <TextView
+ android:layout_width="wrap_content" 
  android:layout_height="wrap_content" 
- android:id="@+id/ilr_itemLog"
- android:layout_width="fill_parent"
+ android:id="@+id/ilr_itemLogLabel"
  android:layout_below="@id/ilr_itemTitle"
  android:layout_alignLeft="@id/ilr_itemTitle"
  android:layout_marginLeft="10sp"
- android:text="No log entries" android:textSize="12sp" />
+ android:text="Last log entry: " 
+ android:textSize="12sp" />
+<TextView
+ android:text="" 
+ android:textSize="12sp"
+ android:id="@+id/ilr_itemLog" 
+ android:layout_toRightOf="@id/ilr_itemLogLabel" 
+ android:layout_alignTop="@id/ilr_itemLogLabel" 
+ android:layout_width="fill_parent"
+ android:layout_height="wrap_content" />
 </RelativeLayout>

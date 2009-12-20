@@ -1,6 +1,7 @@
 package net.sosiouxme.WhenDidI.activity;
 
 
+import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import android.app.Activity;
@@ -12,7 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-public class ItemEdit extends Activity {
+public class ItemViewEdit extends Activity {
 	// Logger tag
     private static final String TAG = "WDI.ItemEdit";
     
@@ -40,13 +41,13 @@ public class ItemEdit extends Activity {
         mDba = new DbAdapter(this).open();
 
         // Set the layout for this activity.
-        setContentView(R.layout.item_edit);
-        mtvTitle = (EditText) findViewById(R.id.item_title);
-        mtvBody = (EditText) findViewById(R.id.item_body);
+        setContentView(R.layout.item_view_edit);
+        mtvTitle = (EditText) findViewById(R.id.item_title_edit);
+        mtvBody = (EditText) findViewById(R.id.item_body_edit);
 
         // find out what was intended
         final Intent intent = getIntent();
-        mListId = intent.getExtras().getLong(DbAdapter.ITEM_LIST);
+        mListId = intent.getExtras().getLong(C.db_ITEM_LIST);
 
         // Do some setup based on the action being performed.
         final String action = intent.getAction();
@@ -54,15 +55,15 @@ public class ItemEdit extends Activity {
             // Requested to edit: set that state, and the data being edited.
             Log.d(TAG, "Requested to edit");
             mMode = MODE_EDIT;
-            mItemId = intent.getExtras().getLong(DbAdapter._ID);
+            mItemId = intent.getExtras().getLong(C.db_ID);
             
             // retrieve the data for the item
             Cursor c = null;
 			try {
 				c = mDba.fetchItem(mItemId);
 				c.moveToFirst();
-				mTitle = c.getString(c.getColumnIndex(DbAdapter.ITEM_TITLE));
-				mBody = c.getString(c.getColumnIndex(DbAdapter.ITEM_BODY));
+				mTitle = c.getString(c.getColumnIndex(C.db_ITEM_TITLE));
+				mBody = c.getString(c.getColumnIndex(C.db_ITEM_BODY));
 			} finally {
 				if (c != null) {
 					c.close();

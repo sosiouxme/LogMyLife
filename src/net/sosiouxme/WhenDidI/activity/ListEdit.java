@@ -1,12 +1,9 @@
 package net.sosiouxme.WhenDidI.activity;
 
+import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
-import net.sosiouxme.WhenDidI.R.id;
-import net.sosiouxme.WhenDidI.R.layout;
-import net.sosiouxme.WhenDidI.R.menu;
 import android.app.ListActivity;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,7 +30,7 @@ public class ListEdit extends ListActivity {
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
 				R.layout.list_edit_row,
 				cur, // Give the cursor to the list adapter
-				new String[] { DbAdapter.LIST_TITLE },
+				new String[] { C.db_LIST_TITLE },
 				new int[] { R.id.ler_list });
 		
 		this.setListAdapter(adapter);
