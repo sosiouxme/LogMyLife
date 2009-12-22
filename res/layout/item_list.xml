@@ -5,7 +5,11 @@
     android:layout_height="fill_parent"
     >
 
-<Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/list_spinner"></Spinner>
+<Spinner
+ android:layout_height="wrap_content"
+ android:layout_width="fill_parent" 
+ android:id="@+id/list_spinner"
+ />
 
 <ListView android:layout_height="fill_parent" android:layout_width="fill_parent" android:clickable="true" android:id="@android:id/list">
 	 </ListView>
