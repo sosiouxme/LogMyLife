@@ -5,17 +5,21 @@
     <application android:icon="@drawable/icon"
      android:label="@string/app_name" 
      android:debuggable="true">
-        <activity android:name=".activity.ItemList"
+        <activity android:name=".activity.TrackerGroup"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<activity android:name=".activity.ItemViewEdit"></activity>
+<activity
+ android:name=".activity.TrackerViewEdit"
+ android:label="WhenDidI - View item details"
+ 
+/>
 <activity android:name=".activity.Prefs"></activity>
-<activity android:name=".activity.ListEdit"></activity>
+<activity android:name=".activity.GroupsEdit"></activity>
 </application>
-    <uses-sdk android:minSdkVersion="4" />
+    <uses-sdk android:minSdkVersion="3" />
 
 </manifest> 

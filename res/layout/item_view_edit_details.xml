@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+<TextView
+	android:layout_width="wrap_content" 
+	android:layout_height="wrap_content" android:text="Title"/>
+<TextView 
+	android:text="Item text" 
+	android:id="@+id/ive_item_title"
+	android:layout_height="wrap_content"
+	android:layout_width="fill_parent" />
+<TextView android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:text="Notes"/>
+<TextView android:id="@+id/ive_item_body" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:text="Item body"  
+	android:maxLines="5" />
+
+</LinearLayout>

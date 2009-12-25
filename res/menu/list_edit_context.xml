@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item android:title="Edit list name" android:orderInCategory="1" android:titleCondensed="Edit" android:id="@+id/lec_menu_edit"></item>
+<item android:titleCondensed="Delete" android:title="Delete list" android:orderInCategory="3" android:id="@+id/lec_menu_delete"></item>
+</menu>

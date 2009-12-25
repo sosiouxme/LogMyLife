@@ -17,7 +17,7 @@ public interface C {
 	public static final String db_LOG_ITEM = "item_id";
 	public static final String db_LOG_TIME = "log_time";
 	public static final String db_LOG_BODY = "body";
-	
+
 	public static final String db_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final DateFormat dbDateFormat = new SimpleDateFormat(db_DATE_FORMAT);
 

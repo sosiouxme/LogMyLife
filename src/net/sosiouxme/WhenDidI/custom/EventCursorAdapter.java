@@ -11,11 +11,11 @@ import android.util.Log;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class LogCursorAdapter extends SimpleCursorAdapter {
+public class EventCursorAdapter extends SimpleCursorAdapter {
 
-	private static final String TAG = "WDI.LogCursorAdapter";
+	private static final String TAG = "WDI.EventCursorAdapter";
 
-	public LogCursorAdapter(Context context, int layout, Cursor c,
+	public EventCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		// TODO Auto-generated constructor stub
@@ -23,7 +23,7 @@ public class LogCursorAdapter extends SimpleCursorAdapter {
 
 	@Override
 	public void setViewText(TextView v, String text) {
-		if(v.getId() == R.id.ilr_itemLog && text != null && text.length() > 0) {
+		if(v.getId() == R.id.logTime && text != null && text.length() > 0) {
 			// try to reformat date text as a local date
 			try {
 				Date d = C.dbDateFormat.parse(text.toString());
@@ -33,6 +33,11 @@ public class LogCursorAdapter extends SimpleCursorAdapter {
 			}
 		}
 		super.setViewText(v, text);
+	}
+
+	public void requery() {
+		Log.d(TAG, "requery");
+		getCursor().requery();
 	}
 
 	

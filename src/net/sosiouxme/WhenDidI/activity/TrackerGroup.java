@@ -2,12 +2,12 @@ package net.sosiouxme.WhenDidI.activity;
 
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
+import net.sosiouxme.WhenDidI.GroupSpinner;
 import net.sosiouxme.WhenDidI.R;
-import net.sosiouxme.WhenDidI.custom.LogCursorAdapter;
+import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -26,19 +26,19 @@ import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class ItemList extends ListActivity implements OnItemClickListener {
-	private static final String TAG = "WDI.ItemList";
+public class TrackerGroup extends ListActivity implements OnItemClickListener, OnItemSelectedListener {
+	private static final String TAG = "WDI.TrackerGroup";
 	private static final int DIALOG_ABOUT = 0;
 	private static final int DIALOG_NEW = 1;
 	private DbAdapter mDba;
-	private long mCurrentListId = 0;
+	private long mCurrentGroupId = 0;
+	private GroupSpinner mSpinner = null;
 
 
 	/** Called when the activity is first created. */
@@ -47,61 +47,52 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.item_list);
+		//getListView().addHeaderView(findViewById(R.id.il_list_spinner));
+		EditText addNew = new EditText(this);
+		addNew.setHint("Add new item");
+		getListView().addFooterView(addNew);
+		//getListView().addFooterView(findViewById(R.id.il_new_item));
 
 		mDba = new DbAdapter(this).open();
-		fillListSpinner();
-		fillItemList();
+		fillGroupSpinner();
+		fillTrackerList();
 	}
 
-	/* get the cursor with all lists and attach to the picker */
-	private void fillListSpinner() {
-		Log.d(TAG, "fillListSpinner");
-		Cursor cur = mDba.fetchLists();
-		startManagingCursor(cur);
-		SpinnerAdapter adapter = new SimpleCursorAdapter(this,
-				R.layout.list_spinner, 	// Use a template
-											// that displays a
-											// text view
-				cur, // Give the cursor to the list adapter
-				new String[] { C.db_LIST_TITLE },	// Map the NAME column in the
-														// list database to...
-				new int[] { R.id.listSpinnerText }); 	// The "text1" view defined
-													// in
-													// the XML template
-		
-		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		Spinner listSpinner = (Spinner) findViewById(R.id.list_spinner);
-		listSpinner.setAdapter(adapter);
-		long curId = mCurrentListId; // don't access member too much
-		if(curId > 0) {
-			// use this view's currently set list id
-			for(int pos = 0; pos < adapter.getCount(); pos++) {
-				if(adapter.getItemId(pos) == curId) {
-					listSpinner.setSelection(pos);
-					break;
-				}
-			}
-		}
-		mCurrentListId = listSpinner.getSelectedItemId();
+	/* get the cursor with all lists and attach to the spinner */
+	private void fillGroupSpinner() {
+		Log.d(TAG, "fillGroupSpinner");
+		mSpinner = new GroupSpinner(this, (Spinner) findViewById(R.id.il_list_spinner), mDba);
+		if(mCurrentGroupId == 0)
+			mCurrentGroupId = mSpinner.getSelectedItemId();
+		mSpinner.setGroupId(mCurrentGroupId);
+		mSpinner.setOnItemSelectedListener(this);
 	}
 	
-	// callback specified in spinner definition - when selected
-	public void onListSpinnerSelect(Spinner s) {
-		Log.d(TAG, "onListSpinnerSelect");
-		mCurrentListId = s.getSelectedItemId();
-		fillItemList();
+	@Override
+	public void onItemSelected(AdapterView<?> av, View v, int i,
+			long groupId) {
+		Log.d(TAG, "onItemSelected");
+		// switch to new group
+		mCurrentGroupId = groupId;
+		fillTrackerList();		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/* attach cursor for the items in the current list to the listview */
-	private void fillItemList() {
-		Log.d(TAG, "fillItemList");
-		Cursor cur = mDba.fetchItems(mCurrentListId);
+	private void fillTrackerList() {
+		Log.d(TAG, "fillTrackerList");
+		Cursor cur = mDba.fetchItems(mCurrentGroupId);
 		startManagingCursor(cur);
-		LogCursorAdapter adapter = new LogCursorAdapter(this,
+		EventCursorAdapter adapter = new EventCursorAdapter(this,
 				R.layout.item_list_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_ITEM_TITLE, C.db_ITEM_LAST_LOG },
-				new int[] { R.id.ilr_itemTitle, R.id.ilr_itemLog });
+				new int[] { R.id.ilr_itemTitle, R.id.logTime });
 		this.setListAdapter(adapter);
 		
 		// set up self as listener for when user clicks item
@@ -128,7 +119,7 @@ public class ItemList extends ListActivity implements OnItemClickListener {
     			showDialog(DIALOG_ABOUT);
     			return true;
     		case R.id.ilmenu_manage_lists:
-    			startActivity(new Intent(this, ListEdit.class));
+    			startActivity(new Intent(this, GroupsEdit.class));
     			return true;
     		case R.id.ilmenu_settings:
     			startActivity(new Intent(this, Prefs.class));
@@ -138,18 +129,19 @@ public class ItemList extends ListActivity implements OnItemClickListener {
     }
     
     void newItem() {
-		Log.d(TAG, "newItem with listId " + mCurrentListId);
-		Intent intent = new Intent(this, ItemViewEdit.class);
+		Log.d(TAG, "newItem with listId " + mCurrentGroupId);
+		Intent intent = new Intent(this, TrackerViewEdit.class);
 		intent.setAction(Intent.ACTION_INSERT);
-		intent.putExtra(C.db_ITEM_LIST, mCurrentListId);
+		intent.putExtra(C.db_ITEM_LIST, mCurrentGroupId);
 		startActivity(intent);
 	}
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		Log.d(TAG, "onCreateDialog");
 		switch(id) {
 		case DIALOG_NEW:
-			return new NewItemDialog(this);
+			return new NewTrackerDialog();
 		case DIALOG_ABOUT:
 			return new AlertDialog.Builder(this)
 			.setTitle(R.string.il_dialog_about_title)
@@ -164,9 +156,9 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long itemId) {
 		Log.d(TAG, "onItemClick " + itemId);
-		Intent intent = new Intent(this, ItemViewEdit.class);
+		Intent intent = new Intent(this, TrackerViewEdit.class);
 		intent.setAction(Intent.ACTION_EDIT);
-		intent.putExtra(C.db_ITEM_LIST, mCurrentListId);
+		intent.putExtra(C.db_ITEM_LIST, mCurrentGroupId);
 		intent.putExtra(C.db_ID, itemId);
 		startActivity(intent);
 	}
@@ -184,7 +176,7 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 		Log.d(TAG, "onContextItemSelected");
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		long rowId = info.id;
-		TextView tv = (TextView) info.targetView.findViewById(R.id.ilr_itemLog);
+		TextView tv = (TextView) info.targetView.findViewById(R.id.logTime);
 		switch(item.getItemId()) {
 		case R.id.ilc_menu_quicklog:
 			String time = mDba.createLog(rowId, null, null);
@@ -198,6 +190,20 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 		return super.onContextItemSelected(item);
 	}
 	
+	@Override
+	protected void onResume() {
+		Log.d(TAG, "onResume");
+		super.onResume();
+		mSpinner.notifyDataSetChanged();
+	}
+
+	@Override
+	protected void onDestroy() {
+		Log.d(TAG, "onDestroy");
+		mDba.close();
+		super.onDestroy();
+	}
+
 	private void showDeleteDialog(final long itemId, String itemTitle) {
 		Log.d(TAG, "showDeleteDialog");
 		Dialog d = new AlertDialog.Builder(this)
@@ -211,7 +217,7 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 				public void onClick(DialogInterface dialog, int which) {
 					Log.d(TAG, "DeleteDialog onClick " + itemId);
 					mDba.deleteItem(itemId);
-					fillItemList();
+					((EventCursorAdapter) getListAdapter()).requery();
 				}
 			})
 		.create();
@@ -220,21 +226,22 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 
 	}
 
-	private class NewItemDialog extends Dialog implements android.view.View.OnClickListener, OnKeyListener, OnDismissListener {
+	private class NewTrackerDialog extends Dialog implements android.view.View.OnClickListener, OnKeyListener, OnDismissListener {
 
 		private Button mCreateButton = null;
 		private EditText mTitleEditor = null;
 		private EditText mBodyEditor = null;
 
-		public NewItemDialog(Context context) {
-			super(context, android.R.style.Theme);
+		public NewTrackerDialog() {
+			super(TrackerGroup.this, android.R.style.Theme);
 		}
 
 		@Override
 		protected void onCreate(Bundle savedInstanceState) {
+			Log.d(TAG, "onCreate NewTrackerDialog");
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.item_list_new_item);
-			this.setOwnerActivity(ItemList.this);
+			this.setOwnerActivity(TrackerGroup.this);
 			this.setTitle(R.string.ilni_title);
 			
 			// make sure only the dialog has focus
@@ -243,29 +250,30 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 
 
 			// wire up the buttons
-			Button cancel = (Button) findViewById(R.id.lini_dialog_cancel);
+			Button cancel = (Button) findViewById(R.id.ilni_dialog_cancel);
 			cancel.setOnClickListener(this);
-			mCreateButton = (Button) findViewById(R.id.lini_dialog_create);
+			mCreateButton = (Button) findViewById(R.id.ilni_dialog_create);
 			mCreateButton.setOnClickListener(this);
 			
 			//wire up the title text to enable/disable the create button
-			mTitleEditor = (EditText) findViewById(R.id.lini_dialog_item_title);
+			mTitleEditor = (EditText) findViewById(R.id.ilni_dialog_item_title);
 			mTitleEditor.setOnKeyListener(this);
 			// and we'll need to reset both text fields when the dialog is dismissed
-			mBodyEditor = (EditText) findViewById(R.id.lini_dialog_item_body);
+			mBodyEditor = (EditText) findViewById(R.id.ilni_dialog_item_body);
 			this.setOnDismissListener(this);
 		}
 
 		@Override
 		public void onClick(View v) {
+			Log.d(TAG, "onClick NewTrackerDialog");
 			switch(v.getId()) {
-			case R.id.lini_dialog_create:
+			case R.id.ilni_dialog_create:
 				Log.d(TAG,"creating new item");
-				mDba.createItem(mCurrentListId, 
+				mDba.createItem(mCurrentGroupId, 
 						mTitleEditor.getText().toString(), 
 						mBodyEditor.getText().toString());
 				// udpate parent's view
-				fillItemList();
+				((EventCursorAdapter) getListAdapter()).requery();
 				break;
 			}
 			this.dismiss();
@@ -283,6 +291,8 @@ public class ItemList extends ListActivity implements OnItemClickListener {
 
 		@Override
 		public void onDismiss(DialogInterface dialog) {
+			Log.d(TAG, "onDismiss NewTrackerDialog");
+
 			// clear for next time dialog is called
 			mTitleEditor.setText("");
 			mBodyEditor.setText("");

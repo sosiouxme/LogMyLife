@@ -22,7 +22,7 @@
 <TextView
  android:text="" 
  android:textSize="12sp"
- android:id="@+id/ilr_itemLog" 
+ android:id="@+id/logTime" 
  android:layout_toRightOf="@id/ilr_itemLogLabel" 
  android:layout_alignTop="@id/ilr_itemLogLabel" 
  android:layout_width="fill_parent"

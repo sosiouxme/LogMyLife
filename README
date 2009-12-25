@@ -1,12 +1,13 @@
 *** Development underway, but not in a useful state yet ***
 
 Eclipse project for an Android application. You'll probably need Eclipse
-and the Android SDK and ADT plugin to make sense of it.
+and the Android SDK and ADT plugin to make sense of it. The code is
+licensed under the GPLv3 (see LICENSE file).
 
 WhenDidI helps with cyclical events and tasks by:
 * Logging when an item (event or task) was performed
-* Alerting when and item has not been performed for a specified period.
-* Hopefully, someday serving as input to a website for the same purpose
+* Alerting when an item has not been performed for a specified period.
+* Hopefully soon, serving as input to a website for the same purpose
   but with greater abilities like graphical log analysis.
 
 Perhaps it will merge later with a more generic task/calendar app, not sure.

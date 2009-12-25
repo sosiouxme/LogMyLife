@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-
-<Spinner
- android:layout_height="wrap_content"
+<LinearLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"
+ android:orientation="vertical" 
  android:layout_width="fill_parent" 
- android:id="@+id/list_spinner"
+ android:layout_height="fill_parent">
+<Spinner
+  android:layout_height="wrap_content" 
+  android:layout_width="fill_parent" 
+  android:id="@+id/il_list_spinner" 
+/>
+<ListView
+ android:layout_height="fill_parent" 
+ android:layout_width="fill_parent" 
+ android:clickable="true" 
+ android:id="@android:id/list" 
+ android:footerDividersEnabled="true" 
+ android:headerDividersEnabled="true" 
+ android:longClickable="true" 
+ android:textFilterEnabled="true"
+/>
+<TextView
+ android:id="@android:id/empty" 
+ android:layout_width="wrap_content" 
+ android:layout_height="wrap_content" 
+ android:text="No items in this list yet."
  />
-
-<ListView android:layout_height="fill_parent" android:layout_width="fill_parent" android:clickable="true" android:id="@android:id/list">
-	 </ListView>
-	 <TextView android:id="@android:id/empty"
-	 	 android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Click to add new item."></TextView>
-	 	 
+<EditText
+ android:layout_height="wrap_content" 
+ android:id="@+id/il_new_item" 
+ android:maxLines="1" 
+ android:hint="New item" 
+ android:layout_width="fill_parent" 
+ />
 </LinearLayout>
+
+
