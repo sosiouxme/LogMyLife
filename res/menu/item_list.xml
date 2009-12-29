@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:titleCondensed="New item" android:title="Create new item" android:id="@+id/ilmenu_new_item" android:alphabeticShortcut="N" android:icon="@android:drawable/ic_menu_add" android:orderInCategory="1"></item>
-<item android:id="@+id/ilmenu_manage_lists" android:titleCondensed="Lists" android:title="Manage Lists" android:alphabeticShortcut="L" android:icon="@android:drawable/ic_menu_agenda" android:orderInCategory="3"></item>
-<item android:title="About" android:id="@+id/ilmenu_about" android:titleCondensed="About" android:orderInCategory="5" android:icon="@android:drawable/ic_menu_help"></item><item android:titleCondensed="Search" android:alphabeticShortcut="S" android:title="Search" android:id="@+id/ilmenu_search" android:icon="@android:drawable/ic_menu_search" android:orderInCategory="7"></item>
-<item android:titleCondensed="Settings" android:title="Settings..." android:id="@+id/ilmenu_settings" android:alphabeticShortcut="P" android:icon="@android:drawable/ic_menu_preferences" android:orderInCategory="9"></item>
-
-</menu>

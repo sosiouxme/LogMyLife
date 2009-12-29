@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:titleCondensed="Log" android:orderInCategory="1" android:title="Quick log entry" android:id="@+id/ilc_menu_quicklog"></item>
-<item android:titleCondensed="Entry" android:orderInCategory="3" android:title="Full log entry" android:id="@+id/ilc_menu_full_log"></item>
-<item android:title="View item/log" android:titleCondensed="View" android:orderInCategory="5" android:id="@+id/ilc_menu_view"></item>
-<item android:orderInCategory="7" android:title="Delete item" android:id="@+id/ilc_menu_delete" android:titleCondensed="Delete"></item>
-</menu>

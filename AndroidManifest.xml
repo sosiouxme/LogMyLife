@@ -13,12 +13,19 @@
             </intent-filter>
         </activity>
 <activity
- android:name=".activity.TrackerViewEdit"
- android:label="WhenDidI - View item details"
- 
+ android:name=".activity.TrackerEdit"
+ android:label="WhenDidI - Edit Tracker"
 />
-<activity android:name=".activity.Prefs"></activity>
-<activity android:name=".activity.GroupsEdit"></activity>
+<activity
+ android:name=".activity.TrackerDetail"
+ android:label="WhenDidI - View Tracker Details"
+/>
+<activity android:name=".activity.Prefs"
+ android:label="WhenDidI - Preferences"
+/>
+<activity android:name=".activity.GroupsEdit"
+ android:label="WhenDidI - Edit Groups"
+/>
 </application>
     <uses-sdk android:minSdkVersion="3" />
 

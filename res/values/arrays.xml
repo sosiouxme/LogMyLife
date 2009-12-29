@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="trackerClickBehaviorVisible">
+	<item>Create instant log</item>
+	<item>Create detailed log</item>
+	<item>View tracker details</item>
+</string-array>
+<string-array name="trackerClickBehaviorStored">
+	<item>log</item>
+	<item>log_detail</item>
+	<item name="trackerClickBehaviorDefault">view</item>
+</string-array>
+</resources>

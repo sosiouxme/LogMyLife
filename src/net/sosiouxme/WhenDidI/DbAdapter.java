@@ -25,7 +25,7 @@ import android.util.Log;
 public class DbAdapter implements C {
 
 	private static final String DATABASE_NAME = "whendidi.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 1;
     private static final String TAG = "WDI.DBAdapter";
 
 	private DbAdmin mDbHelper;
@@ -59,22 +59,22 @@ public class DbAdapter implements C {
      * 
      */
     
-    public long createList(String title) {
+    public long createGroup(String title) {
         // @return listId or -1 if failed
-    	Log.d(TAG, "creating list " + title);
+    	Log.d(TAG, "creating group " + title);
         ContentValues initialValues = new ContentValues();
-        initialValues.put(db_LIST_TITLE, title);
+        initialValues.put(db_GROUP_NAME, title);
 
-        return mDb.insert(db_LIST_TABLE, null, initialValues);
+        return mDb.insert(db_GROUP_TABLE, null, initialValues);
     }
 
-    public Cursor fetchList(long listId) throws SQLException {
+    public Cursor fetchGroup(long groupId) throws SQLException {
         // @return Cursor positioned to matching note, if found
         // @throws SQLException if note could not be found/retrieved
-    	Log.d(TAG, "fetching list " + listId);
+    	Log.d(TAG, "fetching group " + groupId);
         Cursor mCursor =
-                mDb.query(true, db_LIST_TABLE, new String[] {db_ID,
-                        db_LIST_TITLE}, db_ID + "=" + listId, null,
+                mDb.query(true, db_GROUP_TABLE, new String[] {db_ID,
+                        db_GROUP_NAME}, db_ID + "=" + groupId, null,
                         null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -83,26 +83,26 @@ public class DbAdapter implements C {
 
     }
 
-    public Cursor fetchLists() {
-        // @return Cursor over all lists
-    	Log.d(TAG, "fetching all lists");
-    	return mDb.query(db_LIST_TABLE, new String[] {db_ID, db_LIST_TITLE}, null, null, null, null, null);
+    public Cursor fetchGroups() {
+        // @return Cursor over all groups
+    	Log.d(TAG, "fetching all groups");
+    	return mDb.query(db_GROUP_TABLE, new String[] {db_ID, db_GROUP_NAME}, null, null, null, null, null);
     }
     
-    public boolean updateList(long listId, String title) {
+    public boolean updateGroup(long groupId, String title) {
         // @return true if the note was successfully updated, false otherwise
-    	Log.d(TAG, "updating list " + listId);
+    	Log.d(TAG, "updating group " + groupId);
         ContentValues args = new ContentValues();
-        args.put(db_LIST_TITLE, title);
-        return mDb.update(db_LIST_TABLE, args, db_ID + "=" + listId, null) > 0;
+        args.put(db_GROUP_NAME, title);
+        return mDb.update(db_GROUP_TABLE, args, db_ID + "=" + groupId, null) > 0;
     }
     
-    public boolean deleteList(long listId) {
+    public boolean deleteGroup(long groupId) {
         // @return true if deleted, false otherwise
-    	Log.d(TAG, "deleting list " + listId);
-        deleteListLogs(listId);
-        mDb.delete(db_ITEM_TABLE, db_ITEM_LIST + "=" + listId, null);
-        return mDb.delete(db_LIST_TABLE, db_ID + "=" + listId, null) > 0;
+    	Log.d(TAG, "deleting group " + groupId);
+        deleteGroupLogs(groupId);
+        mDb.delete(db_TRACKER_TABLE, db_TRACKER_GROUP + "=" + groupId, null);
+        return mDb.delete(db_GROUP_TABLE, db_ID + "=" + groupId, null) > 0;
     }
 
     
@@ -110,24 +110,24 @@ public class DbAdapter implements C {
      * Handle item table
      */
 
-	public long createItem(long listId, String title, String body) {
+	public long createTracker(long groupId, String name, String body) {
         // @return rowId or -1 if failed
-		Log.d(TAG, "creating item " + listId + ":" + title);
+		Log.d(TAG, "creating item " + groupId + ":" + name);
         ContentValues initialValues = new ContentValues();
-        initialValues.put(db_ITEM_LIST, listId);
-        initialValues.put(db_ITEM_TITLE, title);
-        initialValues.put(db_ITEM_BODY, body);
-        return mDb.insert(db_ITEM_TABLE, null, initialValues);
+        initialValues.put(db_TRACKER_GROUP, groupId);
+        initialValues.put(db_TRACKER_NAME, name);
+        initialValues.put(db_TRACKER_BODY, body);
+        return mDb.insert(db_TRACKER_TABLE, null, initialValues);
     }
 
-    public Cursor fetchItem(long itemId) throws SQLException {
+    public Cursor fetchTracker(long trackerId) throws SQLException {
         // @return Cursor positioned to matching note, if found
         // @throws SQLException if note could not be found/retrieved
-    	Log.d(TAG, "fetching item " + itemId);
+    	Log.d(TAG, "fetching tracker " + trackerId);
         Cursor mCursor =
-                mDb.query(true, db_ITEM_TABLE, 
-                		new String[] {db_ID, db_ITEM_TITLE, db_ITEM_BODY, db_ITEM_LIST, db_ITEM_LAST_LOG},
-                		db_ID + "=" + itemId, 
+                mDb.query(true, db_TRACKER_TABLE, 
+                		new String[] {db_ID, db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_GROUP, db_TRACKER_LAST_LOG},
+                		db_ID + "=" + trackerId, 
                 		null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -136,61 +136,61 @@ public class DbAdapter implements C {
 
     }
 
-	public Cursor fetchItems(long listId) {
+	public Cursor fetchTrackers(long groupId) {
         // @return Cursor over all items in a list
-		Log.d(TAG, "fetching items for list " + listId);
-        return mDb.query(db_ITEM_TABLE,
-        		new String[] {db_ID, db_ITEM_TITLE, db_ITEM_BODY, db_ITEM_LAST_LOG},
-        		db_ITEM_LIST + " = " + listId,
+		Log.d(TAG, "fetching trackers for group " + groupId);
+        return mDb.query(db_TRACKER_TABLE,
+        		new String[] {db_ID, db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_LAST_LOG},
+        		db_TRACKER_GROUP + " = " + groupId,
         		null, null, null, db_ID);
 	}
 	
-    public boolean updateItem(long itemId, String title, String body) {
-        // @return true if the note was successfully updated, false otherwise
-    	Log.d(TAG, "updating item " + itemId);
+    public boolean updateTracker(long trackerId, String name, String body) {
+        // @return true if the tracker was successfully updated, false otherwise
+    	Log.d(TAG, "updating tracker " + trackerId);
         ContentValues args = new ContentValues();
-        args.put(db_ITEM_TITLE, title);
-        args.put(db_ITEM_BODY, body);
-        return mDb.update(db_ITEM_TABLE, args, db_ID + "=" + itemId, null) > 0;
+        args.put(db_TRACKER_NAME, name);
+        args.put(db_TRACKER_BODY, body);
+        return mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + trackerId, null) > 0;
     }
     
-	private static final String STMT_UPDATE_LAST_LOG = "update Item " +
+	private static final String STMT_UPDATE_LAST_LOG = "update Trackers " +
 	"set last_log_time = (" +
 		"select max(log_time) " +
-		"from ItemLog " +
-		"where item_id = ?" +
+		"from TrackerLogs " +
+		"where tracker_id = ?" +
 		") " +
 	"where _id = ?";
-    private boolean updateItemLastLog(long itemId) {
-    	mDb.execSQL(STMT_UPDATE_LAST_LOG, new Long[] {itemId, itemId});
+    private boolean updateTrackerLastLog(long trackerId) {
+    	mDb.execSQL(STMT_UPDATE_LAST_LOG, new Long[] {trackerId, trackerId});
     	return true;
     }
     
-    public boolean deleteItem(long itemId) {
+    public boolean deleteTracker(long trackerId) {
         // @return true if deleted, false otherwise
-    	Log.d(TAG, "deleting item " + itemId);
-        deleteItemLogs(itemId);
-        return mDb.delete(db_ITEM_TABLE, db_ID + "=" + itemId, null) > 0;
+    	Log.d(TAG, "deleting tracker " + trackerId);
+        deleteTrackerLogs(trackerId);
+        return mDb.delete(db_TRACKER_TABLE, db_ID + "=" + trackerId, null) > 0;
     }
 
     
     /**
      * Handle log table
      */
-    public String createLog(long item, Date time, String body) {
+    public String createLog(long trackerId, Date time, String body) {
         // @return rowId or -1 if failed
-    	Log.d(TAG, "creating log for item " + item);
+    	Log.d(TAG, "creating log for tracker " + trackerId);
     	time = (time == null) ? new Date() : time;
         ContentValues initialValues = new ContentValues();
-        initialValues.put(db_LOG_ITEM, item);
+        initialValues.put(db_LOG_TRACKER, trackerId);
         initialValues.put(db_LOG_TIME, dbDateFormat.format(time));
         initialValues.put(db_LOG_BODY, body);
         try {
         	mDb.insert(db_LOG_TABLE, null, initialValues);
-        	updateItemLastLog(item);
+        	updateTrackerLastLog(trackerId);
         	return time.toLocaleString();
         } catch(Exception e) {
-        	Log.e(TAG, "Could not insert log for item " + item);
+        	Log.e(TAG, "Could not insert log for tracker " + trackerId);
         	return "";
         }
     }
@@ -201,7 +201,7 @@ public class DbAdapter implements C {
     	Log.d(TAG, "fetching log " + logId);
         Cursor mCursor =
                 mDb.query(true, db_LOG_TABLE,
-                		new String[] {db_ID, db_LOG_ITEM, db_LOG_TIME, db_LOG_BODY},
+                		new String[] {db_ID, db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY},
                 		db_ID + "=" + logId, null,
                         null, null, null, null);
         if (mCursor != null) {
@@ -210,14 +210,14 @@ public class DbAdapter implements C {
         return mCursor;
     }
 
-    public Cursor fetchLogs(long itemId) throws SQLException {
-        // @return Cursor positioned to matching note, if found
-        // @throws SQLException if note could not be found/retrieved
-    	Log.d(TAG, "fetching logs for item " + itemId);
+    public Cursor fetchLogs(long trackerId) throws SQLException {
+        // @return Cursor positioned to matching log, if found
+        // @throws SQLException if log could not be found/retrieved
+    	Log.d(TAG, "fetching logs for item " + trackerId);
         Cursor c =
                 mDb.query(true, db_LOG_TABLE,
                 		new String[] {db_ID, db_LOG_TIME, db_LOG_BODY},
-                		db_LOG_ITEM + "=" + itemId, null,
+                		db_LOG_TRACKER + "=" + trackerId, null,
                         null, null, null, null);
         if (c != null)
             c.moveToFirst();
@@ -225,7 +225,7 @@ public class DbAdapter implements C {
 
     }
 
-    public boolean updateLog(long logId, Date time, String body, long itemId) {
+    public boolean updateLog(long logId, Date time, String body, long trackerId) {
         // @return true if the note was successfully updated, false otherwise
     	Log.d(TAG, "updating log " + logId);
         ContentValues args = new ContentValues();
@@ -233,32 +233,32 @@ public class DbAdapter implements C {
         	args.put(db_LOG_TIME, dbDateFormat.format(time));
         args.put(db_LOG_BODY, body);
         boolean status = mDb.update(db_LOG_TABLE, args, db_ID + "=" + logId, null) > 0;
-    	updateItemLastLog(itemId);
+    	updateTrackerLastLog(trackerId);
     	return status;
     }
     
-    public boolean deleteLog(long logId, long itemId) {
+    public boolean deleteLog(long logId, long trackerId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting log " + logId);
         boolean status = mDb.delete(db_LOG_TABLE, db_ID + "=" + logId, null) > 0;
-    	updateItemLastLog(itemId);
+    	updateTrackerLastLog(trackerId);
     	return status;
     }
     
-    public boolean deleteItemLogs(long itemId) {
-    	Log.d(TAG, "deleting logs for item " + itemId);
-    	boolean status = mDb.delete(db_LOG_TABLE, db_LOG_ITEM + " = " + itemId, null) > 0;
-    	updateItemLastLog(itemId);
+    public boolean deleteTrackerLogs(long trackerId) {
+    	Log.d(TAG, "deleting logs for item " + trackerId);
+    	boolean status = mDb.delete(db_LOG_TABLE, db_LOG_TRACKER + " = " + trackerId, null) > 0;
+    	updateTrackerLastLog(trackerId);
     	return status;
     }
     
-    private static final String WHERE_LIST_LOGS =
-    	db_LOG_ITEM + " in (select " + db_ID + " from " + db_ITEM_TABLE 
-    	+ " where " + db_ITEM_LIST + " = ?)";
-    public boolean deleteListLogs(long listId) {
-    	Log.d(TAG, "deleting logs for list " + listId);
-    	return mDb.delete(db_LOG_TABLE, WHERE_LIST_LOGS,
-    			new String[] { Long.toString(listId)}) > 0;
+    private static final String WHERE_GROUP_LOGS =
+    	db_LOG_TRACKER + " in (select " + db_ID + " from " + db_TRACKER_TABLE 
+    	+ " where " + db_TRACKER_GROUP + " = ?)";
+    public boolean deleteGroupLogs(long groupId) {
+    	Log.d(TAG, "deleting logs for group " + groupId);
+    	return mDb.delete(db_LOG_TABLE, WHERE_GROUP_LOGS,
+    			new String[] { Long.toString(groupId)}) > 0;
     }
 
 
@@ -275,29 +275,29 @@ public class DbAdapter implements C {
 		public void onCreate(SQLiteDatabase db) {
       
 			try {
-				db.execSQL("CREATE TABLE " + db_LIST_TABLE + " ("
+				db.execSQL("CREATE TABLE " + db_GROUP_TABLE + " ("
 	                    + db_ID + " INTEGER PRIMARY KEY,"
-	                    + db_LIST_TITLE + " TEXT NOT NULL"
+	                    + db_GROUP_NAME + " TEXT NOT NULL"
 	                    + ");");
-				Log.i(TAG, "Created table " + db_LIST_TABLE);
+				Log.i(TAG, "Created table " + db_GROUP_TABLE);
 				
 	            ContentValues firstRow = new ContentValues();
-	            firstRow.put(db_LIST_TITLE, (String) resources.getText(R.string.first_list));
-	            db.insertOrThrow(db_LIST_TABLE, db_LIST_TITLE, firstRow);
+	            firstRow.put(db_GROUP_NAME, (String) resources.getText(R.string.first_list));
+	            db.insertOrThrow(db_GROUP_TABLE, db_GROUP_NAME, firstRow);
 	
 	            // TODO: foreign keys
-	            db.execSQL("CREATE TABLE " + db_ITEM_TABLE + " ("
+	            db.execSQL("CREATE TABLE " + db_TRACKER_TABLE + " ("
 	                    + db_ID + " INTEGER PRIMARY KEY,"
-	                    + db_ITEM_LIST + " INTEGER NOT NULL," 
-	                    + db_ITEM_TITLE + " TEXT NOT NULL,"
-	                    + db_ITEM_BODY + " TEXT,"
-	                    + db_ITEM_LAST_LOG + " DATETIME"
+	                    + db_TRACKER_GROUP + " INTEGER NOT NULL," 
+	                    + db_TRACKER_NAME + " TEXT NOT NULL,"
+	                    + db_TRACKER_BODY + " TEXT,"
+	                    + db_TRACKER_LAST_LOG + " DATETIME"
 	                    + ");");
-				Log.i(TAG, "Created table " + db_ITEM_TABLE);
+				Log.i(TAG, "Created table " + db_TRACKER_TABLE);
 			
 				db.execSQL("CREATE TABLE " + db_LOG_TABLE + " ("
 	                    + db_ID + " INTEGER PRIMARY KEY,"
-	                    + db_LOG_ITEM + " INTEGER NOT NULL," 
+	                    + db_LOG_TRACKER + " INTEGER NOT NULL," 
 	                    + db_LOG_TIME + " DATETIME NOT NULL,"
 	                    + db_LOG_BODY + " TEXT"
 	                    + ");");
@@ -310,15 +310,13 @@ public class DbAdapter implements C {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             /*
-             * Copied from Notepad demo, but seems like a bad idea
-             * Will implement once I understand why this might happen (TODO) 
-             *   
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS " + LIST_TABLE);
-            db.execSQL("DROP TABLE IF EXISTS " + ITEM_TABLE);
-            db.execSQL("DROP TABLE IF EXISTS " + LOG_TABLE);
-            onCreate(db);
+             * Will implement as necessary
+             * 
+             * switch(oldVersion) {
+             * case 1: (no break)
+             * case 2:
+             * etc
+             * }
             */
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", but don't know what to do.");

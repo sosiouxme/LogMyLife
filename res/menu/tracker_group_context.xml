@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+ android:titleCondensed="Log"
+ android:orderInCategory="1" 
+ android:title="Quick log entry" 
+ android:id="@+id/quicklog"
+ />
+<item
+ android:titleCondensed="Entry" 
+ android:orderInCategory="3" 
+ android:title="Detailed log entry" 
+ android:id="@+id/detailed_log"
+ />
+<item
+ android:title="View tracker detail" 
+ android:titleCondensed="View" 
+ android:orderInCategory="5" 
+ android:id="@+id/view"
+ />
+<item
+ android:title="Edit tracker" 
+ android:titleCondensed="Edit" 
+ android:orderInCategory="5" 
+ android:id="@+id/view"
+ />
+<item
+ android:orderInCategory="7" 
+ android:title="Delete item" 
+ android:id="@+id/delete" 
+ android:titleCondensed="Delete"
+ />
+</menu>

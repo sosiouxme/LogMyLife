@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+ android:titleCondensed="New tracker" 
+ android:title="Create new tracker" 
+ android:id="@+id/new_tracker" 
+ android:alphabeticShortcut="N" 
+ android:icon="@android:drawable/ic_menu_add" 
+ android:orderInCategory="1"
+ />
+<item
+ android:id="@+id/manage_groups" 
+ android:titleCondensed="Groups" 
+ android:title="Manage Groups" 
+ android:alphabeticShortcut="G" 
+ android:icon="@android:drawable/ic_menu_agenda" 
+ android:orderInCategory="3"
+ />
+<item
+ android:title="About" 
+ android:id="@+id/about" 
+ android:titleCondensed="About" 
+ android:orderInCategory="5" 
+ android:icon="@android:drawable/ic_menu_help"
+ />
+<item
+ android:titleCondensed="Search" 
+ android:alphabeticShortcut="S" 
+ android:title="Search" 
+ android:id="@+id/search" 
+ android:icon="@android:drawable/ic_menu_search" 
+ android:orderInCategory="7"
+ />
+<item
+ android:titleCondensed="Settings" 
+ android:title="Settings..." 
+ android:id="@+id/settings" 
+ android:alphabeticShortcut="P" 
+ android:icon="@android:drawable/ic_menu_preferences" 
+ android:orderInCategory="9"
+ />
+</menu>

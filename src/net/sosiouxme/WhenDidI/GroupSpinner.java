@@ -19,15 +19,15 @@ public class GroupSpinner {
 		this.mSpinner = spinner;
 		this.mDba = dba;
 
-		Cursor cur = mDba.fetchLists();
+		Cursor cur = mDba.fetchGroups();
 		caller.startManagingCursor(cur);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(caller,
-				R.layout.list_spinner_row, 	// specify layout id with a TextView
+				R.layout.w_group_spinner_row, 	// specify layout id with a TextView
 				//android.R.layout.simple_spinner_item,
 				cur, // Give the cursor to the list adapter
-				new String[] { C.db_LIST_TITLE },	// Map column in the database to...
-				new int[] { R.id.listSpinnerText });// The TextView defined in the layout
-		adapter.setDropDownViewResource(R.layout.list_spinner_row);
+				new String[] { C.db_GROUP_NAME },	// Map column in the database to...
+				new int[] { R.id.groupName });// The TextView defined in the layout
+		adapter.setDropDownViewResource(R.layout.w_group_spinner_row);
 		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mSpinner.setAdapter(adapter);
 	}

@@ -6,15 +6,15 @@ import java.text.SimpleDateFormat;
 public interface C {
 
 	public static final String db_ID = "_id";
-	public static final String db_LIST_TABLE = "List";
-	public static final String db_LIST_TITLE = "title";
-	public static final String db_ITEM_TABLE = "Item";
-	public static final String db_ITEM_LIST = "list_id";
-	public static final String db_ITEM_TITLE = "title";
-	public static final String db_ITEM_BODY = "body";
-	public static final String db_ITEM_LAST_LOG = "last_log_time";
-	public static final String db_LOG_TABLE = "ItemLog";
-	public static final String db_LOG_ITEM = "item_id";
+	public static final String db_GROUP_TABLE = "Groups";
+	public static final String db_GROUP_NAME = "name";
+	public static final String db_TRACKER_TABLE = "Trackers";
+	public static final String db_TRACKER_GROUP = "group_id";
+	public static final String db_TRACKER_NAME = "name";
+	public static final String db_TRACKER_BODY = "body";
+	public static final String db_TRACKER_LAST_LOG = "last_log_time";
+	public static final String db_LOG_TABLE = "TrackerLogs";
+	public static final String db_LOG_TRACKER = "tracker_id";
 	public static final String db_LOG_TIME = "log_time";
 	public static final String db_LOG_BODY = "body";
 

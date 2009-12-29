@@ -9,7 +9,8 @@
 <string name="menu_revert_item">Cancel changes</string><string name="menu_delete_item">Delete</string>
 
 <string name="ilni_title">Create new item</string>
-<string name="lenl_title">Create new list</string>
+<string name="ged_new_title">Create new group</string>
+<string name="ged_edit_title">Edit group name</string>
 <string name="ilc_dialog_delete_title">Really delete?</string>
 <string name="ilc_dialog_delete_msg">This will delete the item and any log entries.</string>
 <string name="ilc_dialog_delete_button">Delete</string>
@@ -22,10 +23,10 @@
 
 <string name="il_dialog_about_title">About WhenDidI</string>
 <string name="il_dialog_about_text">\
-WhenDidI is an application that helps you remember
+WhenDidI is an application that helps you track
 when some recurring event last occurred, for 
 instance a task that you perform. You may 
-create multiple lists of events and create 
+create multiple groups of trackers and create 
 and view log entries for them.
 </string>
 <string name="il_dialog_about_button">OK</string>

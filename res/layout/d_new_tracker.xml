@@ -7,11 +7,21 @@
   >
 
 <TextView android:layout_width="wrap_content" 
-	android:layout_height="wrap_content" android:text="Title"/>
-<EditText android:id="@+id/lenl_dialog_item_title"
+	android:layout_height="wrap_content" android:text="Name"/>
+<EditText android:id="@+id/editor"
 	android:layout_height="wrap_content"
+	android:layout_width="fill_parent"
+	android:lines="1"
+	android:hint="Tracker name"/>
+<TextView android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" android:text="Notes"/>
+<EditText android:id="@+id/body" 
 	android:layout_width="fill_parent" 
-	android:hint="Item title"/>
+	android:layout_height="wrap_content" 
+	android:hint="Optional notes about this tracker" 
+	android:minLines="3" 
+	android:maxLines="5" 
+	/>
 <TableLayout
  android:layout_width="fill_parent" 
  android:layout_height="wrap_content"
@@ -21,12 +31,11 @@
  <TableRow>
 <Button
  android:text="Cancel" 
- android:id="@+id/lenl_dialog_cancel" 
+ android:id="@+id/cancel" 
  />
 <Button
  android:text="Create" 
- android:id="@+id/lenl_dialog_create"
- android:enabled="false" 
+ android:id="@+id/ok"
  />
   </TableRow>
 </TableLayout>

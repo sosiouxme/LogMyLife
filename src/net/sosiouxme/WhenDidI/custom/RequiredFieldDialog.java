@@ -1,12 +1,10 @@
 package net.sosiouxme.WhenDidI.custom;
 
 import net.sosiouxme.WhenDidI.R;
-import net.sosiouxme.WhenDidI.activity.TrackerGroup;
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,80 +13,83 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
+/* 
+ * Defines a dialog that looks for an EditText field and a Button
+ * (with IDs R.id.editor and R.id.ok, respectively)
+ * and ties the OK button to the editor in such a way that the OK
+ * button is disabled unless something is present in the editor.
+ * If a button with ID R.id.cancel exists, it can be used to
+ * cancel the dialog.
+ * 
+ * Requires that subclasses call setContentView() with appropriate
+ * content. Must also define onClickOk() to handle when the OK button
+ * is successfully pushed.
+ */
+public abstract class RequiredFieldDialog extends Dialog
+	implements OnClickListener, OnKeyListener, OnDismissListener {
 
-public abstract class RequiredFieldDialog extends Dialog implements OnClickListener, OnKeyListener, OnDismissListener {
-
-	private final int mTextViewId;
-	private final int mButtonViewId;
-	private final Activity mOwner;
-	private final int mContentViewId;
-	private final int mTitleId;
-	private Button mButton = null;
-	private EditText mEditText = null;
+	private static final String TAG = "WDI.ReqFieldDialog";
+	protected Button mOkButton = null;
+	protected EditText mEditor = null;
 	
-	public RequiredFieldDialog(Activity owner, int contentViewId, int titleId, 
-							int textViewId, int buttonViewId, int themeId) {
+	public RequiredFieldDialog(Context owner, int themeId) {
 		super(owner, themeId);
-		mOwner = owner;
-		mContentViewId = contentViewId;
-		mTitleId = titleId;
-		mTextViewId = textViewId;
-		mButtonViewId = buttonViewId;
 	}
 	
-	public RequiredFieldDialog(Activity owner, int contentViewId, int titleId, int textViewId, int buttonViewId) {
-		this(owner, contentViewId, titleId, textViewId, buttonViewId, android.R.style.Theme);
+	public RequiredFieldDialog(Context owner) {
+		this(owner, android.R.style.Theme);
 	}
+	
+	
 
-
+	/*
+	 * Defines the content for this dialog.
+	 * @see android.app.Dialog#setContentView(int)
+	 * Should include an EditText with ID "editor", a Button
+	 * with ID "ok", and optionally a Button with ID "cancel".
+	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(mContentViewId);
-		this.setOwnerActivity(mOwner);
-		this.setTitle(mTitleId);
+	public void setContentView(int viewId) {
+		super.setContentView(viewId);
 		
 		// make sure only the dialog has focus
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
 	             WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 
-
-		// wire up the buttons
-		
-		/* TODO: this was the button that broke the camel's back. i shouldn't
-		 * have to specify all the buttons in the constructor, but i need to
-		 * know what they are in order to wire them up with listeners.
-		 * bah! what i really wanted was an AlertDialog with an EditText and
-		 * some magic validation dust.
-		 */
-		Button cancel = (Button) findViewById(mButtonViewId);
+		// wire the buttons listener
+		Button cancel = (Button) findViewById(R.id.cancel);
 		cancel.setOnClickListener(this);
+		mOkButton = (Button) findViewById(R.id.ok);
+		mOkButton.setOnClickListener(this);
+		mOkButton.setEnabled(false);
 		
-		mButton = (Button) findViewById(mButtonViewId);
-		mButton.setOnClickListener(this);
-		
-		//wire up the title text to enable/disable the create button
-		mEditText = (EditText) findViewById(mTextViewId);
-		mEditText.setOnKeyListener(this);
-		// and we'll need to reset both text fields when the dialog is dismissed
-		this.setOnDismissListener(this);
+		//wire up the text to enable/disable the create button
+		mEditor = (EditText) findViewById(R.id.editor);
+		mEditor.setOnKeyListener(this);
+		mEditor.setText("");
+
+		setOnDismissListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		if(v.getId() == mButtonViewId)
-			onAccepted();
+		Log.d(TAG, "onClick RequiredFieldDialog");
+		if(v == mOkButton)
+			onClickOk();
 		this.dismiss();
 	}
 
-	protected abstract void onAccepted();
+	/*
+	 * Callback for when the OK button is clicked.
+	 */
+	protected abstract void onClickOk();
 
 	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
 		if(((EditText)v).getText().length() > 0) {
-			mButton.setEnabled(true);			
+			mOkButton.setEnabled(true);			
 		} else {
-			mButton.setEnabled(false);			
+			mOkButton.setEnabled(false);			
 		}
 		return false;
 	}
@@ -96,7 +97,7 @@ public abstract class RequiredFieldDialog extends Dialog implements OnClickListe
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		// clear for next time dialog is called
-		mEditText.setText("");
-		mButton.setEnabled(false);
+		mEditor.setText("");
+		mOkButton.setEnabled(false);
 	}
 }
