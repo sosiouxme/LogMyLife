@@ -4,7 +4,12 @@ import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
+import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
+import net.sosiouxme.WhenDidI.model.Tracker;
 import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,69 +22,57 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class TrackerDetail extends ListActivity implements OnItemClickListener {
 	// Logger tag
-	private static final String TAG = "WDI.TrackerViewEdit";
+	private static final String TAG = "WDI.TrackerDetail";
 
 	// the Item being handled
-	private long mTrackerId = 0;
-	private long mGroupId = 0;
-	private String mTitle = null;
-	private String mBody = null;
-	private TextView mtvTitle;
-	private TextView mtvBody;
-	//private EditText metTitle;
-	//private EditText metBody;
+	private Tracker mTracker = null;
 
 	private DbAdapter mDba;
+	TextView mName;
+	TextView mBody;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// get item info
-		mTrackerId = getIntent().getExtras().getLong(C.db_ID);
-
 		// get a DB handle
 		mDba = new DbAdapter(this).open();
 
 		// Set the layout for this activity.
-		setContentView(R.layout.a_tracker_view_edit);
-		View header = getLayoutInflater().inflate(R.layout.a_tracker_view_edit_details, null);
-		getListView().addHeaderView(header);
+		setContentView(R.layout.a_tracker_detail);
+		View header = getLayoutInflater().inflate(R.layout.a_tracker_detail_head, null);
+		header.setFocusable(false);
+		header.setClickable(false);
+		getListView().addHeaderView(header, null, true);
 
-		// retrieve the data for the item
-		Cursor c = null;
-		try {
-			c = mDba.fetchTracker(mTrackerId);
-			c.moveToFirst();
-			mTitle = c.getString(c.getColumnIndex(C.db_TRACKER_NAME));
-			mBody = c.getString(c.getColumnIndex(C.db_TRACKER_BODY));
-			mGroupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
-		} finally {
-			if (c != null) {
-				c.close();
-			}
+		// locate the necessary elements of the layout
+		mName = (TextView) findViewById(R.id.name);
+		mBody = (TextView) findViewById(R.id.body);
+	}
+	
+	@Override
+	protected void onResume() {
+		// get (or refresh) item info
+		mTracker = mDba.fetchTracker(getIntent().getExtras().getLong(C.db_ID));
+		if(mTracker == null){
+			finish(); // nothing to show!
+		} else {
+
+			// set the data in the views
+			mName.setText(mTracker.name);
+			mBody.setText(mTracker.body);
+			fillLogList();
 		}
 
-		// locate and fill the necessary elements of the layout
-		mtvTitle = (TextView) findViewById(R.id.ive_item_title);
-		mtvBody = (TextView) findViewById(R.id.ive_item_body);
-		//metTitle = (EditText) findViewById(R.id.ive_item_title_edit);
-		//metBody = (EditText) findViewById(R.id.ive_item_body_edit);
-		// set the data in the views
-		mtvTitle.setText(mTitle);
-		//metTitle.setText(mTitle);
-		mtvBody.setText(mBody);
-		//metBody.setText(mBody);
-		
-		fillLogList();
+		super.onResume();		
 	}
 
 	private void fillLogList(){
 		Log.d(TAG, "fillLogList");
-		Cursor cur = mDba.fetchLogs(mTrackerId);
+		Cursor cur = mDba.fetchLogs(mTracker.id);
 		startManagingCursor(cur);
 		EventCursorAdapter adapter = new EventCursorAdapter(this,
-				R.layout.a_tracker_view_edit_logrow,
+				R.layout.a_tracker_detail_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_LOG_TIME, C.db_LOG_BODY },
 				new int[] { R.id.logTime, R.id.ivel_logBody });
@@ -94,11 +87,8 @@ public class TrackerDetail extends ListActivity implements OnItemClickListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.d(TAG, "onCreateOptionsMenu");
-		getMenuInflater().inflate(R.menu.tracker_edit, menu);
-		// menu is inflated for MODE_INSERT; modify if MODE_EDIT
-			menu.findItem(R.id.cancel_new).setVisible(false);
-			menu.findItem(R.id.cancel_existing).setVisible(true);
-			menu.findItem(R.id.delete).setVisible(true);
+		getMenuInflater().inflate(R.menu.tracker_detail, menu);
+
 		return true;
 	}
 	
@@ -107,30 +97,33 @@ public class TrackerDetail extends ListActivity implements OnItemClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.save:
-			saveItem();
-			return true;
-		case R.id.cancel_new:
-		case R.id.cancel_existing:
-			finish();
-			return true;
+		case R.id.edit:
+			startActivity(new Intent(this, TrackerEdit.class).putExtra(C.db_ID, mTracker.id));
+			break;
 		case R.id.delete:
+			deleteTracker();
+		case R.id.new_log:
+			//TODO
+			break;
+		case R.id.done:
 			finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void saveItem() {
-		//mTitle = metTitle.getText().toString();
-		//mBody = metBody.getText().toString();
-		mtvTitle.setText(mTitle);
-		mtvBody.setText(mBody);
-
-		mDba.updateTracker(mTrackerId, mTitle, mBody);
-		finish();
+	private void deleteTracker() {
+		final long id = mTracker.id;
+		Log.d(TAG, "deleteItem " + id);
+		TrackerDeleteDialog.create(this, new OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				Log.d(TAG, "DeleteDialog onClick " + id);
+				mDba.deleteTracker(id);
+				finish();
+			}
+		}).show();
 	}
-
+	
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub

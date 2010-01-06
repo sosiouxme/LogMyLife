@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 /* 
@@ -26,7 +24,7 @@ import android.widget.EditText;
  * is successfully pushed.
  */
 public abstract class RequiredFieldDialog extends Dialog
-	implements OnClickListener, OnKeyListener, OnDismissListener {
+	implements OnClickListener, OnDismissListener {
 
 	private static final String TAG = "WDI.ReqFieldDialog";
 	protected Button mOkButton = null;
@@ -65,7 +63,7 @@ public abstract class RequiredFieldDialog extends Dialog
 		
 		//wire up the text to enable/disable the create button
 		mEditor = (EditText) findViewById(R.id.editor);
-		mEditor.setOnKeyListener(this);
+		mEditor.setOnKeyListener(new RequireTextFor(mOkButton, mEditor));
 		mEditor.setText("");
 
 		setOnDismissListener(this);
@@ -83,16 +81,6 @@ public abstract class RequiredFieldDialog extends Dialog
 	 * Callback for when the OK button is clicked.
 	 */
 	protected abstract void onClickOk();
-
-	@Override
-	public boolean onKey(View v, int keyCode, KeyEvent event) {
-		if(((EditText)v).getText().length() > 0) {
-			mOkButton.setEnabled(true);			
-		} else {
-			mOkButton.setEnabled(false);			
-		}
-		return false;
-	}
 
 	@Override
 	public void onDismiss(DialogInterface dialog) {

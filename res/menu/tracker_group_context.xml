@@ -23,7 +23,7 @@
  android:title="Edit tracker" 
  android:titleCondensed="Edit" 
  android:orderInCategory="5" 
- android:id="@+id/view"
+ android:id="@+id/edit"
  />
 <item
  android:orderInCategory="7" 

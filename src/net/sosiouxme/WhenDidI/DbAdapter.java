@@ -5,8 +5,10 @@ package net.sosiouxme.WhenDidI;
 
 //import java.sql.Date;
 
+import java.text.ParseException;
 import java.util.Date;
 
+import net.sosiouxme.WhenDidI.model.Tracker;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
@@ -68,25 +70,30 @@ public class DbAdapter implements C {
         return mDb.insert(db_GROUP_TABLE, null, initialValues);
     }
 
-    public Cursor fetchGroup(long groupId) throws SQLException {
-        // @return Cursor positioned to matching note, if found
-        // @throws SQLException if note could not be found/retrieved
+    /**
+     * @param groupId rowId of group to return
+     * @return Cursor positioned at single group matching id if any
+     */
+    public Cursor fetchGroup(long groupId) {
     	Log.d(TAG, "fetching group " + groupId);
-        Cursor mCursor =
-                mDb.query(true, db_GROUP_TABLE, new String[] {db_ID,
-                        db_GROUP_NAME}, db_ID + "=" + groupId, null,
-                        null, null, null, null);
+		Cursor mCursor = mDb.query(true, 
+				db_GROUP_TABLE, 
+				new String[] { db_ID, db_GROUP_NAME }, 
+				db_ID + "=" + groupId, 
+				null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
         return mCursor;
-
     }
 
     public Cursor fetchGroups() {
         // @return Cursor over all groups
     	Log.d(TAG, "fetching all groups");
-    	return mDb.query(db_GROUP_TABLE, new String[] {db_ID, db_GROUP_NAME}, null, null, null, null, null);
+    	return mDb.query(
+    			db_GROUP_TABLE, 
+    			new String[] {db_ID, db_GROUP_NAME}, 
+    			null, null, null, null, null);
     }
     
     public boolean updateGroup(long groupId, String title) {
@@ -120,7 +127,7 @@ public class DbAdapter implements C {
         return mDb.insert(db_TRACKER_TABLE, null, initialValues);
     }
 
-    public Cursor fetchTracker(long trackerId) throws SQLException {
+    public Cursor fetchTrackerCursor(long trackerId) throws SQLException {
         // @return Cursor positioned to matching note, if found
         // @throws SQLException if note could not be found/retrieved
     	Log.d(TAG, "fetching tracker " + trackerId);
@@ -134,6 +141,31 @@ public class DbAdapter implements C {
         }
         return mCursor;
 
+    }
+    
+    public Tracker fetchTracker(long trackerId) {
+		Cursor c = null;
+		Tracker t = null;
+		try {
+			c = fetchTrackerCursor(trackerId);
+			if (c.getCount() == 1) {
+				c.moveToFirst();
+				t = new Tracker(trackerId);
+				t.name = c.getString(c.getColumnIndex(C.db_TRACKER_NAME));
+				t.body = c.getString(c.getColumnIndex(C.db_TRACKER_BODY));
+				t.groupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
+				String date = c.getString(c.getColumnIndex(C.db_TRACKER_LAST_LOG));
+				if(date != null)
+					t.lastLogDate = dbDateFormat.parse(date);
+			}
+		} catch (ParseException e) {
+			// nothing to do; t is left with null log date, which is presumably right
+		} finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		return t;
     }
 
 	public Cursor fetchTrackers(long groupId) {
@@ -153,6 +185,22 @@ public class DbAdapter implements C {
         args.put(db_TRACKER_BODY, body);
         return mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + trackerId, null) > 0;
     }
+
+	public void updateTracker(Tracker mTracker) {
+		ContentValues args = new ContentValues();
+		for(String field : mTracker.getChanged()) {
+			if(field == db_TRACKER_NAME) {
+				args.put(field, mTracker.name);
+			}
+			if(field == db_TRACKER_BODY) {
+				args.put(field, mTracker.body);
+			}
+			if(field == db_TRACKER_GROUP) {
+				args.put(field, mTracker.groupId);
+			}
+		}
+        mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + mTracker.id, null);
+	}
     
 	private static final String STMT_UPDATE_LAST_LOG = "update Trackers " +
 	"set last_log_time = (" +
@@ -323,6 +371,9 @@ public class DbAdapter implements C {
 		}
 
 	}
+
+
+
 
 
 

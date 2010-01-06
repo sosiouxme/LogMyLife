@@ -11,15 +11,15 @@
 <string name="ilni_title">Create new item</string>
 <string name="ged_new_title">Create new group</string>
 <string name="ged_edit_title">Edit group name</string>
-<string name="ilc_dialog_delete_title">Really delete?</string>
-<string name="ilc_dialog_delete_msg">This will delete the item and any log entries.</string>
-<string name="ilc_dialog_delete_button">Delete</string>
-<string name="ilc_dialog_cancel_button">Cancel</string>
+<string name="tdd_title">Really delete?</string>
+<string name="tdd_msg">This will delete the tracker and any log entries.</string>
+<string name="tdd_delete_button">Delete</string>
+<string name="tdd_cancel_button">Cancel</string>
 
-<string name="lec_dialog_delete_title">Really delete?</string>
-<string name="lec_dialog_delete_msg">This will delete the list and any items and log entries that belong to it.</string>
-<string name="lec_dialog_delete_button">Delete</string>
-<string name="lec_dialog_cancel_button">Cancel</string>
+<string name="ge_dialog_delete_title">Really delete?</string>
+<string name="ge_dialog_delete_msg">This will delete the list and any trackers and log entries that belong to it.</string>
+<string name="ge_dialog_delete_button">Delete</string>
+<string name="ge_dialog_cancel_button">Cancel</string>
 
 <string name="il_dialog_about_title">About WhenDidI</string>
 <string name="il_dialog_about_text">\

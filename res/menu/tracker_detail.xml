@@ -1,8 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:titleCondensed="Save" android:orderInCategory="0" android:title="Save Item" android:icon="@android:drawable/ic_menu_save" android:id="@+id/save"></item>
-<item android:visible="true" android:titleCondensed="Cancel" android:title="Cancel creation" android:orderInCategory="1" android:icon="@android:drawable/ic_menu_revert" android:id="@+id/cancel_new"></item>
-<item android:visible="false" android:titleCondensed="Cancel" android:title="Cancel changes" android:orderInCategory="2" android:icon="@android:drawable/ic_menu_revert" android:id="@+id/cancel_existing"></item>
-<item android:titleCondensed="Delete" android:title="Delete item" android:orderInCategory="3" android:visible="false" android:icon="@android:drawable/ic_menu_delete" android:id="@+id/delete"></item>
+  xmlns:android="http://schemas.android.com/apk/res/android"
+>
+  <item
+    android:titleCondensed="Edit"
+    android:orderInCategory="0"
+    android:title="Edit Tracker"
+    android:icon="@android:drawable/ic_menu_edit"
+    android:id="@+id/edit" />
+  <item
+    android:titleCondensed="Delete"
+    android:title="Delete tracker"
+    android:orderInCategory="1"
+    android:icon="@android:drawable/ic_menu_delete"
+    android:id="@+id/delete" />
+  <item
+    android:titleCondensed="Log now"
+    android:title="Log entry now"
+    android:orderInCategory="2"
+    android:icon="@android:drawable/ic_menu_add"
+    android:id="@+id/new_log" />
+  <item
+    android:titleCondensed="Done"
+    android:title="Return to group"
+    android:orderInCategory="3"
+    android:icon="@android:drawable/ic_menu_revert"
+    android:id="@+id/done" />
 </menu>

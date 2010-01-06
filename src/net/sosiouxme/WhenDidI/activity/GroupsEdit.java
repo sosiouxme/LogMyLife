@@ -3,6 +3,7 @@ package net.sosiouxme.WhenDidI.activity;
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.RequiredFieldDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,6 +31,8 @@ public class GroupsEdit extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_groups_edit);
+		getListView().addHeaderView(
+				getLayoutInflater().inflate(R.layout.a_groups_edit_new, null));
 		mDba = new DbAdapter(this).open();
 		fillGroupList();
 	}
@@ -84,9 +87,13 @@ public class GroupsEdit extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Dialog d = new GroupDialog(id);
-		d.setOwnerActivity(this);
-		d.show();
+		if (v.getId() == R.id.new_group) {
+			showDialog(DIALOG_NEW_LIST);
+		} else {
+			Dialog d = new GroupDialog(id);
+			d.setOwnerActivity(this);
+			d.show();
+		}
 	}
 	
 	@Override
@@ -99,15 +106,19 @@ public class GroupsEdit extends ListActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		long rowId = info.id;
+		long groupId = info.id;
 		switch(item.getItemId()) {
+		case R.id.view:
+			((WhenDidI) getApplication()).setSelectedGroup(groupId);
+			finish();
+			break;
 		case R.id.edit:
-			Dialog d = new GroupDialog(rowId);
+			Dialog d = new GroupDialog(groupId);
 			d.setOwnerActivity(this);
 			d.show();
 			return true;
 		case R.id.delete:
-			showDeleteDialog(rowId);
+			showDeleteDialog(groupId);
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -117,10 +128,10 @@ public class GroupsEdit extends ListActivity {
 		Log.d(TAG, "showDeleteDialog");
 		Dialog d = new AlertDialog.Builder(this)
 		// TODO: customize message with list title
-		.setTitle(R.string.lec_dialog_delete_title)
-		.setMessage(R.string.lec_dialog_delete_msg)
-		.setNegativeButton(R.string.lec_dialog_cancel_button, null)
-		.setPositiveButton(R.string.lec_dialog_delete_button,
+		.setTitle(R.string.ge_dialog_delete_title)
+		.setMessage(R.string.ge_dialog_delete_msg)
+		.setNegativeButton(R.string.ge_dialog_cancel_button, null)
+		.setPositiveButton(R.string.ge_dialog_delete_button,
 			new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

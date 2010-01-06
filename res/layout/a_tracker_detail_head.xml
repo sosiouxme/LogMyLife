@@ -2,43 +2,42 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
+  android:layout_height="wrap_content"
   android:orientation="vertical"
 >
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Name" />
-  <EditText
-    android:id="@+id/editor"
+  <TextView
+    android:text="Tracker text"
+    android:id="@+id/name"
     android:layout_height="wrap_content"
-    android:layout_width="fill_parent"
-    android:lines="1"
-    android:hint="Tracker name" />
+    android:layout_width="fill_parent" />
   <TextView
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="Notes" />
-  <EditText
+  <TextView
     android:id="@+id/body"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:hint="Optional notes about this tracker"
-    android:minLines="3"
+    android:text="Tracker body"
     android:maxLines="5" />
-  <TableLayout
+  <LinearLayout
+    android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:stretchColumns="*"
   >
-    <TableRow>
-      <Button
-        android:text="Cancel"
-        android:id="@+id/cancel" />
-      <Button
-        android:text="Create"
-        android:id="@+id/ok" />
-    </TableRow>
-  </TableLayout>
+    <Button
+      android:id="@+id/quick_log"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Log now" />
+    <Button
+      android:id="@+id/detailed_log"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Create detailed log" />
+  </LinearLayout>
 </LinearLayout>
