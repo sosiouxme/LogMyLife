@@ -1,12 +1,11 @@
 package net.sosiouxme.WhenDidI.activity;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
@@ -25,7 +24,6 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class TrackerDetail extends ListActivity implements  android.view.View.OnClickListener {
@@ -39,10 +37,7 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 	TextView mName;
 	TextView mBody;
 	
-	// repository for created toasts
-	private Map<Long,Toast> mToasts = new HashMap<Long,Toast>();
-	private static final Long TOAST_LOG_DELETED = new Long(R.string.log_entry_deleted);
-	private static final Long TOAST_LOG_CREATED = new Long(R.string.new_log_entry);
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -179,14 +174,18 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 			break;
 		}
 	}
-
+	/*
+	// repository for created toasts
+	private Map<Long,Toast> mToasts = new HashMap<Long,Toast>();
+	private static final Long TOAST_LOG_DELETED = new Long(R.string.log_entry_deleted);
+	private static final Long TOAST_LOG_CREATED = new Long(R.string.new_log_entry);
 	protected void showToast(Long id) {
 		Toast t = mToasts.get(id);
 		if(t==null)
 			mToasts.put(id, (t = Toast.makeText(this, id.intValue(), Toast.LENGTH_SHORT)));
 		t.show();
 	}
-
+*/
 	private void deleteTracker() {
 		final long id = mTracker.id;
 		Log.d(TAG, "deleteTracker " + id);
@@ -194,6 +193,7 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 			public void onClick(DialogInterface dialog, int which) {
 				Log.d(TAG, "TDeleteDialog onClick " + id);
 				mDba.deleteTracker(id);
+				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_DELETED);
 				finish();
 			}
 		}).show();
@@ -201,8 +201,8 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 	
 	private void createQuickLog() {
 		mDba.createLog(mTracker.id, new Date(), null);
+		((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		requeryList();
-		showToast(TOAST_LOG_CREATED);
 	}
 
 	private void newLogEntry() {
@@ -224,8 +224,8 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 		LogDeleteDialog.create(this, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				mDba.deleteLog(logId, trackerId);
+				((WhenDidI) getApplication()).showToast(C.TOAST_LOG_DELETED);
 				requeryList();
-				showToast(TOAST_LOG_DELETED);
 			}
 		}).show();
 	}

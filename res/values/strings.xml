@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="toast_group_deleted">Group deleted</string>
+    <string name="toast_group_updated">Group updated</string>
+    <string name="toast_group_created">Group created</string>
+    <string name="toast_tracker_updated">Tracker updated</string>
+    <string name="toast_tracker_created">Tracker created</string>
+    <string name="toast_tracker_deleted">Tracker deleted</string>
+    <string name="toast_log_entry_updated">Log entry updated</string>
     <string name="new_log_entry">Created new log entry</string>
     <string name="log_entry_deleted">Log entry deleted</string>
     <string name="hello">Howdy</string>

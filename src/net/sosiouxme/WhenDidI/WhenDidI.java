@@ -1,7 +1,11 @@
 package net.sosiouxme.WhenDidI;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 /* e.g. getApplication().getSelectedGroup() */
 public class WhenDidI extends Application {
@@ -22,6 +26,15 @@ public class WhenDidI extends Application {
 	public static final String TRACKER_CLICK_BEHAVIOR_VIEW = "view";
 	public String getTrackerClickBehavior() {
 		return mPrefs.getString(TRACKER_CLICK_BEHAVIOR, TRACKER_CLICK_BEHAVIOR_VIEW);
+	}
+	
+	// repository for created toasts
+	private Map<Long,Toast> mToasts = new HashMap<Long,Toast>();
+	public void showToast(Long id) {
+		Toast t = mToasts.get(id);
+		if(t==null)
+			mToasts.put(id, t = Toast.makeText(this, id.intValue(), Toast.LENGTH_SHORT));
+		t.show();
 	}
 
 	/*

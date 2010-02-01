@@ -21,4 +21,14 @@ public interface C {
 	public static final String db_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final DateFormat dbDateFormat = new SimpleDateFormat(db_DATE_FORMAT);
 
+	public static final Long TOAST_LOG_DELETED = new Long(R.string.log_entry_deleted);
+	public static final Long TOAST_LOG_CREATED = new Long(R.string.new_log_entry);
+	public static final Long TOAST_LOG_UPDATED = new Long(R.string.toast_log_entry_updated);
+	public static final Long TOAST_TRACKER_DELETED = new Long(R.string.toast_tracker_deleted);
+	public static final Long TOAST_TRACKER_CREATED = new Long(R.string.toast_tracker_created);
+	public static final Long TOAST_TRACKER_UPDATED = new Long(R.string.toast_tracker_updated);
+	public static final Long TOAST_GROUP_CREATED = new Long(R.string.toast_group_created);
+	public static final Long TOAST_GROUP_UPDATED = new Long(R.string.toast_group_updated);
+	public static final Long TOAST_GROUP_DELETED = new Long(R.string.toast_group_deleted);
+
 }

@@ -3,6 +3,7 @@ package net.sosiouxme.WhenDidI.activity;
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequiredFieldDialog;
@@ -42,8 +43,8 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.a_tracker_group);
-		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_tracker_group_new, null));
+		setContentView(R.layout.a_main);
+		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_main_new, null));
 
 		mDba = new DbAdapter(this).open();
 		fillGroupSpinner();
@@ -68,7 +69,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		Cursor cur = mDba.fetchTrackers(mCurrentGroupId);
 		startManagingCursor(cur);
 		EventCursorAdapter adapter = new EventCursorAdapter(this,
-				R.layout.a_tracker_group_row,
+				R.layout.a_main_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_TRACKER_NAME, C.db_TRACKER_LAST_LOG },
 				new int[] { R.id.ilr_itemTitle, R.id.logTime });
@@ -89,7 +90,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.d(TAG, "onCreateOptionsMenu");
-		getMenuInflater().inflate(R.menu.tracker_group, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -110,14 +111,6 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	void newItem() {
-		Log.d(TAG, "newItem with listId " + mCurrentGroupId);
-		Intent intent = new Intent(this, TrackerDetail.class);
-		intent.setAction(Intent.ACTION_INSERT);
-		intent.putExtra(C.db_TRACKER_GROUP, mCurrentGroupId);
-		startActivity(intent);
 	}
 
 	@Override
@@ -154,7 +147,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			ContextMenuInfo menuInfo) {
 		Log.d(TAG, "onCreateContextMenu");
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getMenuInflater().inflate(R.menu.tracker_group_context, menu);
+		getMenuInflater().inflate(R.menu.main_context, menu);
 	}
 
 	public boolean onContextItemSelected(MenuItem item) {
@@ -165,9 +158,10 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		TextView tv = (TextView) info.targetView.findViewById(R.id.logTime);
 		switch (item.getItemId()) {
 		case R.id.quicklog:
-			String time = mDba.createLog(rowId, null, null);
-			if (time != null)
-				tv.setText(time);
+			quickLog(rowId, tv);
+			return true;
+		case R.id.detailed_log:
+			startActivity(new Intent(this, LogEdit.class).putExtra(C.db_LOG_TRACKER, rowId));
 			return true;
 		case R.id.delete:
 			showDeleteDialog(rowId);
@@ -182,12 +176,20 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		return super.onContextItemSelected(item);
 	}
 
+	private void quickLog(long rowId, TextView tv) {
+		String time = mDba.createLog(rowId, null, null);
+		((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
+		if (time != null)
+			tv.setText(time);
+	}
+
 	private void showDeleteDialog(final long itemId) {
 		Log.d(TAG, "showDeleteDialog");
 		TrackerDeleteDialog.create(this, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				Log.d(TAG, "DeleteDialog onClick " + itemId);
 				mDba.deleteTracker(itemId);
+				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_DELETED);
 				((EventCursorAdapter) getListAdapter()).requery();
 			}
 		}).show();
@@ -234,6 +236,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			mDba.createTracker(mCurrentGroupId, mEditor.getText()
 					.toString(), mBodyEditor.getText().toString());
 			// udpate parent's view
+			((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_CREATED);
 			((EventCursorAdapter) getListAdapter()).requery();
 		}
 

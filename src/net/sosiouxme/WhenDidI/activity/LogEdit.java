@@ -6,6 +6,7 @@ import java.util.Date;
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
 import net.sosiouxme.WhenDidI.model.dto.LogEntry;
 import net.sosiouxme.WhenDidI.model.dto.Tracker;
@@ -168,6 +169,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 				Log.d(TAG, "DeleteDialog onClick " + id);
 				mDba.deleteLog(id, mTracker.id);
 				saveOnFinish = false;
+				((WhenDidI) getApplication()).showToast(C.TOAST_LOG_DELETED);
 				finish();
 			}
 		}).show();
@@ -177,11 +179,13 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private boolean saveLogEntry() {
 		if (mLogEntry == null) {
 			mDba.createLog(mTracker.id, getDateTime(), metBody.getText().toString());
+			((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		} else {
 			mLogEntry.setBody(metBody.getText().toString());
 			mLogEntry.setTrackerId(mTracker.id);
 			mLogEntry.setLogDate(getDateTime());
 			mDba.updateLog(mLogEntry);
+			((WhenDidI) getApplication()).showToast(C.TOAST_LOG_UPDATED);
 		}
 		return true;
 	}

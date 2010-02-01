@@ -137,6 +137,7 @@ public class GroupsEdit extends ListActivity {
 				public void onClick(DialogInterface dialog, int which) {
 					Log.d(TAG, "DeleteDialog onClick " + listId);
 					mDba.deleteGroup(listId);
+					((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_DELETED);
 					fillGroupList();
 				}
 			})
@@ -189,10 +190,12 @@ public class GroupsEdit extends ListActivity {
 			String title = mEditor.getText().toString();
 			if(mGroupId == 0) {
 				Log.d(TAG,"creating new item");
-				mDba.createGroup(title);				
+				mDba.createGroup(title);
+				((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_CREATED);
 			} else {
 				Log.d(TAG,"editing item " + mGroupId);
 				mDba.updateGroup(mGroupId, title);
+				((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_UPDATED);
 			}
 			// udpate parent's view
 			GroupsEdit.this.requery();

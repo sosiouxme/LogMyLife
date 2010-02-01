@@ -3,6 +3,7 @@ package net.sosiouxme.WhenDidI.activity;
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequireTextFor;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
@@ -111,7 +112,7 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 			finish();
 			return true;
 		case R.id.delete:
-			deleteItem();
+			deleteTracker();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -143,14 +144,14 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		super.onPause();
 	}
 
-	private void deleteItem() {
+	private void deleteTracker() {
 		final long id = mTracker.id;
-		Log.d(TAG, "deleteItem " + id);
 		TrackerDeleteDialog.create(this, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				Log.d(TAG, "DeleteDialog onClick " + id);
 				mDba.deleteTracker(id);
 				saveOnFinish = false;
+				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_DELETED);
 				finish();
 			}
 		}).show();
@@ -162,11 +163,13 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		if (name.length() > 0) {
 			if(mTracker == null) {
 				mDba.createTracker(mCurrentGroupId, name, metBody.getText().toString());
+				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_CREATED);
 			} else {
 				mTracker.setName(name);
 				mTracker.setBody(metBody.getText().toString());
 				mTracker.setGroupId(mCurrentGroupId);
 				mDba.updateTracker(mTracker);
+				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_UPDATED);
 			}
 			return true;
 		}
