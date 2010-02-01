@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android"
+>
+<LinearLayout
   android:layout_width="fill_parent"
   android:layout_height="wrap_content"
   android:orientation="vertical"
@@ -8,21 +12,40 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Name" />
+    android:text="Tracker" />
   <TextView
     android:text="Tracker text"
-    android:id="@+id/name"
+    android:id="@+id/tracker_name"
     android:layout_height="wrap_content"
     android:layout_width="fill_parent" />
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Tracker Details" />
+  <TextView
+    android:text="Tracker details text"
+    android:id="@+id/tracker_details"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent" />
+ 
+    <DatePicker
+      android:id="@+id/log_date"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:startYear="2009" />
+    <TimePicker
+      android:id="@+id/log_time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
   <TextView
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="Notes" />
-  <TextView
+  <EditText
     android:id="@+id/body"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:text="Tracker body"
+    android:hint="Log body"
     android:maxLines="5" />
   <LinearLayout
     android:orientation="horizontal"
@@ -30,18 +53,19 @@
     android:layout_height="wrap_content"
   >
     <Button
-      android:id="@+id/quick_log"
+      android:id="@+id/save"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:layout_weight="1.0"
       android:padding="5sp"
-      android:text="Log now" />
+      android:text="Save" />
     <Button
-      android:id="@+id/detailed_log"
+      android:id="@+id/cancel"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:layout_weight="1.0"
       android:padding="5sp"
-      android:text="Log details" />
+      android:text="Cancel" />
   </LinearLayout>
 </LinearLayout>
+</ScrollView>

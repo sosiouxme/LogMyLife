@@ -15,8 +15,8 @@
     android:icon="@android:drawable/ic_menu_delete"
     android:id="@+id/delete" />
   <item
-    android:titleCondensed="Log now"
-    android:title="Log entry now"
+    android:titleCondensed="Log"
+    android:title="Log entry"
     android:orderInCategory="2"
     android:icon="@android:drawable/ic_menu_add"
     android:id="@+id/new_log" />

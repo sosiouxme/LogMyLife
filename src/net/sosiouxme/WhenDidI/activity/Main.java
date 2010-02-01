@@ -29,7 +29,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class TrackerGroup extends ListActivity implements OnItemClickListener, OnGroupSelectedListener {
+public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener {
 	private static final String TAG = "WDI.TrackerGroup";
 	private static final int DIALOG_ABOUT = 0;
 	private static final int DIALOG_NEW = 1;
@@ -213,7 +213,7 @@ public class TrackerGroup extends ListActivity implements OnItemClickListener, O
 		private EditText mBodyEditor = null;
 
 		public NewTrackerDialog() {
-			super(TrackerGroup.this, android.R.style.Theme);
+			super(Main.this, android.R.style.Theme);
 		}
 
 		@Override
@@ -221,7 +221,7 @@ public class TrackerGroup extends ListActivity implements OnItemClickListener, O
 			Log.d(TAG, "onCreate NewTrackerDialog");
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.d_new_tracker);
-			this.setOwnerActivity(TrackerGroup.this);
+			this.setOwnerActivity(Main.this);
 			this.setTitle(R.string.ilni_title);
 
 			// and we'll need this later

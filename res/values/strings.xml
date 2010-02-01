@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="new_log_entry">Created new log entry</string>
+    <string name="log_entry_deleted">Log entry deleted</string>
     <string name="hello">Howdy</string>
     <string name="app_name">When Did I</string>
     <string name="first_list">General</string>
@@ -15,6 +17,11 @@
 <string name="tdd_msg">This will delete the tracker and any log entries.</string>
 <string name="tdd_delete_button">Delete</string>
 <string name="tdd_cancel_button">Cancel</string>
+
+<string name="ldd_title">Really delete?</string>
+<string name="ldd_msg">Press "Delete" to permanently delete this log entry.</string>
+<string name="ldd_delete_button">Delete</string>
+<string name="ldd_cancel_button">Cancel</string>
 
 <string name="ge_dialog_delete_title">Really delete?</string>
 <string name="ge_dialog_delete_msg">This will delete the list and any trackers and log entries that belong to it.</string>

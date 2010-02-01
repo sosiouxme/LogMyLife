@@ -9,14 +9,9 @@
     android:id="@android:id/list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" />
-  <LinearLayout
+  <TextView
+    android:id="@android:id/empty"
+    android:text="No logs created yet."
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-  >
-    <TextView
-      android:text="No logs created yet."
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content" />
-  </LinearLayout>
+    android:layout_height="wrap_content" />
 </LinearLayout>

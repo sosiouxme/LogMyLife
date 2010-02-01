@@ -1,23 +1,18 @@
-package net.sosiouxme.WhenDidI.model;
+package net.sosiouxme.WhenDidI.model.dto;
 
 import java.util.Date;
-import java.util.Set;
 
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.Util;
 
-public class Tracker {
+public class Tracker extends AbstractDTO {
 
-	public final long id;
 	public long groupId;
 	public String name;
 	public String body;
 	public Date lastLogDate;
-	private Set<String> changed = Util.newSet();
-
+	
 	public Tracker(long id) {
-		super();
-		this.id = id;
+		super(id);
 	}
 
 	public String getName() {
@@ -34,13 +29,6 @@ public class Tracker {
 
 	public long getGroupId() {
 		return groupId;
-	}
-
-
-	/* these actually do something */
-	
-	public String[] getChanged() {
-		return changed.toArray(new String[] {});
 	}
 	
 	public void setName(String name) {
@@ -63,4 +51,10 @@ public class Tracker {
 		changed.add(C.db_TRACKER_GROUP);
 	}
 
+	public void copyFrom(Tracker t) {
+		setGroupId(t.groupId);
+		setName(t.name);
+		setBody(t.body);
+		setLastLogDate(t.lastLogDate);
+	}
 }

@@ -5,13 +5,16 @@
     <application android:icon="@drawable/icon"
      android:label="@string/app_name" 
      android:debuggable="true" android:name="WhenDidI">
-        <activity android:name=".activity.TrackerGroup"
-                  android:label="@string/app_name">
+        <activity android:name=".activity.Main"
+                  android:label="WhenDidI - Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<activity android:name=".activity.GroupsEdit"
+ android:label="WhenDidI - Edit Groups"
+/>
 <activity
  android:name=".activity.TrackerEdit"
  android:label="WhenDidI - Edit Tracker"
@@ -20,11 +23,11 @@
  android:name=".activity.TrackerDetail"
  android:label="WhenDidI - View Tracker Details"
 />
+<activity android:name=".activity.LogEdit"
+ android:label="WhenDidI - Edit Log"
+/>
 <activity android:name=".activity.Prefs"
  android:label="WhenDidI - Preferences"
-/>
-<activity android:name=".activity.GroupsEdit"
- android:label="WhenDidI - Edit Groups"
 />
 </application>
     <uses-sdk android:minSdkVersion="3" />

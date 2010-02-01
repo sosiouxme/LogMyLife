@@ -7,12 +7,12 @@ import android.app.Dialog;
 import android.content.DialogInterface.OnClickListener;
 import android.util.Log;
 
-public class TrackerDeleteDialog {
-	
+public class DetailedLogDialog {
+//TODO
 	private static final String TAG = "WDI";
 
 	public static Dialog create(Activity activity, OnClickListener listener) {
-		Log.d(TAG, "showDeleteDialog");
+		Log.d(TAG, "detailedLogDialog");
 		Dialog d = new AlertDialog.Builder(activity)
 		.setTitle(R.string.tdd_title)
 		.setMessage(R.string.tdd_msg)
@@ -21,6 +21,5 @@ public class TrackerDeleteDialog {
 		.create();
 		d.setOwnerActivity(activity); // why can't the builder do this?
 		return d;
-
 	}
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android"
+>
+  <item
+    android:titleCondensed="Save"
+    android:orderInCategory="0"
+    android:title="Save Tracker"
+    android:icon="@android:drawable/ic_menu_save"
+    android:id="@+id/save" />
+  <item
+    android:visible="true"
+    android:titleCondensed="Cancel"
+    android:title="Cancel creation"
+    android:orderInCategory="1"
+    android:icon="@android:drawable/ic_menu_revert"
+    android:id="@+id/cancel_new" />
+  <item
+    android:visible="false"
+    android:titleCondensed="Cancel"
+    android:title="Cancel changes"
+    android:orderInCategory="2"
+    android:icon="@android:drawable/ic_menu_revert"
+    android:id="@+id/cancel_existing" />
+  <item
+    android:titleCondensed="Delete"
+    android:title="Delete item"
+    android:orderInCategory="3"
+    android:visible="false"
+    android:icon="@android:drawable/ic_menu_delete"
+    android:id="@+id/delete" />
+</menu>
