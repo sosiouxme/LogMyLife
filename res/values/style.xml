@@ -1,13 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ExampleTextAppearance" parent="@android:style/TextAppearance">
-      <item name="android:textSize">12sp</item>
-      <item name="android:textColor">#333</item>
-      <item name="android:textStyle">bold</item>
+    <!-- general styles and themes -->
+    <style name="AppTheme" parent="android:Theme">
+      <item name="android:windowNoTitle">false</item>
+      <item name="android:windowBackground">@color/background</item>
+      <item name="android:textAppearance">@style/DefaultTextAppearance</item>
     </style>
-    <style name="listSpecialItem" parent="@android:style/TextAppearance">
+    <style name="DefaultTextAppearance" parent="@android:style/TextAppearance">
       <item name="android:textSize">12sp</item>
+      <item name="android:textColor">#DEF</item>
+    </style>
+    <style name="ListTextAppearance" parent="@style/DefaultTextAppearance">
+      <item name="android:textSize">18sp</item>
+    </style>
+    <style name="SubTextAppearance" parent="@style/DefaultTextAppearance">
+    </style>
+    
+    <!-- text appearances -->
+    <style name="AddNewItem_TA" parent="@style/DefaultTextAppearance">
+      <item name="android:textSize">18sp</item>
       <item name="android:textColor">#DDD</item>
       <item name="android:textStyle">italic</item>
     </style>
+    <style name="SpinnerRow" parent="@style/DefaultTextAppearance">
+      <item name="android:textSize">18sp</item>
+      <item name="android:textColor">#000</item>
+      <item name="android:padding">15sp</item>  
+    </style>
+    <style name="SpinnerDisplay_TA" parent="@style/DefaultTextAppearance">
+      <item name="android:textSize">18sp</item>
+      <item name="android:textColor">#000</item>
+    </style>
+
+    <!-- specific widgets -->
+    <style name="Label" parent="@android:style/Widget.TextView">
+      <item name="android:layout_width">wrap_content</item>
+      <item name="android:layout_height">wrap_content</item>
+      <item name="android:background">#345</item>
+    </style>
+    <style name="LineLabel" parent="@style/Label">
+      <item name="android:layout_width">fill_parent</item>
+    </style>
+    <style name="AddNewItem" parent="@android:style/Widget.TextView">
+      <item name="android:layout_width">fill_parent</item>
+      <item name="android:layout_height">wrap_content</item>
+      <item name="android:background">#345</item>
+      <item name="android:textAppearance">@style/AddNewItem_TA</item>
+      <item name="android:padding">5sp</item>
+    </style>
+    <style name="BigButton" parent="@android:style/Widget.Button">
+      <item name="android:padding">5sp</item>
+      <item name="android:layout_width">fill_parent</item>
+      <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <!-- layout components -->
+    <style name="horizontalLL">
+      <item name="android:orientation">horizontal</item>
+      <item name="android:layout_width">fill_parent</item>
+      <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="verticalLL">
+      <item name="android:orientation">vertical</item>
+      <item name="android:layout_width">wrap_content</item>
+      <item name="android:layout_height">fill_parent</item>
+    </style>
+
+    <!-- colors to be re-used -->
+    <color name="background">#111</color>
 </resources>

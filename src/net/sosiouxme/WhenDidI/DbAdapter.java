@@ -172,13 +172,18 @@ public class DbAdapter implements C {
 		return t;
 	}
 
-	public Cursor fetchTrackers(long groupId) {
+	public Cursor fetchTrackers(long groupId, String filter) {
         // @return Cursor over all items in a list
 		Log.d(TAG, "fetching trackers for group " + groupId);
+		String selection = db_TRACKER_GROUP + " = " + groupId;
+		String[] selectionArgs = null;
+		if(filter != null) {
+			selection = selection + " AND " + db_TRACKER_NAME + " LIKE ?";
+			selectionArgs = new String[] { "%" + filter + "%" };
+		}
         return mDb.query(db_TRACKER_TABLE,
         		new String[] {db_ID, db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_LAST_LOG},
-        		db_TRACKER_GROUP + " = " + groupId,
-        		null, null, null, db_ID);
+        		selection, selectionArgs, null, null, db_ID);
 	}
 	
     public boolean updateTracker(long trackerId, String name, String body) {
@@ -243,7 +248,7 @@ public class DbAdapter implements C {
     /**
      * Handle log table
      */
-    public String createLog(long trackerId, Date time, String body) {
+    public Date createLog(long trackerId, Date time, String body) {
         // @return rowId or -1 if failed
     	Log.d(TAG, "creating log for tracker " + trackerId);
     	time = (time == null) ? new Date() : time;
@@ -254,10 +259,10 @@ public class DbAdapter implements C {
         try {
         	mDb.insert(db_LOG_TABLE, null, initialValues);
         	updateTrackerLastLog(trackerId);
-        	return time.toLocaleString();
+        	return time;
         } catch(Exception e) {
         	Log.e(TAG, "Could not insert log for tracker " + trackerId);
-        	return "";
+        	return null;
         }
     }
 
@@ -336,6 +341,7 @@ public class DbAdapter implements C {
 			}
 		}
         mDb.update(db_LOG_TABLE, args, db_ID + "=" + log.id, null);
+    	updateTrackerLastLog(log.trackerId);
         log.clearChanged();
 	}
     

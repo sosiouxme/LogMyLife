@@ -97,7 +97,7 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 				R.layout.a_tracker_detail_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_LOG_TIME, C.db_LOG_BODY },
-				new int[] { R.id.logTime, R.id.ivel_logBody });
+				new int[] { R.id.logTime, R.id.logBody });
 		this.setListAdapter(adapter);
 		
 		// enable context menu for list items
@@ -213,7 +213,6 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 
 	private void editLogEntry(long rowId) {
 		Intent i = new Intent(this, LogEdit.class)
-			.putExtra(C.db_LOG_TRACKER, mTracker.id)
 			.putExtra(C.db_ID, rowId);
 		startActivity(i);
 	}

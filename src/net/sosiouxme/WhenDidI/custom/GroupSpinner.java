@@ -30,13 +30,11 @@ public class GroupSpinner implements OnItemSelectedListener {
 		Cursor cur = mDba.fetchGroups();
 		caller.startManagingCursor(cur);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(caller,
-				R.layout.w_group_spinner_row, 	// specify layout id with a TextView
-				//android.R.layout.simple_spinner_item,
+				R.layout.w_group_spinner_display, 	// specify layout id with a TextView
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_GROUP_NAME },	// Map column in the database to...
 				new int[] { R.id.groupName });// The TextView defined in the layout
 		adapter.setDropDownViewResource(R.layout.w_group_spinner_row);
-		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mSpinner.setAdapter(adapter);
 		mSpinner.setOnItemSelectedListener(this);
 

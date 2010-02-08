@@ -25,14 +25,6 @@
  android:icon="@android:drawable/ic_menu_help"
  />
 <item
- android:titleCondensed="Search" 
- android:alphabeticShortcut="S" 
- android:title="Search" 
- android:id="@+id/search" 
- android:icon="@android:drawable/ic_menu_search" 
- android:orderInCategory="7"
- />
-<item
  android:titleCondensed="Settings" 
  android:title="Settings..." 
  android:id="@+id/settings" 

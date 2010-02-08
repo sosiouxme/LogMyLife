@@ -1,12 +1,14 @@
 package net.sosiouxme.WhenDidI.activity;
 
+import java.util.Date;
+
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.Util;
 import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
-import net.sosiouxme.WhenDidI.custom.RequiredFieldDialog;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
 import android.app.AlertDialog;
@@ -17,6 +19,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -24,19 +27,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener {
+public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener, FilterQueryProvider {
 	private static final String TAG = "WDI.TrackerGroup";
 	private static final int DIALOG_ABOUT = 0;
-	private static final int DIALOG_NEW = 1;
 	private DbAdapter mDba;
 	private GroupSpinner mSpinner = null;
 	private long mCurrentGroupId = 0;
+	private EventCursorAdapter mAdapter;
+	private final Handler mUiHandler = new Handler();
+	private Thread mUpdateThread;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -54,26 +60,27 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	/* get the cursor with all lists and attach to the spinner */
 	private void fillGroupSpinner() {
 		Log.d(TAG, "fillGroupSpinner");
-		mSpinner = new GroupSpinner(this,
+		GroupSpinner spinner = new GroupSpinner(this,
 				(Spinner) findViewById(R.id.il_list_spinner), mDba);
-		mCurrentGroupId = mSpinner.getSelectedItemId();
-		mSpinner.setOnGroupSelectedListener(this);
+		mCurrentGroupId = spinner.getSelectedItemId();
+		spinner.setOnGroupSelectedListener(this);
+		mSpinner = spinner;
 	}
-
 
 	/* attach cursor for the items in the current list to the listview */
 	private void fillTrackerList() {
 		Log.d(TAG, "fillTrackerList");
 		// TODO: deal with situation where all groups were deleted
-		// TODO: does this leak the cursor last used when a new one is created?
-		Cursor cur = mDba.fetchTrackers(mCurrentGroupId);
+
+		Cursor cur = mDba.fetchTrackers(mCurrentGroupId, null);
 		startManagingCursor(cur);
-		EventCursorAdapter adapter = new EventCursorAdapter(this,
+		mAdapter = new EventCursorAdapter(this,
 				R.layout.a_main_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_TRACKER_NAME, C.db_TRACKER_LAST_LOG },
-				new int[] { R.id.ilr_itemTitle, R.id.logTime });
-		this.setListAdapter(adapter);
+				new int[] { R.id.name, R.id.lastLog });
+		mAdapter.setFilterQueryProvider(this);
+		this.setListAdapter(mAdapter);
 
 		// set up self as listener for when user clicks item
 		this.getListView().setOnItemClickListener(this);
@@ -81,10 +88,19 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		registerForContextMenu(getListView());
 	}
 
+	/* FilterQueryProvide interface - provide a cursor for filtered results */
+	public Cursor runQuery(CharSequence constraint) {
+		Cursor cur = mDba.fetchTrackers(mCurrentGroupId, constraint.toString());
+		startManagingCursor(cur);
+		return cur;
+	}
+
 	@Override
 	public void onGroupSelected(long groupId) {
-		mCurrentGroupId = groupId;
-		fillTrackerList();
+		if(mCurrentGroupId != groupId) {
+			mCurrentGroupId = groupId;
+			fillTrackerList();
+		}
 	}
 
 	@Override
@@ -117,8 +133,6 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	protected Dialog onCreateDialog(int id) {
 		Log.d(TAG, "onCreateDialog");
 		switch (id) {
-		case DIALOG_NEW:
-			return new NewTrackerDialog();
 		case DIALOG_ABOUT:
 			return new AlertDialog.Builder(this).setTitle(
 					R.string.il_dialog_about_title).setMessage(
@@ -155,10 +169,9 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
 		long rowId = info.id;
-		TextView tv = (TextView) info.targetView.findViewById(R.id.logTime);
 		switch (item.getItemId()) {
 		case R.id.quicklog:
-			quickLog(rowId, tv);
+			quickLog(rowId);
 			return true;
 		case R.id.detailed_log:
 			startActivity(new Intent(this, LogEdit.class).putExtra(C.db_LOG_TRACKER, rowId));
@@ -176,11 +189,12 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		return super.onContextItemSelected(item);
 	}
 
-	private void quickLog(long rowId, TextView tv) {
-		String time = mDba.createLog(rowId, null, null);
+	private void quickLog(long rowId) {
+		mDba.createLog(rowId, null, null);
 		((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
-		if (time != null)
-			tv.setText(time);
+		mAdapter.requery();
+
+
 	}
 
 	private void showDeleteDialog(final long itemId) {
@@ -190,7 +204,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 				Log.d(TAG, "DeleteDialog onClick " + itemId);
 				mDba.deleteTracker(itemId);
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_DELETED);
-				((EventCursorAdapter) getListAdapter()).requery();
+				mAdapter.requery();
 			}
 		}).show();
 	}
@@ -200,6 +214,13 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		Log.d(TAG, "onResume");
 		super.onResume();
 		mSpinner.notifyDataSetChanged();
+		startUpdateThread();
+	}
+	
+	@Override
+	protected void onPause() {
+		stopUpdateThread();
+		super.onPause();
 	}
 
 	@Override
@@ -208,44 +229,61 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		mDba.close();
 		super.onDestroy();
 	}
-
-
-	private class NewTrackerDialog extends RequiredFieldDialog {
-
-		private EditText mBodyEditor = null;
-
-		public NewTrackerDialog() {
-			super(Main.this, android.R.style.Theme);
-		}
-
-		@Override
-		protected void onCreate(Bundle savedInstanceState) {
-			Log.d(TAG, "onCreate NewTrackerDialog");
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.d_new_tracker);
-			this.setOwnerActivity(Main.this);
-			this.setTitle(R.string.ilni_title);
-
-			// and we'll need this later
-			mBodyEditor = (EditText) findViewById(R.id.body);
-		}
-
-		@Override
-		protected void onClickOk() {
-			Log.d(TAG, "creating new item");
-			mDba.createTracker(mCurrentGroupId, mEditor.getText()
-					.toString(), mBodyEditor.getText().toString());
-			// udpate parent's view
-			((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_CREATED);
-			((EventCursorAdapter) getListAdapter()).requery();
-		}
-
-		@Override
-		public void onDismiss(DialogInterface dialog) {
-			Log.d(TAG, "onDismiss NewTrackerDialog");
-			super.onDismiss(dialog);
-			// clear for next time dialog is called
-			mBodyEditor.setText("");
+	
+	public void updateLastLogTimes() {
+//		Log.d(TAG, "updateLastLogTimes");
+		ListView list = getListView();
+		int children = list.getChildCount();
+		Date now = new Date();
+		for (int i = 0; i < children; i++) {
+			View v = list.getChildAt(i);
+			if (v == null)
+				continue;
+			TextView tv = (TextView) v.findViewById(R.id.lastLog);
+			if (tv == null)
+				continue;
+			Date date = (Date) tv.getTag();
+			if (date == null)
+				continue;
+			String newText = Util.getTimeSince(date, now);
+			if(newText != tv.getText())
+				tv.setText(newText);
 		}
 	}
+
+	public void startUpdateThread() {
+		if (mUpdateThread != null)
+			stopUpdateThread();
+		mUpdateThread = new Thread() {
+			private final Runnable update = new Runnable() {
+				public void run() {
+					updateLastLogTimes();
+				}
+			};
+
+			public void run() {
+				try {
+					while (true) {
+						Thread.sleep(1000); // 1 sec
+						mUiHandler.post(update);
+					}
+				} catch (InterruptedException e) {
+//					Log.d(TAG, "interrupting update thread");
+				}
+			}
+
+		};
+
+		mUpdateThread.start();
+	}
+	
+	public void stopUpdateThread() {
+//		Log.d(TAG, "stopUpdateThread");
+		if(mUpdateThread != null) {
+//			Log.d(TAG, "trying to interrupt update thread");
+			mUpdateThread.interrupt();
+			mUpdateThread = null;
+		}
+	}
+	
 }

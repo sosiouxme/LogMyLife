@@ -7,6 +7,7 @@ import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
+import net.sosiouxme.WhenDidI.custom.NumberPicker;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
 import net.sosiouxme.WhenDidI.model.dto.LogEntry;
 import net.sosiouxme.WhenDidI.model.dto.Tracker;
@@ -34,7 +35,14 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private DatePicker mdpDate;
 	private TimePicker mtpTime;
 	private boolean saveOnFinish = true; // by default, back button will save
+	private NumberPicker mSecondPicker;
 
+	/* 
+	 * (non-Javadoc)
+	 * expects an extras bundle on the intent, specifying either:
+	 * C.db_ID = rowId of log entry to edit
+	 * C.db_LOG_TRACKER = rowId of tracker for which to create new log entry
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,16 +56,16 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		Bundle e = getIntent().getExtras();
 		if (e == null)
 			throw new RuntimeException("required intent extras not supplied");
-		logId = e.getLong(C.db_ID);
-		trackerId = e.getLong(C.db_LOG_TRACKER);
-
+		logId = e.getLong(C.db_ID); //to edit existing log entry
+		trackerId = e.getLong(C.db_LOG_TRACKER); //for new log entry
+		// existing logId means we're going to edit it
 		if (logId > 0) {
 			mLogEntry = mDba.fetchLog(logId);
 			if (mLogEntry == null)
 				throw new RuntimeException("couldn't find log id " + logId);
-
 			trackerId = mLogEntry.getTrackerId();
 		}
+		// get the tracker to log against (whether new or existing log) 
 		mTracker = mDba.fetchTracker(trackerId);
 		if (mTracker == null)
 			throw new RuntimeException("couldn't find tracker id " + trackerId);
@@ -71,9 +79,14 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		metBody = (EditText) findViewById(R.id.body);
 		mdpDate = (DatePicker) findViewById(R.id.log_date);
 		mtpTime = (TimePicker) findViewById(R.id.log_time);
+        mSecondPicker = (NumberPicker) findViewById(R.id.log_time_seconds);
 		
 		tvName.setText(mTracker.name);
 		tvBody.setText(mTracker.body);
+        // digits of timepicker seconds (custom addition)
+        mSecondPicker.setRange(0, 59);
+        mSecondPicker.setSpeed(100);
+        mSecondPicker.setFormatter(NumberPicker.TWO_DIGIT_FORMATTER);
 		
 		if(mLogEntry != null) {			
 			// set the data in the views
@@ -82,6 +95,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 			mdpDate.updateDate(d.getYear() + 1900, d.getMonth(), d.getDate());
 			mtpTime.setCurrentHour(d.getHours());
 			mtpTime.setCurrentMinute(d.getMinutes());
+	        mSecondPicker.setCurrent(d.getSeconds());
 		}
 		else {
 			final Calendar c = Calendar.getInstance();
@@ -92,6 +106,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	         );
 			mtpTime.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
 			mtpTime.setCurrentMinute(c.get(Calendar.MINUTE));
+	        mSecondPicker.setCurrent(c.get(Calendar.SECOND));
 		}
 		mtpTime.setIs24HourView(true);
 		
@@ -101,7 +116,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		Button saveButton = (Button) findViewById(R.id.save);
 		saveButton.setOnClickListener(this);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.log_edit, menu);
@@ -196,7 +211,8 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 				mdpDate.getMonth(),
 				mdpDate.getDayOfMonth(),
 				mtpTime.getCurrentHour(),
-				mtpTime.getCurrentMinute()
+				mtpTime.getCurrentMinute(),
+				mSecondPicker.getCurrent()
 				);
 	}
 

@@ -4,9 +4,9 @@
       android:versionName="1.0" android:versionCode="1">
     <application android:icon="@drawable/icon"
      android:label="@string/app_name" 
-     android:debuggable="true" android:name="WhenDidI">
+     android:debuggable="true" android:name="WhenDidI" android:theme="@style/AppTheme">
         <activity android:name=".activity.Main"
-                  android:label="WhenDidI - Main">
+                  android:label="WhenDidI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
