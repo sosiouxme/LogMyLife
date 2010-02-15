@@ -63,7 +63,7 @@ public abstract class RequiredFieldDialog extends Dialog
 		
 		//wire up the text to enable/disable the create button
 		mEditor = (EditText) findViewById(R.id.editor);
-		mEditor.setOnKeyListener(new RequireTextFor(mOkButton, mEditor));
+		mEditor.addTextChangedListener(new RequireTextFor(mOkButton, mEditor));
 		mEditor.setText("");
 
 		setOnDismissListener(this);

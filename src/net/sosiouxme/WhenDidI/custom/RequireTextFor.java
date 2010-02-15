@@ -1,17 +1,15 @@
 package net.sosiouxme.WhenDidI.custom;
 
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnKeyListener;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 /* 
  * Ties the OK button to the editor in such a way that the OK
  * button is disabled unless something is present in the editor.
  * 
  */
-public class RequireTextFor implements OnKeyListener {
+public class RequireTextFor implements TextWatcher {
 
 	private Button mOkButton = null;
 	
@@ -24,9 +22,16 @@ public class RequireTextFor implements OnKeyListener {
 
 	}
 
-	@Override
-	public boolean onKey(View v, int keyCode, KeyEvent event) {
-		mOkButton.setEnabled(((EditText)v).getText().length() > 0);			
-		return false;
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		mOkButton.setEnabled(s.length() > 0);
+	}
+
+	public void afterTextChanged(Editable et) {
+		// nothing to do, just implementing interface method		
+	}
+
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		// nothing to do, just implementing interface method
 	}
 }

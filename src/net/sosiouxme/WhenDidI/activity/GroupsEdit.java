@@ -87,7 +87,7 @@ public class GroupsEdit extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		if (v.getId() == R.id.new_group) {
+		if (v.getId() == R.id.add_new_group) {
 			showDialog(DIALOG_NEW_LIST);
 		} else {
 			Dialog d = new GroupDialog(id);
@@ -188,7 +188,7 @@ public class GroupsEdit extends ListActivity {
 		@Override
 		protected void onClickOk() {
 			String title = mEditor.getText().toString();
-			if(mGroupId == 0) {
+			if(mGroupId <= 0) {
 				Log.d(TAG,"creating new item");
 				mDba.createGroup(title);
 				((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_CREATED);

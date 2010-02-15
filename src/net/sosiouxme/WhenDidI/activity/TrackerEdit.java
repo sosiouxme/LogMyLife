@@ -69,7 +69,7 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		Button cancelButton = (Button) findViewById(R.id.cancel);
 		cancelButton.setOnClickListener(this);
 		Button okButton = (Button) findViewById(R.id.ok);
-		metName.setOnKeyListener(new RequireTextFor(okButton, metName));
+		metName.addTextChangedListener(new RequireTextFor(okButton, metName));
 		okButton.setOnClickListener(this);
 		
 		fillGroupSpinner();
