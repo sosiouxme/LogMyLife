@@ -10,6 +10,7 @@
     android:textAppearance="@style/ListTextAppearance"
     android:layout_height="wrap_content"
     android:layout_width="fill_parent"
+    style="@style/EllipseText"
     android:layout_marginTop="2sp" />
   <TextView
     android:id="@+id/lastLog"
@@ -23,6 +24,7 @@
   <TextView
     android:id="@+id/logDetails"
     android:textAppearance="@style/SubTextAppearance"
+    style="@style/EllipseText"
     android:layout_toRightOf="@id/lastLog"
     android:layout_alignTop="@id/lastLog"
     android:layout_width="fill_parent"

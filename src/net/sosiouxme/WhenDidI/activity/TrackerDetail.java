@@ -126,12 +126,13 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 			break;
 		case R.id.delete:
 			deleteTracker();
+			break;
 		case R.id.new_log:
 			newLogEntry();
 			break;
 		case R.id.done:
 			finish();
-			return true;
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

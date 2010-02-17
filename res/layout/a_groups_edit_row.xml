@@ -2,9 +2,10 @@
 
 <TextView
  xmlns:android="http://schemas.android.com/apk/res/android"
- android:id="@+id/ler_list" 
+ android:id="@+id/listName" 
  android:text="List name" 
  android:layout_width="fill_parent" 
  android:layout_height="wrap_content"
  android:textSize="18sp"
+ android:padding="5sp"
  />

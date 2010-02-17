@@ -11,9 +11,7 @@
     android:text="Name" />
   <EditText
     android:id="@+id/editor"
-    android:layout_height="wrap_content"
-    android:layout_width="fill_parent"
-    android:lines="1"
+    style="@style/NameEditor"
     android:hint="Tracker name" />
   <TextView
     android:layout_width="fill_parent"
@@ -21,11 +19,9 @@
     android:text="Notes" />
   <EditText
     android:id="@+id/body"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    style="@style/BodyEditor"
     android:hint="Optional notes about this tracker"
-    android:minLines="3"
-    android:maxLines="5" />
+    />
   <TableLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"

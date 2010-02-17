@@ -53,8 +53,7 @@
         android:layout_width="70dip"
         android:layout_marginLeft="5dip"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-         />
+        android:focusableInTouchMode="true" />
     </LinearLayout>
     <TextView
       android:layout_width="fill_parent"
@@ -62,14 +61,10 @@
       android:text="Notes" />
     <EditText
       android:id="@+id/body"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:hint="Log body"
-      android:maxLines="5" />
+      style="@style/BodyEditor"
+      android:hint="Log body" />
     <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
+      style="@style/horizontalLL"
     >
       <Button
         android:id="@+id/save"

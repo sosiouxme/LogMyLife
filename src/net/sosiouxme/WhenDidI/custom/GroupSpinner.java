@@ -65,12 +65,17 @@ public class GroupSpinner implements OnItemSelectedListener {
 				return true;
 			}
 		}
+		// nothing in the list matched. set groupId to first item in list
+		mSpinner.setSelection(0);
+		if(onGroupSelectedListener != null)
+			onGroupSelectedListener.onGroupSelected(mSpinner.getItemIdAtPosition(0));		
 		return false;
 	}
 	
 	public void notifyDataSetChanged() {
 		Log.d(TAG, "notifyDataSetChanged");
 		((SimpleCursorAdapter) mSpinner.getAdapter()).notifyDataSetChanged();
+		setGroupId(mApp.getSelectedGroup());
 	}
 	
 	public long getSelectedItemId() {

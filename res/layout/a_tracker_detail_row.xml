@@ -13,6 +13,7 @@
     android:text="Body"
     android:id="@+id/logBody"
     android:textAppearance="@style/SubTextAppearance"
+    style="@style/EllipseText"
     android:layout_width="fill_parent"
     android:paddingLeft="5sp"
     android:layout_height="wrap_content" />

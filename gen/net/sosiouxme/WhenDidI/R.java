@@ -60,7 +60,7 @@ public final class R {
         public static final int il_list_spinner=0x7f0a000a;
         public static final int increment=0x7f0a0017;
         public static final int lastLog=0x7f0a000d;
-        public static final int ler_list=0x7f0a0001;
+        public static final int listName=0x7f0a0001;
         public static final int logBody=0x7f0a0012;
         public static final int logDetails=0x7f0a000e;
         public static final int logTime=0x7f0a0011;
@@ -157,19 +157,22 @@ public final class R {
          */
         public static final int AppTheme=0x7f070000;
         public static final int BigButton=0x7f07000a;
+        public static final int BodyEditor=0x7f07000c;
         public static final int DefaultTextAppearance=0x7f070001;
+        public static final int EllipseText=0x7f07000d;
         /**  specific widgets 
          */
         public static final int Label=0x7f070007;
         public static final int LineLabel=0x7f070008;
         public static final int ListTextAppearance=0x7f070002;
+        public static final int NameEditor=0x7f07000b;
         public static final int SpinnerDisplay_TA=0x7f070006;
         public static final int SpinnerRow=0x7f070005;
         public static final int SubTextAppearance=0x7f070003;
         /**  layout components 
          */
-        public static final int horizontalLL=0x7f07000b;
-        public static final int verticalLL=0x7f07000c;
+        public static final int horizontalLL=0x7f07000e;
+        public static final int verticalLL=0x7f07000f;
     }
     public static final class xml {
         public static final int prefs=0x7f040000;

@@ -51,7 +51,7 @@ public class GroupsEdit extends ListActivity {
 				R.layout.a_groups_edit_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_GROUP_NAME },
-				new int[] { R.id.ler_list });
+				new int[] { R.id.listName });
 		
 		this.setListAdapter(adapter);
 		this.registerForContextMenu(getListView());
@@ -69,7 +69,7 @@ public class GroupsEdit extends ListActivity {
     }
     
     @Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.d(TAG, "onMenuItemSelected");
     	switch(item.getItemId()) {
     		case R.id.new_group:
@@ -79,7 +79,7 @@ public class GroupsEdit extends ListActivity {
     			finish();
     			return true;
     	}
-    	return super.onMenuItemSelected(featureId, item);
+    	return super.onOptionsItemSelected(item);
     }
 
     
@@ -90,9 +90,8 @@ public class GroupsEdit extends ListActivity {
 		if (v.getId() == R.id.add_new_group) {
 			showDialog(DIALOG_NEW_LIST);
 		} else {
-			Dialog d = new GroupDialog(id);
-			d.setOwnerActivity(this);
-			d.show();
+			((WhenDidI) getApplication()).setSelectedGroup(id);
+			finish();
 		}
 	}
 	
@@ -138,7 +137,7 @@ public class GroupsEdit extends ListActivity {
 					Log.d(TAG, "DeleteDialog onClick " + listId);
 					mDba.deleteGroup(listId);
 					((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_DELETED);
-					fillGroupList();
+					GroupsEdit.this.requery();
 				}
 			})
 		.create();
@@ -197,7 +196,7 @@ public class GroupsEdit extends ListActivity {
 				mDba.updateGroup(mGroupId, title);
 				((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_UPDATED);
 			}
-			// udpate parent's view
+			// update parent's view
 			GroupsEdit.this.requery();
 		}
 	}
