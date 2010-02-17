@@ -28,15 +28,18 @@ import android.util.Log;
 public class DbAdapter implements C {
 
 	private static final String DATABASE_NAME = "whendidi.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
     private static final String TAG = "WDI.DBAdapter";
 
 	private DbAdmin mDbHelper;
     private SQLiteDatabase mDb;
     private final Context mCtx;
+	private Resources resources;
+
 
     public DbAdapter(Context ctx) {
         mCtx = ctx;
+        resources = ctx.getResources();
 	}
     
     /**
@@ -55,6 +58,11 @@ public class DbAdapter implements C {
     public void close() {
         mDbHelper.close();
     }
+    
+    // Return a string defined in resource file
+	private String str(int id) {
+		return (String) resources.getText(id);
+	}
     
     /**
      * 
@@ -125,17 +133,20 @@ public class DbAdapter implements C {
         initialValues.put(db_TRACKER_GROUP, groupId);
         initialValues.put(db_TRACKER_NAME, name);
         initialValues.put(db_TRACKER_BODY, body);
+        initialValues.put(db_TRACKER_VALUE_TYPE, 0);
         return mDb.insert(db_TRACKER_TABLE, null, initialValues);
     }
 
     public Cursor fetchTrackerCursor(long trackerId) {
         // @return Cursor positioned to matching note, if found
     	Log.d(TAG, "fetching tracker " + trackerId);
-        Cursor mCursor =
-                mDb.query(true, db_TRACKER_TABLE, 
-                		new String[] {db_ID, db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_GROUP, db_TRACKER_LAST_LOG},
-                		db_ID + "=" + trackerId, 
-                		null, null, null, null, null);
+				
+		Cursor mCursor = mDb.query(
+				db_TRACKER_TABLE, 
+				new String[] { db_ID, db_TRACKER_NAME, db_TRACKER_BODY,
+						db_TRACKER_GROUP, db_TRACKER_LAST_LOG_ID, db_TRACKER_VALUE_TYPE },
+				db_ID + "=" + trackerId,
+				null, null,	null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -157,13 +168,10 @@ public class DbAdapter implements C {
 			t.name = c.getString(c.getColumnIndex(C.db_TRACKER_NAME));
 			t.body = c.getString(c.getColumnIndex(C.db_TRACKER_BODY));
 			t.groupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
-			String date = c.getString(c.getColumnIndex(C.db_TRACKER_LAST_LOG));
-			if (date != null)
-				t.lastLogDate = dbDateFormat.parse(date);
-
-		} catch (ParseException e) {
-			// nothing to do; t is left with null log date, which is presumably
-			// right
+			t.lastLogId = c.getLong(c.getColumnIndex(C.db_TRACKER_LAST_LOG_ID));
+			t.valueType = c.getLong(c.getColumnIndex(C.db_TRACKER_VALUE_TYPE));
+			if(t.lastLogId > 0)
+				t.lastLog = fetchLog(t.lastLogId);
 		} finally {
 			if (c != null) {
 				c.close();
@@ -175,41 +183,27 @@ public class DbAdapter implements C {
 	public Cursor fetchTrackers(long groupId, String filter) {
         // @return Cursor over all items in a list
 		Log.d(TAG, "fetching trackers for group " + groupId);
-		String selection = db_TRACKER_GROUP + " = " + groupId;
-		String[] selectionArgs = null;
-		if(filter != null) {
-			selection = selection + " AND " + db_TRACKER_NAME + " LIKE ?";
-			selectionArgs = new String[] { "%" + filter + "%" };
-		}
-        return mDb.query(db_TRACKER_TABLE,
-        		new String[] {db_ID, db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_LAST_LOG},
-        		selection, selectionArgs, null, null, db_ID);
+		if(filter == null)
+			return mDb.rawQuery(str(R.string.db_select_trackers),
+					new String[] {"" + groupId});
+		else
+			return mDb.rawQuery(str(R.string.db_select_trackers_filter), 
+					new String[] {"" + groupId, "%" + filter + "%"});
 	}
-	
-    public boolean updateTracker(long trackerId, String name, String body) {
-        // @return true if the tracker was successfully updated, false otherwise
-    	Log.d(TAG, "updating tracker " + trackerId);
-        ContentValues args = new ContentValues();
-        args.put(db_TRACKER_NAME, name);
-        args.put(db_TRACKER_BODY, body);
-        return mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + trackerId, null) > 0;
-    }
 
 	public void updateTracker(Tracker tracker) {
 		ContentValues args = new ContentValues();
 		for(String field : tracker.getChanged()) {
-			if(field == db_TRACKER_NAME) {
+			if(field == db_TRACKER_NAME)
 				args.put(field, tracker.name);
-			}
-			if(field == db_TRACKER_BODY) {
+			if(field == db_TRACKER_BODY)
 				args.put(field, tracker.body);
-			}
-			if(field == db_TRACKER_GROUP) {
+			if(field == db_TRACKER_GROUP) 
 				args.put(field, tracker.groupId);
-			}
-			if(field == db_TRACKER_LAST_LOG) {
+			if(field == db_TRACKER_VALUE_TYPE) 
+				args.put(field, tracker.valueType);
+			if(field == db_TRACKER_LAST_LOG_ID) 
 				throw new RuntimeException("Tracker LastLog should never be explicitly updated");
-			}
 		}
         mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + tracker.id, null);
         tracker.clearChanged();
@@ -224,16 +218,9 @@ public class DbAdapter implements C {
     		throw new EntryMissingException();
     	}
     }
-    
-	private static final String STMT_UPDATE_LAST_LOG = "update Trackers " +
-	"set last_log_time = (" +
-		"select max(log_time) " +
-		"from TrackerLogs " +
-		"where tracker_id = ?" +
-		") " +
-	"where _id = ?";
+
     private boolean updateTrackerLastLog(long trackerId) {
-    	mDb.execSQL(STMT_UPDATE_LAST_LOG, new Long[] {trackerId, trackerId});
+    	mDb.execSQL(str(R.string.db_update_tracker_last_log), new Long[] {trackerId});
     	return true;
     }
     
@@ -270,7 +257,11 @@ public class DbAdapter implements C {
 		Cursor c = null;
 		LogEntry le = null;
 		try {
-			c = fetchLogCursor(logId);
+			c = mDb.query(true, db_LOG_TABLE,
+            		new String[] {db_ID, db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY,
+					  db_LOG_VALUE, db_LOG_VALUE_TYPE, db_LOG_IS_BREAK},
+					db_ID + "=" + logId, null,
+					null, null, null, null);
 			if (c.getCount() != 1)
 				return null;
             c.moveToFirst();
@@ -280,6 +271,9 @@ public class DbAdapter implements C {
 			String date = c.getString(c.getColumnIndex(C.db_LOG_TIME));
 			if (date != null)
 				le.logDate = dbDateFormat.parse(date);
+			le.isBreak = c.getInt(c.getColumnIndex(C.db_LOG_IS_BREAK)) > 0;
+			le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
+			le.value = c.getString(c.getColumnIndex(C.db_LOG_VALUE));
 		} catch (ParseException e) {
 			throw new RuntimeException("fetchLog couldn't parse date for " + logId, e);
 		} finally {
@@ -289,17 +283,6 @@ public class DbAdapter implements C {
 		}
 		return le;
 	}
-
-	public Cursor fetchLogCursor(long logId) {
-        // @return Cursor positioned to matching note, if found
-    	Log.d(TAG, "fetching log " + logId);
-        Cursor mCursor =
-                mDb.query(true, db_LOG_TABLE,
-                		new String[] {db_ID, db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY},
-                		db_ID + "=" + logId, null,
-                        null, null, null, null);
-        return mCursor;
-    }
 
     public Cursor fetchLogs(long trackerId) {
         // @return Cursor positioned to matching log, if found
@@ -313,32 +296,23 @@ public class DbAdapter implements C {
         return c;
 
     }
-
-    public boolean updateLog(long logId, Date time, String body, long trackerId) {
-        // @return true if the note was successfully updated, false otherwise
-    	Log.d(TAG, "updating log " + logId);
-        ContentValues args = new ContentValues();
-        if (time != null)
-        	args.put(db_LOG_TIME, dbDateFormat.format(time));
-        args.put(db_LOG_BODY, body);
-        boolean status = mDb.update(db_LOG_TABLE, args, db_ID + "=" + logId, null) > 0;
-    	updateTrackerLastLog(trackerId);
-    	return status;
-    }
     
 	public void updateLog(LogEntry log) {
 		ContentValues args = new ContentValues();
 		for(String field : log.getChanged()) {
-			if(field == db_LOG_TRACKER) {
+			if(field == db_LOG_TRACKER) 
 				args.put(field, log.trackerId);
-			}
-			if(field == db_LOG_BODY) {
+			if(field == db_LOG_BODY) 
 				args.put(field, log.body);
-			}
-			if(field == db_LOG_TIME) {
+			if(field == db_LOG_TIME) 
 				args.put(db_LOG_TIME, (log.logDate == null) ? null : 
 						dbDateFormat.format(log.logDate));
-			}
+			if(field == db_LOG_IS_BREAK) 
+				args.put(field, log.isBreak);
+			if(field == db_LOG_VALUE_TYPE) 
+				args.put(field, log.valueType);
+			if(field == db_LOG_VALUE) 
+				args.put(field, log.value == null ? null : log.value.toString());
 		}
         mDb.update(db_LOG_TABLE, args, db_ID + "=" + log.id, null);
     	updateTrackerLastLog(log.trackerId);
@@ -377,68 +351,76 @@ public class DbAdapter implements C {
     
     // inner class for handling basic DB maintenance
 	private class DbAdmin extends SQLiteOpenHelper {
-		private Resources resources;
 		public DbAdmin(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
-            resources = context.getResources();
 		}
 
 		@Override /* create DB tables */
 		public void onCreate(SQLiteDatabase db) {
-      
-			try {
-				db.execSQL("CREATE TABLE " + db_GROUP_TABLE + " ("
-	                    + db_ID + " INTEGER PRIMARY KEY,"
-	                    + db_GROUP_NAME + " TEXT NOT NULL"
-	                    + ");");
-				Log.i(TAG, "Created table " + db_GROUP_TABLE);
-				
-	            ContentValues firstRow = new ContentValues();
-	            firstRow.put(db_GROUP_NAME, (String) resources.getText(R.string.first_list));
-	            db.insertOrThrow(db_GROUP_TABLE, db_GROUP_NAME, firstRow);
-	
-	            // TODO: foreign keys
-	            db.execSQL("CREATE TABLE " + db_TRACKER_TABLE + " ("
-	                    + db_ID + " INTEGER PRIMARY KEY,"
-	                    + db_TRACKER_GROUP + " INTEGER NOT NULL," 
-	                    + db_TRACKER_NAME + " TEXT NOT NULL,"
-	                    + db_TRACKER_BODY + " TEXT,"
-	                    + db_TRACKER_LAST_LOG + " DATETIME"
-	                    + ");");
-				Log.i(TAG, "Created table " + db_TRACKER_TABLE);
-			
-				db.execSQL("CREATE TABLE " + db_LOG_TABLE + " ("
-	                    + db_ID + " INTEGER PRIMARY KEY,"
-	                    + db_LOG_TRACKER + " INTEGER NOT NULL," 
-	                    + db_LOG_TIME + " DATETIME NOT NULL,"
-	                    + db_LOG_BODY + " TEXT"
-	                    + ");");
-				Log.i(TAG, "Created table " + db_LOG_TABLE);
-			} catch(SQLException e) {
-				Log.e(TAG, e.getMessage(), e);
-				throw(e);
-			}
+			onUpgrade(db, 0, DATABASE_VERSION);
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            /*
-             * Will implement as necessary
-             * 
-             * switch(oldVersion) {
-             * case 1: (no break)
-             * case 2:
-             * etc
-             * }
-            */
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", but don't know what to do.");
+			if (oldVersion == 0)
+				Log.i(TAG, "Creating new database");
+			else
+				Log.i(TAG, "Upgrading database from version " + oldVersion
+						+ " to " + newVersion);
+
+			try {
+				if (oldVersion < 1) {
+					db.execSQL(str(R.string.db_create_groups));
+					Log.i(TAG, "Created table " + db_GROUP_TABLE);
+
+					ContentValues firstRow = new ContentValues();
+					firstRow.put(db_GROUP_NAME, str(R.string.db_first_list));
+					db.insertOrThrow(db_GROUP_TABLE, db_GROUP_NAME, firstRow);
+
+					db.execSQL(str(R.string.db_create_trackers));
+					Log.i(TAG, "Created table " + db_TRACKER_TABLE);
+
+					db.execSQL(str(R.string.db_create_logs));
+					Log.i(TAG, "Created table " + db_LOG_TABLE);
+				}
+				if (oldVersion < 2) {
+					// migrate v.1 to v.2
+					db.execSQL(str(R.string.db_create_valuetypes));
+					ContentValues firstRow = new ContentValues();
+					firstRow.put(db_VALUE_NAME, str(R.string.db_first_value_name));
+					firstRow.put(db_VALUE_TYPE, str(R.string.db_first_value_type));
+					db.insertOrThrow(db_VALUE_TABLE, null, firstRow);
+					Log.i(TAG, "Created table " + db_VALUE_TABLE);
+
+					db.execSQL(str(R.string.db_create_alarms));
+					Log.i(TAG, "Created table " + db_ALARM_TABLE);
+
+					db.execSQL(str(R.string.db_alter_trackers_1));
+					db.execSQL(str(R.string.db_alter_trackers_2));
+					Log.i(TAG, "Altered table " + db_TRACKER_TABLE);
+
+					db.execSQL(str(R.string.db_alter_logs_1));
+					db.execSQL(str(R.string.db_alter_logs_2));
+					db.execSQL(str(R.string.db_alter_logs_3));
+					Log.i(TAG, "Altered table " + db_LOG_TABLE);
+					
+					db.execSQL(str(R.string.db_create_tracker_group_id_idx));
+					db.execSQL(str(R.string.db_create_log_tracker_time_idx));
+					db.execSQL(str(R.string.db_create_alarm_tracker_id_idx));
+					Log.i(TAG, "Created indexes");
+
+					db.execSQL(str(R.string.db_update_all_trackers_last_log));
+					Log.i(TAG, "Updated last log ids");
+				}
+
+			} catch (SQLException e) {
+				Log.e(TAG, e.getMessage(), e);
+				throw (e);
+			}
 		}
 
+
 	}
-
-
-
 
 
 

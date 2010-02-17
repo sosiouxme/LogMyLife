@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="db_create_groups">
+    CREATE TABLE Groups (
+      _id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL
+    );
+  </string>
+  <string name="db_create_trackers">
+    CREATE TABLE Trackers (
+      _id INTEGER PRIMARY KEY,
+      group_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      body TEXT
+    );
+  </string>
+  <string name="db_create_logs">
+    CREATE TABLE TrackerLogs (
+      _id INTEGER PRIMARY KEY,
+      tracker_id INTEGER NOT NULL,
+      log_time DATETIME NOT NULL,
+      body TEXT
+    );
+  </string>
+  <string name="db_create_valuetypes">
+    create table ValueTypes (
+      _id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL
+    );
+  </string>
+  <string name="db_create_alarms">
+    create table Alarms (
+      _id INTEGER PRIMARY KEY,
+      tracker_id INTEGER NOT NULL,
+      interval_type TEXT NOT NULL,
+      interval_length INTEGER NOT NULL,
+      ringtone TEXT
+    );
+  </string>
+  
+  <string name="db_alter_trackers_1">
+    alter table Trackers add column last_log_id INTEGER ;
+  </string>
+  <string name="db_alter_trackers_2">
+    alter table Trackers add column value_type INTEGER ;
+  </string>
+  <string name="db_alter_logs_1">
+    alter table TrackerLogs add column value_type INTEGER;
+  </string>
+  <string name="db_alter_logs_2">
+    alter table TrackerLogs add column value NUMERIC;
+  </string>
+  <string name="db_alter_logs_3">
+    alter table TrackerLogs add column is_break BOOLEAN default 0;
+  </string>
+  <string name="db_alter_">
+  </string>
+  <string name="db_select_trackers">
+    select  t._id, name, log_time, tl.body
+    from Trackers t LEFT JOIN TrackerLogs tl
+    on (t.last_log_id = tl._id)
+    where group_id = ?
+  </string>
+  <string name="db_select_trackers_filter">
+    select  t._id, name, log_time, tl.body
+    from Trackers t LEFT JOIN TrackerLogs tl
+    on (t.last_log_id = tl._id)
+    where group_id = ?
+    and t.name like ?
+  </string>
+  <string name="db_update_">
+  </string>
+  <string name="db_update_tracker_last_log">
+      update Trackers
+      set last_log_id = (
+                      select _id
+                      from TrackerLogs
+                      where tracker_id = Trackers._id
+                      order by log_time desc, _id
+                      limit 1
+                      )
+              where _id = ?
+      ;
+  </string>
+  <string name="db_update_all_trackers_last_log">
+      update Trackers
+      set last_log_id = (
+                      select _id
+                      from TrackerLogs
+                      where tracker_id = Trackers._id
+                      order by log_time desc, _id
+                      limit 1
+                      )
+      ;
+  </string>
+  <string name="db_create_tracker_group_id_idx">
+    create index tracker_group_id_idx on Trackers (group_id);
+  </string>
+  <string name="db_create_log_tracker_time_idx">
+    create index log_tracker_time_idx on TrackerLogs (tracker_id ASC, log_time DESC);
+  </string>
+  <string name="db_create_alarm_tracker_id_idx">
+    create index alarm_tracker_id_idx on Alarms (tracker_id);
+  </string>  
+  <string name="db_first_list">General</string>
+  <string name="db_first_value_type">Number</string>
+  <string name="db_first_value_name">Number</string>
+
+</resources>

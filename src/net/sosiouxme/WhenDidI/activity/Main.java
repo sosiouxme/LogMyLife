@@ -77,8 +77,8 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		mAdapter = new EventCursorAdapter(this,
 				R.layout.a_main_row,
 				cur, // Give the cursor to the list adapter
-				new String[] { C.db_TRACKER_NAME, C.db_TRACKER_LAST_LOG },
-				new int[] { R.id.name, R.id.lastLog });
+				new String[] { C.db_TRACKER_NAME, C.db_LOG_TIME, C.db_LOG_BODY },
+				new int[] { R.id.name, R.id.lastLog, R.id.logBody });
 		mAdapter.setFilterQueryProvider(this);
 		this.setListAdapter(mAdapter);
 

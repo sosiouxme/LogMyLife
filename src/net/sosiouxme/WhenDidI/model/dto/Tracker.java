@@ -1,7 +1,5 @@
 package net.sosiouxme.WhenDidI.model.dto;
 
-import java.util.Date;
-
 import net.sosiouxme.WhenDidI.C;
 
 public class Tracker extends AbstractDTO {
@@ -9,7 +7,9 @@ public class Tracker extends AbstractDTO {
 	public long groupId;
 	public String name;
 	public String body;
-	public Date lastLogDate;
+	public long valueType;
+	public long lastLogId;
+	public LogEntry lastLog = null;
 	
 	public Tracker(long id) {
 		super(id);
@@ -23,14 +23,22 @@ public class Tracker extends AbstractDTO {
 		return body;
 	}
 
-	public Date getLastLogDate() {
-		return lastLogDate;
-	}
-
 	public long getGroupId() {
 		return groupId;
 	}
+
+	public long getLastLogId() {
+		return lastLogId;
+	}
+
+	public LogEntry getLastLog() {
+		return lastLog;
+	}
 	
+	public long getValueType() {
+		return valueType;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 		changed.add(C.db_TRACKER_NAME);
@@ -41,20 +49,31 @@ public class Tracker extends AbstractDTO {
 		changed.add(C.db_TRACKER_BODY);
 	}
 
-	public void setLastLogDate(Date lastLogDate) {
-		this.lastLogDate = lastLogDate;
-		changed.add(C.db_TRACKER_LAST_LOG);
-	}
-
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 		changed.add(C.db_TRACKER_GROUP);
 	}
+	
+	public void setLastLogId(long lastLogId) {
+		this.lastLogId = lastLogId;
+		changed.add(C.db_TRACKER_LAST_LOG_ID);
+	}
 
+	public void setLastLog(LogEntry lastLog) {
+		this.lastLog = lastLog;
+	}
+
+	public void setValueType(long valueType) {
+		this.valueType = valueType;
+		changed.add(C.db_TRACKER_LAST_LOG_ID);
+	}
+	
 	public void copyFrom(Tracker t) {
 		setGroupId(t.groupId);
 		setName(t.name);
 		setBody(t.body);
-		setLastLogDate(t.lastLogDate);
+		setValueType(t.valueType);
+		setLastLogId(t.lastLogId);
+		setLastLog(t.lastLog);
 	}
 }
