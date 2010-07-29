@@ -3,13 +3,14 @@ package net.sosiouxme.WhenDidI.activity;
 import java.util.Date;
 
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.Util;
 import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
-import net.sosiouxme.WhenDidI.model.dto.Tracker;
+import net.sosiouxme.WhenDidI.domain.DbAdapter;
+import net.sosiouxme.WhenDidI.domain.dto.Tracker;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,7 +25,15 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+
+/**
+Activity for displaying the details of one tracker, including log entries
+
+@author Luke Meyer, Copyright 2010
+See LICENSE file for this file's GPLv3 distribution license.
+*/
 
 public class TrackerDetail extends ListActivity implements  android.view.View.OnClickListener {
 	// Logger tag
@@ -44,7 +53,7 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 		super.onCreate(savedInstanceState);
 
 		// get a DB handle
-		mDba = new DbAdapter(this).open();
+		mDba = new DbAdapter(this);
 
 		// Set the layout for this activity.
 		setContentView(R.layout.a_tracker_detail);
@@ -129,6 +138,10 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 			break;
 		case R.id.new_log:
 			newLogEntry();
+			break;
+		case R.id.test_alarm:
+			Util.setAlarm(this, mTracker.id, System.currentTimeMillis() + (5 * 1000));
+			Toast.makeText(this, "Alarm set", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.done:
 			finish();

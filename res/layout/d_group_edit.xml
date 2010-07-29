@@ -10,6 +10,7 @@
 	android:layout_height="wrap_content" android:text="Title"/>
 <EditText android:id="@+id/editor"
     style="@style/NameEditor"
+    android:inputType="textShortMessage|textCapSentences|textAutoCorrect|textAutoComplete"
 	android:hint="Group name"/>
 <TableLayout
  android:layout_width="fill_parent" 
@@ -23,7 +24,7 @@
  android:id="@+id/cancel" 
  />
 <Button
- android:text="Create" 
+ android:text="@string/ged_ok_create" 
  android:id="@+id/ok"
  android:enabled="false" 
  />

@@ -21,6 +21,10 @@
     android:text="Tracker body"
     android:maxLines="5" />
   <LinearLayout
+    android:id="@+id/alarmContainer"
+    style="@style/verticalLL"
+    android:layout_width="fill_parent" />
+  <LinearLayout
     style="@style/horizontalLL"
   >
     <Button

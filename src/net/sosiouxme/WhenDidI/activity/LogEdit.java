@@ -4,13 +4,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.NumberPicker;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
-import net.sosiouxme.WhenDidI.model.dto.LogEntry;
-import net.sosiouxme.WhenDidI.model.dto.Tracker;
+import net.sosiouxme.WhenDidI.domain.DbAdapter;
+import net.sosiouxme.WhenDidI.domain.dto.LogEntry;
+import net.sosiouxme.WhenDidI.domain.dto.Tracker;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -24,6 +24,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+/**
+Activity that presents the UI for editing a single LogEntry 
+
+@author Luke Meyer, Copyright 2010
+See LICENSE file for this file's GPLv3 distribution license.
+*/
 
 public class LogEdit extends Activity implements android.view.View.OnClickListener {
 
@@ -48,7 +55,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		super.onCreate(savedInstanceState);
 		
 		// get a DB handle
-		mDba = new DbAdapter(this).open();
+		mDba = new DbAdapter(this);
 
 		// find existing log entry / tracker to work on
 		long logId = 0;

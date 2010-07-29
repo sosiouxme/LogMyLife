@@ -1,4 +1,5 @@
-*** Development underway, but not in a useful state yet ***
+*** Development underway, but still very alpha ***
+*** Issues not being tracked on github yet ***
 
 Eclipse project for an Android application. You'll probably need Eclipse
 and the Android SDK and ADT plugin to make sense of it. The code is

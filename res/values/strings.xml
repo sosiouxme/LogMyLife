@@ -11,14 +11,12 @@
     <string name="log_entry_deleted">Log entry deleted</string>
     <string name="hello">Howdy</string>
     <string name="app_name">When Did I</string>
-<string name="menu_new_item">New item</string>
-<string name="menu_save_item">Save</string>
-<string name="menu_cancel_item">Cancel</string>
-<string name="menu_revert_item">Cancel changes</string><string name="menu_delete_item">Delete</string>
 
-<string name="ilni_title">Create new item</string>
 <string name="ged_new_title">Create new group</string>
 <string name="ged_edit_title">Edit group name</string>
+<string name="ged_ok_create">Create</string>
+<string name="ged_ok_update">Change</string>
+
 <string name="tdd_title">Really delete?</string>
 <string name="tdd_msg">This will delete the tracker and any log entries.</string>
 <string name="tdd_delete_button">Delete</string>

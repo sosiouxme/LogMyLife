@@ -3,7 +3,6 @@ package net.sosiouxme.WhenDidI.activity;
 import java.util.Date;
 
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.Util;
 import net.sosiouxme.WhenDidI.WhenDidI;
@@ -11,6 +10,7 @@ import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
+import net.sosiouxme.WhenDidI.domain.DbAdapter;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -34,6 +34,14 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
+/**
+Activity that presents the UI for the application's main screen, which 
+displays all trackers for the currently selected group.
+
+@author Luke Meyer, Copyright 2010
+See LICENSE file for this file's GPLv3 distribution license.
+*/
+
 public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener, FilterQueryProvider {
 	private static final String TAG = "WDI.TrackerGroup";
 	private static final int DIALOG_ABOUT = 0;
@@ -52,7 +60,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		setContentView(R.layout.a_main);
 		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_main_new, null));
 
-		mDba = new DbAdapter(this).open();
+		mDba = new DbAdapter(this);
 		fillGroupSpinner();
 		fillTrackerList();
 	}
@@ -255,12 +263,14 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		if (mUpdateThread != null)
 			stopUpdateThread();
 		mUpdateThread = new Thread() {
+			// This is the bit that is passed to the UI thread to run
 			private final Runnable update = new Runnable() {
 				public void run() {
 					updateLastLogTimes();
 				}
 			};
 
+			// This is the timekeeper for this background thread
 			public void run() {
 				try {
 					while (true) {

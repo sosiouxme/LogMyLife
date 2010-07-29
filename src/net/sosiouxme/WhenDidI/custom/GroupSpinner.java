@@ -1,9 +1,9 @@
 package net.sosiouxme.WhenDidI.custom;
 
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
+import net.sosiouxme.WhenDidI.domain.DbAdapter;
 import android.app.Activity;
 import android.database.Cursor;
 import android.util.Log;

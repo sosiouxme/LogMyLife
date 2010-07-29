@@ -7,7 +7,13 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
-/* e.g. getApplication().getSelectedGroup() */
+/**
+The Application object that can be retrieved from any WDI Activity with 
+getApplication(). Useful for referencing app-wide preferences and such.
+ 
+@author Luke Meyer, Copyright 2010
+See LICENSE file for this file's GPLv3 distribution license.
+*/
 public class WhenDidI extends Application {
 	
 	private SharedPreferences mPrefs = null;
@@ -17,7 +23,6 @@ public class WhenDidI extends Application {
 	public void onCreate() {
 		super.onCreate();
 		this.mPrefs = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
-
 	}
 
 	public static final String TRACKER_CLICK_BEHAVIOR = "trackerClickBehavior";

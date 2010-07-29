@@ -8,20 +8,8 @@
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Name" />
-  <EditText
-    android:id="@+id/editor"
-    style="@style/NameEditor"
-    android:hint="Tracker name" />
-  <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="Notes" />
-  <EditText
-    android:id="@+id/body"
-    style="@style/BodyEditor"
-    android:hint="Optional notes about this tracker"
-    />
+    android:text="This alarm will activate after the most recent log entry is this old:" />
+  <include layout="@layout/w_tracker_edit_alarm" />
   <TableLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"

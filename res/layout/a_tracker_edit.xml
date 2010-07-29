@@ -1,44 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:orientation="vertical"
 >
-  <Spinner
-    android:id="@+id/group_spinner"
+  <LinearLayout
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" />
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Name" />
-  <EditText
-    android:id="@+id/name"
-    style="@style/NameEditor"
-   android:hint="Tracker name" />
-  <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="Notes" />
-  <EditText
-    android:id="@+id/body"
-    style="@style/BodyEditor"
-    android:hint="Optional notes about this tracker"
-     />
-  <TableLayout
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:stretchColumns="*"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
   >
-    <TableRow>
-      <Button
-        android:text="Save"
-        android:id="@+id/ok" />
-      <Button
-        android:text="Cancel"
-        android:id="@+id/cancel" />
-    </TableRow>
-  </TableLayout>
-</LinearLayout>
+    <Spinner
+      android:id="@+id/group_spinner"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content" />
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Name" />
+    <EditText
+      android:id="@+id/name"
+      style="@style/NameEditor"
+      android:hint="Tracker name" />
+    <TextView
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="Notes" />
+    <EditText
+      android:id="@+id/body"
+      style="@style/BodyEditor"
+      android:hint="Optional notes about this tracker" />
+    <LinearLayout
+      android:id="@+id/alarmContainer"
+      style="@style/verticalLL"
+      android:layout_width="fill_parent" />
+    <TableLayout
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:stretchColumns="*"
+    >
+      <TableRow>
+        <Button
+          android:text="Save"
+          android:id="@+id/ok" />
+        <Button
+          android:text="Cancel"
+          android:id="@+id/cancel" />
+      </TableRow>
+    </TableLayout>
+  </LinearLayout>
+</ScrollView>

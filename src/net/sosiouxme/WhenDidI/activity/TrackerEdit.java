@@ -1,14 +1,18 @@
 package net.sosiouxme.WhenDidI.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequireTextFor;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
-import net.sosiouxme.WhenDidI.model.dto.Tracker;
+import net.sosiouxme.WhenDidI.domain.DbAdapter;
+import net.sosiouxme.WhenDidI.domain.dto.Alarm;
+import net.sosiouxme.WhenDidI.domain.dto.Tracker;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -19,25 +23,49 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+
+/**
+Activity that presents the UI to edit a single tracker.
+
+@author Luke Meyer, Copyright 2010
+See LICENSE file for this file's GPLv3 distribution license.
+*/
 
 public class TrackerEdit extends Activity implements android.view.View.OnClickListener, OnGroupSelectedListener {
 
 	private static final String TAG = "WDI.TrackerEdit";
+	/** The tracker the activity is currently editing */
 	private Tracker mTracker = null;
+	/** database handle */
 	private DbAdapter mDba = null;
+	/** reference to the text edit field holding the tracker name */
 	private EditText metName;
+	/** reference to the text edit field holding the tracker body */
 	private EditText metBody;
+	/** reference to the group spinner so group can be changed for this tracker */
 	private GroupSpinner mSpinner;
+	/** current group for this tracker (shown in spinner) */
 	private long mCurrentGroupId = 0;
-	private boolean saveOnFinish = true; // by default, back button will save
+	/** Ordered list of alarms attached to this Tracker */
+	//private List<Alarm> alarms = new ArrayList<Alarm>();	
+	/** Map of alarms attached to this Tracker and their views */
+	//private Map<View,Alarm> alarmViews = new HashMap<View,Alarm>();
+	/** set if changes made; back button will save any changes by default */
+	private boolean saveOnFinish = true;
+	private LinearLayout alarmContainer;
+	private List<Alarm> alarmList = new ArrayList<Alarm>();
 
+		/**
+		 * {@inheritDoc}
+		 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		// get a DB handle
-		mDba = new DbAdapter(this).open();
+		mDba = new DbAdapter(this);
 
 		long trackerId = 0;
 		Bundle e = getIntent().getExtras();
@@ -58,11 +86,19 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		// locate and fill the necessary elements of the layout
 		metName = (EditText) findViewById(R.id.name);
 		metBody = (EditText) findViewById(R.id.body);
+		alarmContainer = (LinearLayout) findViewById(R.id.alarmContainer);
 
 		if(mTracker != null) {			
 			// set the data in the views
 			metName.setText(mTracker.name);
 			metBody.setText(mTracker.body);
+			// get the alarms to populate alarmList
+		}
+		
+		for(Alarm alarm : alarmList) {
+			View alarmView = getLayoutInflater().inflate(R.layout.w_tracker_edit_alarm, null);
+			alarmView.setTag(alarm);
+			alarmContainer.addView(alarmView);
 		}
 		
 		// wire up the buttons
@@ -110,12 +146,23 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		case R.id.cancel_existing:
 			saveOnFinish = false;
 			finish();
-			return true;
+			break;
 		case R.id.delete:
 			deleteTracker();
-			return true;
+			break;
+		case R.id.new_alarm:
+			addNewAlarm();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void addNewAlarm() {
+		View alarmEdit = getLayoutInflater().inflate(R.layout.w_tracker_edit_alarm, null);
+		alarmContainer.addView(alarmEdit, -1);
+		Alarm alarm = new Alarm(-1);
+		alarmList.add(alarm);
+		alarmEdit.setTag(alarm);
 	}
 
 	public void onClick(View v) {
@@ -133,8 +180,6 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		}
 	}
 	
-	
-
 	@Override
 	protected void onPause() {
 		if(isFinishing() && saveOnFinish ) {

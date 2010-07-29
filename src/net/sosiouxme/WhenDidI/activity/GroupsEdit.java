@@ -1,10 +1,10 @@
 package net.sosiouxme.WhenDidI.activity;
 
 import net.sosiouxme.WhenDidI.C;
-import net.sosiouxme.WhenDidI.DbAdapter;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.RequiredFieldDialog;
+import net.sosiouxme.WhenDidI.domain.DbAdapter;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -18,22 +18,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
+/**
+Activity for presenting the UI to edit the groups that trackers can be in.
+
+@author Luke Meyer, Copyright 2010
+See LICENSE file for this file's GPLv3 distribution license.
+*/
+
 public class GroupsEdit extends ListActivity {
 	private DbAdapter mDba;
 	private static final String TAG = "WDI.GroupsEdit";
-	private static final int DIALOG_NEW_LIST = 0;
-	
+
+	private static final int DIALOG_GROUP_NAME = 0;
+	private long mGroupEditId = 0;
+	private static final int DIALOG_GROUP_DELETE = 1;
+	private long mGroupDeleteId = 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_groups_edit);
 		getListView().addHeaderView(
 				getLayoutInflater().inflate(R.layout.a_groups_edit_new, null));
-		mDba = new DbAdapter(this).open();
+		mDba = new DbAdapter(this);
 		fillGroupList();
 	}
 	
@@ -73,7 +85,8 @@ public class GroupsEdit extends ListActivity {
 		Log.d(TAG, "onMenuItemSelected");
     	switch(item.getItemId()) {
     		case R.id.new_group:
-    			showDialog(DIALOG_NEW_LIST);
+    			mGroupEditId = 0;
+    			showDialog(DIALOG_GROUP_NAME);
     			return true;
     		case R.id.done:
     			finish();
@@ -88,7 +101,8 @@ public class GroupsEdit extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		if (v.getId() == R.id.add_new_group) {
-			showDialog(DIALOG_NEW_LIST);
+			mGroupEditId = 0;
+			showDialog(DIALOG_GROUP_NAME);
 		} else {
 			((WhenDidI) getApplication()).setSelectedGroup(id);
 			finish();
@@ -112,45 +126,39 @@ public class GroupsEdit extends ListActivity {
 			finish();
 			break;
 		case R.id.edit:
-			Dialog d = new GroupDialog(groupId);
-			d.setOwnerActivity(this);
-			d.show();
-			return true;
+			mGroupEditId = groupId;
+			showDialog(DIALOG_GROUP_NAME);
+			break;
 		case R.id.delete:
-			showDeleteDialog(groupId);
-			return true;
+			mGroupDeleteId = groupId;
+			showDialog(DIALOG_GROUP_DELETE);
+			break;
 		}
 		return super.onContextItemSelected(item);
-	}
-
-	private void showDeleteDialog(final long listId) {
-		Log.d(TAG, "showDeleteDialog");
-		Dialog d = new AlertDialog.Builder(this)
-		// TODO: customize message with list title
-		.setTitle(R.string.ge_dialog_delete_title)
-		.setMessage(R.string.ge_dialog_delete_msg)
-		.setNegativeButton(R.string.ge_dialog_cancel_button, null)
-		.setPositiveButton(R.string.ge_dialog_delete_button,
-			new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					Log.d(TAG, "DeleteDialog onClick " + listId);
-					mDba.deleteGroup(listId);
-					((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_DELETED);
-					GroupsEdit.this.requery();
-				}
-			})
-		.create();
-		d.setOwnerActivity(this); // why can't the builder do this?
-		d.show();
-
 	}
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
-		case DIALOG_NEW_LIST:
+		case DIALOG_GROUP_NAME:
 			return new GroupDialog();
+		case DIALOG_GROUP_DELETE:
+			return new AlertDialog.Builder(this)
+			// TODO: customize message with list title
+			.setTitle(R.string.ge_dialog_delete_title)
+			.setMessage(R.string.ge_dialog_delete_msg)
+			.setNegativeButton(R.string.ge_dialog_cancel_button, null)
+			.setPositiveButton(R.string.ge_dialog_delete_button,
+				new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Log.d(TAG, "DeleteDialog onClick " + mGroupDeleteId);
+						mDba.deleteGroup(mGroupDeleteId);
+						((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_DELETED);
+						GroupsEdit.this.requery();
+					}
+				})
+			.create();
 		}
 		return null;
 	}
@@ -158,14 +166,9 @@ public class GroupsEdit extends ListActivity {
 
 	private class GroupDialog extends RequiredFieldDialog {
 
-		private long mGroupId = 0;
 		
 		public GroupDialog() {
 			super(GroupsEdit.this, android.R.style.Theme_Dialog);
-		}
-		public GroupDialog(long groupId) {
-			this();
-			mGroupId = groupId;
 		}
 
 		@Override
@@ -173,27 +176,39 @@ public class GroupsEdit extends ListActivity {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.d_group_edit);
 			this.setOwnerActivity(GroupsEdit.this);
-			if(mGroupId > 0) {
-				Cursor c = mDba.fetchGroup(mGroupId);
+		}
+		
+		@Override
+		protected void onStart() {
+			if(mGroupEditId > 0) {
+				Cursor c = mDba.fetchGroup(mGroupEditId);
 				c.moveToFirst();
 				mEditor.setText(c.getString(c.getColumnIndex(C.db_GROUP_NAME)));
 				c.close();
-				this.setTitle(R.string.ged_edit_title);
+				setTitle(R.string.ged_edit_title);
+				setOkText(R.string.ged_ok_update);
 			} else {
-				this.setTitle(R.string.ged_new_title);
+				setTitle(R.string.ged_new_title);
+				setOkText(R.string.ged_ok_create);
 			}
+			super.onStart();
+		}
+		
+		private void setOkText(int textResId) {
+			Button ok = (Button) findViewById(R.id.ok);
+			ok.setText(textResId);
 		}
 
 		@Override
 		protected void onClickOk() {
 			String title = mEditor.getText().toString();
-			if(mGroupId <= 0) {
+			if(mGroupEditId <= 0) {
 				Log.d(TAG,"creating new item");
 				mDba.createGroup(title);
 				((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_CREATED);
 			} else {
-				Log.d(TAG,"editing item " + mGroupId);
-				mDba.updateGroup(mGroupId, title);
+				Log.d(TAG,"editing item " + mGroupEditId);
+				mDba.updateGroup(mGroupEditId, title);
 				((WhenDidI) getApplication()).showToast(C.TOAST_GROUP_UPDATED);
 			}
 			// update parent's view

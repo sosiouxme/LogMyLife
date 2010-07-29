@@ -12,7 +12,9 @@
       _id INTEGER PRIMARY KEY,
       group_id INTEGER NOT NULL,
       name TEXT NOT NULL,
-      body TEXT
+      body TEXT,
+      last_log_id INTEGER,
+      flag_skip_next_alarm BOOLEAN DEFAULT 0
     );
   </string>
   <string name="db_create_logs">
@@ -20,7 +22,24 @@
       _id INTEGER PRIMARY KEY,
       tracker_id INTEGER NOT NULL,
       log_time DATETIME NOT NULL,
-      body TEXT
+      body TEXT,
+      value NUMERIC,
+      is_break BOOLEAN default 0
+    );
+  </string>
+  <string name="db_create_alarms">
+    create table Alarms (
+      _id INTEGER PRIMARY KEY,
+      tracker_id INTEGER NOT NULL,
+      interval_months INTEGER DEFAULT 0,
+      interval_weeks INTEGER DEFAULT 0,
+      interval_days INTEGER DEFAULT 0,
+      interval_hours INTEGER DEFAULT 0,
+      interval_minutes INTEGER DEFAULT 0,
+      interval_seconds INTEGER DEFAULT 0,
+      next_time INTEGER DEFAULT 0,
+      ringtone TEXT,
+      is_enabled BOOLEAN DEFAULT 1
     );
   </string>
   <string name="db_create_valuetypes">
@@ -30,33 +49,7 @@
       type TEXT NOT NULL
     );
   </string>
-  <string name="db_create_alarms">
-    create table Alarms (
-      _id INTEGER PRIMARY KEY,
-      tracker_id INTEGER NOT NULL,
-      interval_type TEXT NOT NULL,
-      interval_length INTEGER NOT NULL,
-      ringtone TEXT
-    );
-  </string>
   
-  <string name="db_alter_trackers_1">
-    alter table Trackers add column last_log_id INTEGER ;
-  </string>
-  <string name="db_alter_trackers_2">
-    alter table Trackers add column value_type INTEGER ;
-  </string>
-  <string name="db_alter_logs_1">
-    alter table TrackerLogs add column value_type INTEGER;
-  </string>
-  <string name="db_alter_logs_2">
-    alter table TrackerLogs add column value NUMERIC;
-  </string>
-  <string name="db_alter_logs_3">
-    alter table TrackerLogs add column is_break BOOLEAN default 0;
-  </string>
-  <string name="db_alter_">
-  </string>
   <string name="db_select_trackers">
     select  t._id, name, log_time, tl.body
     from Trackers t LEFT JOIN TrackerLogs tl
@@ -70,8 +63,6 @@
     where group_id = ?
     and t.name like ?
   </string>
-  <string name="db_update_">
-  </string>
   <string name="db_update_tracker_last_log">
       update Trackers
       set last_log_id = (
@@ -82,17 +73,6 @@
                       limit 1
                       )
               where _id = ?
-      ;
-  </string>
-  <string name="db_update_all_trackers_last_log">
-      update Trackers
-      set last_log_id = (
-                      select _id
-                      from TrackerLogs
-                      where tracker_id = Trackers._id
-                      order by log_time desc, _id
-                      limit 1
-                      )
       ;
   </string>
   <string name="db_create_tracker_group_id_idx">

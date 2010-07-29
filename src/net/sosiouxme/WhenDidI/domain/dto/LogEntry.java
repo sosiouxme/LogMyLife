@@ -1,4 +1,4 @@
-package net.sosiouxme.WhenDidI.model.dto;
+package net.sosiouxme.WhenDidI.domain.dto;
 
 import java.util.Date;
 
@@ -47,32 +47,34 @@ public class LogEntry extends AbstractDTO {
 
 	public void setBody(String body) {
 		this.body = body;
-		changed.add(C.db_LOG_BODY);
+		changed.put(C.db_LOG_BODY,body);
 	}
 
 	public void setLogDate(Date logDate) {
 		this.logDate = logDate;
-		changed.add(C.db_LOG_TIME);
+		changed.put(C.db_LOG_TIME, logDate == 
+									null ? null 
+									: C.dbDateFormat.format(logDate));
 	}
 
 	public void setTrackerId(long trackerId) {
 		this.trackerId = trackerId;
-		changed.add(C.db_LOG_TRACKER);
+		changed.put(C.db_LOG_TRACKER, trackerId);
 	}
 
 	public void setValueType(long valueType) {
 		this.valueType = valueType;
-		changed.add(C.db_LOG_VALUE_TYPE);
+		changed.put(C.db_LOG_VALUE_TYPE, valueType);
 	}
 
 	public void setValue(Object value) {
 		this.value = value;
-		changed.add(C.db_LOG_VALUE);
+		changed.put(C.db_LOG_VALUE, value == null ? null : value.toString()); //TODO
 	}
 
 	public void setBreak(boolean isBreak) {
 		this.isBreak = isBreak;
-		changed.add(C.db_LOG_IS_BREAK);
+		changed.put(C.db_LOG_IS_BREAK, isBreak);
 	}
 
 	public void copyFrom(LogEntry le) {

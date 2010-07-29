@@ -1,15 +1,18 @@
 /**
  * 
  */
-package net.sosiouxme.WhenDidI;
+package net.sosiouxme.WhenDidI.domain;
 
 //import java.sql.Date;
 
 import java.text.ParseException;
 import java.util.Date;
 
-import net.sosiouxme.WhenDidI.model.dto.LogEntry;
-import net.sosiouxme.WhenDidI.model.dto.Tracker;
+import net.sosiouxme.WhenDidI.C;
+import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.domain.dto.Alarm;
+import net.sosiouxme.WhenDidI.domain.dto.LogEntry;
+import net.sosiouxme.WhenDidI.domain.dto.Tracker;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
@@ -20,53 +23,79 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * 
- *         DB Adapter for the app
- * 
+  
+  DB Adapter for the application; where all the low-level interaction with the DB
+  occurs, including creation/upgrade of the DB and storage of domain objects.
+
+  @author Luke Meyer, Copyright 2010
+  See LICENSE file for this file's GPLv3 distribution license.
+  
  */
 
 public class DbAdapter implements C {
 
-	private static final String DATABASE_NAME = "whendidi.db";
-	private static final int DATABASE_VERSION = 2;
+	/**	 name of the file used for the sqlite DB */
+	private static final String DATABASE_NAME = "WhenDidI.db";
+	/** version of the DB (to determine if migration is needed) */
+	private static final int DATABASE_VERSION = 1;
+	/** Logging tag for this class */
     private static final String TAG = "WDI.DBAdapter";
 
-	private DbAdmin mDbHelper;
+    /** Helper that handles creating/migrating/opening the DB */
+    private DbAdmin mDbHelper;
+    /** Actual database handle */
     private SQLiteDatabase mDb;
-    private final Context mCtx;
+    /** String resources from the application context */ 
 	private Resources resources;
 
-
+	/**
+	 * Creates the database adapter that mediates all DB access
+	 * 
+	 * @param ctx The application context in which this adapter is created
+	 */
     public DbAdapter(Context ctx) {
-        mCtx = ctx;
         resources = ctx.getResources();
+        open(ctx);
 	}
     
     /**
-     * Open a database handle, creating if needed. If it cannot be created, throw exception.
+     * Opens a database handle, creating if needed. If it cannot be created, throw exception.
+     * @param ctx 
      * 
      * @return this
      * @throws SQLException if the database could be neither opened or created
      */
     
-    public DbAdapter open() throws SQLException {
-        mDbHelper = new DbAdmin(mCtx);
+    public DbAdapter open(Context ctx) throws SQLException {
+    	if(mDbHelper != null) return this;
+        mDbHelper = new DbAdmin(ctx);
         mDb = mDbHelper.getWritableDatabase();
         return this;
     }
     
+    /**
+     * Close any open database handles.
+     */
     public void close() {
+    	if(mDbHelper == null) return;
         mDbHelper.close();
+        mDb = null;
+        mDbHelper = null;
     }
     
-    // Return a string defined in resource file
+    /**
+     *  Return a string defined in resource file
+     * @param id The R.id for the string
+     * @return The corresponding string requested
+     */
 	private String str(int id) {
 		return (String) resources.getText(id);
 	}
     
-    /**
+    /*
+     * *********************************************************************
      * 
-     * Handle list table
+     * Handle group table
      * 
      */
     
@@ -116,14 +145,17 @@ public class DbAdapter implements C {
     public boolean deleteGroup(long groupId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting group " + groupId);
-        deleteGroupLogs(groupId);
+       	mDb.delete(db_LOG_TABLE, 
+    			"tracker_id in (select _id from Trackers where group_id = ?)",
+    			new String[] { Long.toString(groupId)});
         mDb.delete(db_TRACKER_TABLE, db_TRACKER_GROUP + "=" + groupId, null);
         return mDb.delete(db_GROUP_TABLE, db_ID + "=" + groupId, null) > 0;
     }
 
     
-    /**
-     * Handle item table
+    /*
+     * ******************************************************************************8
+     * Handle Trackers table
      */
 
 	public long createTracker(long groupId, String name, String body) {
@@ -133,7 +165,7 @@ public class DbAdapter implements C {
         initialValues.put(db_TRACKER_GROUP, groupId);
         initialValues.put(db_TRACKER_NAME, name);
         initialValues.put(db_TRACKER_BODY, body);
-        initialValues.put(db_TRACKER_VALUE_TYPE, 0);
+        initialValues.put(db_TRACKER_SKIP_NEXT_ALARM, 0);
         return mDb.insert(db_TRACKER_TABLE, null, initialValues);
     }
 
@@ -144,7 +176,8 @@ public class DbAdapter implements C {
 		Cursor mCursor = mDb.query(
 				db_TRACKER_TABLE, 
 				new String[] { db_ID, db_TRACKER_NAME, db_TRACKER_BODY,
-						db_TRACKER_GROUP, db_TRACKER_LAST_LOG_ID, db_TRACKER_VALUE_TYPE },
+						db_TRACKER_SKIP_NEXT_ALARM, db_TRACKER_GROUP,
+						db_TRACKER_LAST_LOG_ID },
 				db_ID + "=" + trackerId,
 				null, null,	null, null);
         if (mCursor != null) {
@@ -169,7 +202,8 @@ public class DbAdapter implements C {
 			t.body = c.getString(c.getColumnIndex(C.db_TRACKER_BODY));
 			t.groupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
 			t.lastLogId = c.getLong(c.getColumnIndex(C.db_TRACKER_LAST_LOG_ID));
-			t.valueType = c.getLong(c.getColumnIndex(C.db_TRACKER_VALUE_TYPE));
+			t.skipNextAlarm = c.getInt(c.getColumnIndex(C.db_TRACKER_SKIP_NEXT_ALARM)) > 0;
+
 			if(t.lastLogId > 0)
 				t.lastLog = fetchLog(t.lastLogId);
 		} finally {
@@ -181,7 +215,7 @@ public class DbAdapter implements C {
 	}
 
 	public Cursor fetchTrackers(long groupId, String filter) {
-        // @return Cursor over all items in a list
+        // @return Cursor over all trackers in a group
 		Log.d(TAG, "fetching trackers for group " + groupId);
 		if(filter == null)
 			return mDb.rawQuery(str(R.string.db_select_trackers),
@@ -192,21 +226,11 @@ public class DbAdapter implements C {
 	}
 
 	public void updateTracker(Tracker tracker) {
-		ContentValues args = new ContentValues();
-		for(String field : tracker.getChanged()) {
-			if(field == db_TRACKER_NAME)
-				args.put(field, tracker.name);
-			if(field == db_TRACKER_BODY)
-				args.put(field, tracker.body);
-			if(field == db_TRACKER_GROUP) 
-				args.put(field, tracker.groupId);
-			if(field == db_TRACKER_VALUE_TYPE) 
-				args.put(field, tracker.valueType);
-			if(field == db_TRACKER_LAST_LOG_ID) 
-				throw new RuntimeException("Tracker LastLog should never be explicitly updated");
+		ContentValues args = tracker.getChanged();
+		if(args.size() > 0) {
+			mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + tracker.id, null);
+			tracker.clearChanged();
 		}
-        mDb.update(db_TRACKER_TABLE, args, db_ID + "=" + tracker.id, null);
-        tracker.clearChanged();
 	}
 	
     public void requeryTracker(Tracker t) {
@@ -227,14 +251,16 @@ public class DbAdapter implements C {
     public boolean deleteTracker(long trackerId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting tracker " + trackerId);
-        deleteTrackerLogs(trackerId);
+    	mDb.delete(db_LOG_TABLE, db_LOG_TRACKER + " = " + trackerId, null);
         return mDb.delete(db_TRACKER_TABLE, db_ID + "=" + trackerId, null) > 0;
     }
 
     
-    /**
-     * Handle log table
+    /*
+     * ******************************************************************************
+     * Handle TrackerLogs table
      */
+    
     public Date createLog(long trackerId, Date time, String body) {
         // @return rowId or -1 if failed
     	Log.d(TAG, "creating log for tracker " + trackerId);
@@ -259,7 +285,7 @@ public class DbAdapter implements C {
 		try {
 			c = mDb.query(true, db_LOG_TABLE,
             		new String[] {db_ID, db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY,
-					  db_LOG_VALUE, db_LOG_VALUE_TYPE, db_LOG_IS_BREAK},
+					  db_LOG_VALUE, /*db_LOG_VALUE_TYPE,*/ db_LOG_IS_BREAK},
 					db_ID + "=" + logId, null,
 					null, null, null, null);
 			if (c.getCount() != 1)
@@ -272,7 +298,7 @@ public class DbAdapter implements C {
 			if (date != null)
 				le.logDate = dbDateFormat.parse(date);
 			le.isBreak = c.getInt(c.getColumnIndex(C.db_LOG_IS_BREAK)) > 0;
-			le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
+			//le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
 			le.value = c.getString(c.getColumnIndex(C.db_LOG_VALUE));
 		} catch (ParseException e) {
 			throw new RuntimeException("fetchLog couldn't parse date for " + logId, e);
@@ -298,25 +324,12 @@ public class DbAdapter implements C {
     }
     
 	public void updateLog(LogEntry log) {
-		ContentValues args = new ContentValues();
-		for(String field : log.getChanged()) {
-			if(field == db_LOG_TRACKER) 
-				args.put(field, log.trackerId);
-			if(field == db_LOG_BODY) 
-				args.put(field, log.body);
-			if(field == db_LOG_TIME) 
-				args.put(db_LOG_TIME, (log.logDate == null) ? null : 
-						dbDateFormat.format(log.logDate));
-			if(field == db_LOG_IS_BREAK) 
-				args.put(field, log.isBreak);
-			if(field == db_LOG_VALUE_TYPE) 
-				args.put(field, log.valueType);
-			if(field == db_LOG_VALUE) 
-				args.put(field, log.value == null ? null : log.value.toString());
+		ContentValues args = log.getChanged();
+		if(args.size() > 0) {
+	        mDb.update(db_LOG_TABLE, args, db_ID + "=" + log.id, null);
+	    	updateTrackerLastLog(log.trackerId);
+	        log.clearChanged();
 		}
-        mDb.update(db_LOG_TABLE, args, db_ID + "=" + log.id, null);
-    	updateTrackerLastLog(log.trackerId);
-        log.clearChanged();
 	}
     
     public boolean deleteLog(long logId, long trackerId) {
@@ -326,24 +339,134 @@ public class DbAdapter implements C {
     	updateTrackerLastLog(trackerId);
     	return status;
     }
+
+    /*
+     * ******************************************************************************
+     * Handle Alarms table
+     */
     
-    public boolean deleteTrackerLogs(long trackerId) {
-    	Log.d(TAG, "deleting logs for item " + trackerId);
-    	boolean status = mDb.delete(db_LOG_TABLE, db_LOG_TRACKER + " = " + trackerId, null) > 0;
-    	updateTrackerLastLog(trackerId);
-    	return status;
-    }
-    
-    private static final String WHERE_GROUP_LOGS =
-    	db_LOG_TRACKER + " in (select " + db_ID + " from " + db_TRACKER_TABLE 
-    	+ " where " + db_TRACKER_GROUP + " = ?)";
-    public boolean deleteGroupLogs(long groupId) {
-    	Log.d(TAG, "deleting logs for group " + groupId);
-    	return mDb.delete(db_LOG_TABLE, WHERE_GROUP_LOGS,
-    			new String[] { Long.toString(groupId)}) > 0;
+	    /**
+	     * Create a DB alarm entry from an Alarm DTO
+	     * 
+	     * @param newAlarm the DTO to create in the DB
+	     * @return rowId of the alarm created
+	     */
+    public long createAlarm(Alarm newAlarm) {
+    	Log.d(TAG, "creating Alarm for tracker " + newAlarm.trackerId);
+       	return mDb.insert(db_LOG_TABLE, null, newAlarm.getChanged());
     }
 
+	    /** All columns from the Alarms table (for queries) */
+	private static final String[] ALARM_COLUMNS = new String[] { 
+			db_ID, db_ALARM_TRACKER,
+			db_ALARM_INTERVAL_MONTHS, db_ALARM_INTERVAL_WEEKS, 
+			db_ALARM_INTERVAL_DAYS, db_ALARM_INTERVAL_HOURS, 
+			db_ALARM_INTERVAL_MINUTES, db_ALARM_INTERVAL_SECONDS, 
+			db_ALARM_NEXT_TIME, db_ALARM_ENABLED, 
+			db_ALARM_RINGTONE };
+		
+		/**
+		 * Fetches an Alarm DTO from the DB with the given rowId
+		 * 
+		 * @param alarmId The rowId of the alarm
+		 * @return The corresponding Alarm object, or null if not found
+		 */
+	public Alarm fetchAlarm(long alarmId) {
+		Cursor c = null;
+		Alarm alarm = null;
+		try {
+			c = mDb.query(true, db_LOG_TABLE,
+            		ALARM_COLUMNS,
+					db_ID + "=" + alarmId, null,
+					null, null, null, null);
+			if (c.getCount() != 1)
+				return null;
+            c.moveToFirst();
+            alarm = getAlarmFromCursor(c);
+		} finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		return alarm;
+	}
+	
+		/**
+		 * Turns a single cursor row from the DB into an Alarm object
+		 * @param c The cursor
+		 * @return The filled out Alarm oject
+		 */
+	private Alarm getAlarmFromCursor(Cursor c) {
+		Alarm a = new Alarm(c.getLong(0));
+		a.trackerId = c.getLong(c.getColumnIndex(C.db_ALARM_TRACKER));
+		a.isEnabled = c.getInt(c.getColumnIndex(C.db_ALARM_ENABLED)) > 0;
+		a.ivalMonths = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_MONTHS));
+		a.ivalWeeks = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_WEEKS));
+		a.ivalDays = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_DAYS));
+		a.ivalHours = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_HOURS));
+		a.ivalMinutes = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_MINUTES));
+		a.ivalSeconds = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_SECONDS));
+		a.nextTime = new Date(c.getLong(c.getColumnIndex(C.db_ALARM_NEXT_TIME)));
+		a.ringtone = c.getString(c.getColumnIndex(C.db_ALARM_RINGTONE));
+		return a;
+	}
+	
+		/**
+		 * Fetches an Alarm cursor of all alarms for a tracker 
+		 * @param trackerId The rowId of the tracker
+		 * @return Cursor of all the tracker's alarms
+		 */
+    public Cursor fetchAlarmsCursor(long trackerId) {
+    	Log.d(TAG, "fetching alarms for tracker " + trackerId);
+        Cursor c = mDb.query(true, db_ALARM_TABLE,
+				ALARM_COLUMNS,
+				db_LOG_TRACKER + "=" + trackerId, null,
+		        null, null, db_ID, null);
+        if (c != null)
+            c.moveToFirst();
+        return c;
 
+    }
+    
+    	/**
+    	 * Updates an alarm in the DB according to changes in the DTO (if any)
+    	 * 
+    	 * @param alarm The Alarm DTO of the alarm to be updated
+    	 */
+	public void updateAlarm(Alarm alarm) {
+		ContentValues args = alarm.getChanged();
+		if(args.size() > 0) {
+	        mDb.update(db_ALARM_TABLE, args, db_ID + "=" + alarm.id, null);
+	        alarm.clearChanged();
+		}
+	}
+    
+		/**
+		 * Deletes an alarm from the DB
+		 * 
+		 * @param alarmId The rowId of the alarm to delete
+		 */
+	public void deleteAlarm(long alarmId) {
+    	Log.d(TAG, "deleting alarm " + alarmId);
+        mDb.delete(db_ALARM_TABLE, db_ID + "=" + alarmId, null);
+    }
+    
+		/**
+		 * Fetches the Alarm from the DB that is enabled and has the soonest
+		 * scheduled time to go off (even if it may be skipped once reached).
+		 *   
+		 * @return The Alarm DTO, or none if none are scheduled
+		 */
+    public Alarm fetchNextAlarm() {
+		return null;
+	}
+
+	/*
+	 * **************************************************************
+     * 
+	 * Helper classes
+     */
+    
     public class EntryMissingException extends RuntimeException {
     	// This "should not happen"
 		private static final long serialVersionUID = 1L;
@@ -382,35 +505,22 @@ public class DbAdapter implements C {
 
 					db.execSQL(str(R.string.db_create_logs));
 					Log.i(TAG, "Created table " + db_LOG_TABLE);
-				}
-				if (oldVersion < 2) {
-					// migrate v.1 to v.2
-					db.execSQL(str(R.string.db_create_valuetypes));
-					ContentValues firstRow = new ContentValues();
-					firstRow.put(db_VALUE_NAME, str(R.string.db_first_value_name));
-					firstRow.put(db_VALUE_TYPE, str(R.string.db_first_value_type));
-					db.insertOrThrow(db_VALUE_TABLE, null, firstRow);
-					Log.i(TAG, "Created table " + db_VALUE_TABLE);
-
+			
 					db.execSQL(str(R.string.db_create_alarms));
 					Log.i(TAG, "Created table " + db_ALARM_TABLE);
-
-					db.execSQL(str(R.string.db_alter_trackers_1));
-					db.execSQL(str(R.string.db_alter_trackers_2));
-					Log.i(TAG, "Altered table " + db_TRACKER_TABLE);
-
-					db.execSQL(str(R.string.db_alter_logs_1));
-					db.execSQL(str(R.string.db_alter_logs_2));
-					db.execSQL(str(R.string.db_alter_logs_3));
-					Log.i(TAG, "Altered table " + db_LOG_TABLE);
 					
 					db.execSQL(str(R.string.db_create_tracker_group_id_idx));
 					db.execSQL(str(R.string.db_create_log_tracker_time_idx));
 					db.execSQL(str(R.string.db_create_alarm_tracker_id_idx));
 					Log.i(TAG, "Created indexes");
 
-					db.execSQL(str(R.string.db_update_all_trackers_last_log));
-					Log.i(TAG, "Updated last log ids");
+/*					db.execSQL(str(R.string.db_create_valuetypes));
+					ContentValues firstRow = new ContentValues();
+					firstRow.put(db_VALUE_NAME, str(R.string.db_first_value_name));
+					firstRow.put(db_VALUE_TYPE, str(R.string.db_first_value_type));
+					db.insertOrThrow(db_VALUE_TABLE, null, firstRow);
+					Log.i(TAG, "Created table " + db_VALUE_TABLE);
+*/
 				}
 
 			} catch (SQLException e) {

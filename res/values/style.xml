@@ -57,7 +57,7 @@
       <item name="android:layout_height">wrap_content</item>
       <item name="android:layout_width">fill_parent</item>
       <item name="android:lines">1</item>
-      <item name="android:inputType">textCapSentences|textAutoCorrect|textAutoComplete</item>
+      <item name="android:inputType">textShortMessage|textCapSentences|textAutoCorrect|textAutoComplete</item>
     </style>
     <style name="BodyEditor" parent="@android:style/Widget.EditText">
       <item name="android:layout_height">wrap_content</item>
