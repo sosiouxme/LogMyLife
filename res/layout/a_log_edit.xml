@@ -31,11 +31,23 @@
       <TextView
         style="@style/Label"
         android:text="Date: " />
+        <TextView
+        android:id="@+id/dateDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="date goes here"        
+        />
       <DatePicker
         android:id="@+id/log_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:startYear="2009" />
+        <Button
+          android:id="@+id/editDate"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Edit"
+          />
     </LinearLayout>
     <LinearLayout
       style="@style/horizontalLL"

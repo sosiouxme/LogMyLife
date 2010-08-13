@@ -6,7 +6,9 @@ package net.sosiouxme.WhenDidI.domain;
 //import java.sql.Date;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.R;
@@ -391,6 +393,23 @@ public class DbAdapter implements C {
 		return alarm;
 	}
 	
+    public List<Alarm> fetchAlarmList(long trackerId) {
+        // @return ArrayList of matching alarms, if found
+    	// WARN: this has never been tested
+    	Log.d(TAG, "fetching alarms for tracker " + trackerId);
+        List<Alarm> alarms = new ArrayList<Alarm>();
+        Cursor c = fetchAlarmsCursor(trackerId);
+        if (c != null) {
+	        c.moveToFirst();
+	        while(!c.isAfterLast()) {
+	        	alarms.add(getAlarmFromCursor(c));
+	        	c.moveToNext();
+	        }
+	        c.close();
+        }
+        return alarms;
+    }
+	
 		/**
 		 * Turns a single cursor row from the DB into an Alarm object
 		 * @param c The cursor
@@ -450,7 +469,17 @@ public class DbAdapter implements C {
     	Log.d(TAG, "deleting alarm " + alarmId);
         mDb.delete(db_ALARM_TABLE, db_ID + "=" + alarmId, null);
     }
-    
+
+	/**
+	 * Deletes an alarm from the DB
+	 * 
+	 * @param trackerId The rowId of the tracker to delete alarms for
+	 */
+	public void deleteAlarms(long trackerId) {
+		Log.d(TAG, "deleting alarms for tracker " + trackerId);
+	    mDb.delete(db_ALARM_TABLE, db_ALARM_TRACKER + "=" + trackerId, null);
+	}
+
 		/**
 		 * Fetches the Alarm from the DB that is enabled and has the soonest
 		 * scheduled time to go off (even if it may be skipped once reached).

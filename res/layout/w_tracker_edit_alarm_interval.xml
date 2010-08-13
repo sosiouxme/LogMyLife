@@ -7,21 +7,23 @@
 >
   <EditText
     android:id="@+id/alarmInterval"
-    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:inputType="number"
-    android:maxLength="5" />
+    android:maxLength="5"
+    android:layout_weight="1"
+    android:layout_width="wrap_content" />
   <Spinner
     android:entries="@array/alarmIntervals"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_weight="1"
     android:id="@+id/alarmIntervalType" />
-  <ImageButton
+  <Button
   	android:id="@+id/alarmFieldAddButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="+" />
-  <ImageButton
+  <Button
   	android:id="@+id/alarmFieldDropButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

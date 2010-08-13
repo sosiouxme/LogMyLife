@@ -6,6 +6,7 @@ import java.util.List;
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
+import net.sosiouxme.WhenDidI.custom.AlarmWidget;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequireTextFor;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
@@ -18,9 +19,11 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -48,18 +51,13 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 	private GroupSpinner mSpinner;
 	/** current group for this tracker (shown in spinner) */
 	private long mCurrentGroupId = 0;
-	/** Ordered list of alarms attached to this Tracker */
-	//private List<Alarm> alarms = new ArrayList<Alarm>();	
-	/** Map of alarms attached to this Tracker and their views */
-	//private Map<View,Alarm> alarmViews = new HashMap<View,Alarm>();
 	/** set if changes made; back button will save any changes by default */
-	private boolean saveOnFinish = true;
-	private LinearLayout alarmContainer;
-	private List<Alarm> alarmList = new ArrayList<Alarm>();
+	private boolean mSaveOnFinish = true;
 
-		/**
-		 * {@inheritDoc}
-		 */
+	private AlarmWidget mAlarmWidget;
+
+/* *********************** lifecycle methods ************************ */	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,19 +84,11 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		// locate and fill the necessary elements of the layout
 		metName = (EditText) findViewById(R.id.name);
 		metBody = (EditText) findViewById(R.id.body);
-		alarmContainer = (LinearLayout) findViewById(R.id.alarmContainer);
 
 		if(mTracker != null) {			
 			// set the data in the views
 			metName.setText(mTracker.name);
 			metBody.setText(mTracker.body);
-			// get the alarms to populate alarmList
-		}
-		
-		for(Alarm alarm : alarmList) {
-			View alarmView = getLayoutInflater().inflate(R.layout.w_tracker_edit_alarm, null);
-			alarmView.setTag(alarm);
-			alarmContainer.addView(alarmView);
 		}
 		
 		// wire up the buttons
@@ -108,7 +98,13 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		metName.addTextChangedListener(new RequireTextFor(okButton, metName));
 		okButton.setOnClickListener(this);
 		
+		createAlarmWidget(savedInstanceState);
 		fillGroupSpinner();
+	}
+
+	private void createAlarmWidget(Bundle savedInstanceState) {
+		LinearLayout alarmContainer = (LinearLayout) findViewById(R.id.alarmContainer);
+		mAlarmWidget = new AlarmWidget(this, mDba, alarmContainer, mTracker, savedInstanceState);
 	}
 	
 	/* get the cursor with all lists and attach to the spinner */
@@ -119,6 +115,29 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		mSpinner.setOnGroupSelectedListener(this);
 		mCurrentGroupId = mSpinner.getSelectedItemId();
 	}
+	
+	@Override
+	public void onGroupSelected(long groupId) {
+		mCurrentGroupId = groupId;		
+	}
+
+	@Override
+	protected void onPause() {
+		if(isFinishing() && mSaveOnFinish ) {
+			// if we are finishing and need to save (e.g. back button), do so
+			saveTracker();
+		}
+		super.onPause();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		if(!isFinishing()) 
+			mAlarmWidget.saveState(outState);
+		super.onSaveInstanceState(outState);
+	}
+
+/* ************************ event handling ******************************* */	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -138,64 +157,63 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		switch (item.getItemId()) {
 		case R.id.save:
 			if(saveTracker()) {
-				saveOnFinish = false;
+				mSaveOnFinish = false;
 				finish();
 			}
 			break;
 		case R.id.cancel_new:
 		case R.id.cancel_existing:
-			saveOnFinish = false;
+			mSaveOnFinish = false;
 			finish();
 			break;
 		case R.id.delete:
 			deleteTracker();
 			break;
 		case R.id.new_alarm:
-			addNewAlarm();
+			mAlarmWidget.openNewAlarmDialog();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	private void addNewAlarm() {
-		View alarmEdit = getLayoutInflater().inflate(R.layout.w_tracker_edit_alarm, null);
-		alarmContainer.addView(alarmEdit, -1);
-		Alarm alarm = new Alarm(-1);
-		alarmList.add(alarm);
-		alarmEdit.setTag(alarm);
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		Log.d(TAG, "onCreateContextMenu");
+		super.onCreateContextMenu(menu, v, menuInfo);
+		mAlarmWidget.onCreateContextMenu(menu, v, menuInfo);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		mAlarmWidget.onContextItemSelected(item);
+		return super.onContextItemSelected(item);
 	}
 
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.ok:
 			if (saveTracker()) {
-				saveOnFinish = false;
+				mSaveOnFinish = false;
 				finish();
 			}
 			break;
 		case R.id.cancel:
-			saveOnFinish = false;
+			mSaveOnFinish = false;
 			finish();
 			break;
 		}
 	}
 	
-	@Override
-	protected void onPause() {
-		if(isFinishing() && saveOnFinish ) {
-			// if we are finishing and need to save (e.g. back button), do so
-			saveTracker();
-		}
-		super.onPause();
-	}
-
+/* **************************** worker methods ************************** */	
+	
 	private void deleteTracker() {
 		final long id = mTracker.id;
 		TrackerDeleteDialog.create(this, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				Log.d(TAG, "DeleteDialog onClick " + id);
 				mDba.deleteTracker(id);
-				saveOnFinish = false;
+				mSaveOnFinish = false;
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_DELETED);
 				finish();
 			}
@@ -205,32 +223,27 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 	// creates/updates the tracker UNLESS the name is empty
 	private boolean saveTracker() {
 		String name = metName.getText().toString();
+		long trackerId = -1;
 		if (name.length() > 0) {
 			if(mTracker == null) {
-				mDba.createTracker(mCurrentGroupId, name, metBody.getText().toString());
+				trackerId = mDba.createTracker(mCurrentGroupId, name, metBody.getText().toString());
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_CREATED);
 			} else {
+				trackerId = mTracker.getId();
 				mTracker.setName(name);
 				mTracker.setBody(metBody.getText().toString());
 				mTracker.setGroupId(mCurrentGroupId);
 				mDba.updateTracker(mTracker);
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_UPDATED);
 			}
-			return true;
+			mAlarmWidget.storeAlarms(trackerId);
 		}
-		return false;
+		return trackerId > -1;
 	}
 	
 	@Override
 	protected void onDestroy() {
 		mDba.close();
 		super.onDestroy();
-	}
-
-
-
-	@Override
-	public void onGroupSelected(long groupId) {
-		mCurrentGroupId = groupId;		
 	}
 }

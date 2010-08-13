@@ -40,6 +40,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private DbAdapter mDba = null;
 	private EditText metBody;
 	private DatePicker mdpDate;
+	private Button dateEditButton;
 	private TimePicker mtpTime;
 	private boolean saveOnFinish = true; // by default, back button will save
 	private NumberPicker mSecondPicker;
@@ -86,6 +87,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		metBody = (EditText) findViewById(R.id.body);
 		mdpDate = (DatePicker) findViewById(R.id.log_date);
 		mtpTime = (TimePicker) findViewById(R.id.log_time);
+		dateEditButton = (Button) findViewById(R.id.editDate);
         mSecondPicker = (NumberPicker) findViewById(R.id.log_time_seconds);
 		
 		tvName.setText(mTracker.name);

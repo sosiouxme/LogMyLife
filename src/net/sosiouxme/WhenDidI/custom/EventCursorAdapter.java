@@ -8,7 +8,6 @@ import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.Util;
 import android.content.Context;
 import android.database.Cursor;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -16,15 +15,10 @@ import android.widget.TextView;
 public class EventCursorAdapter extends SimpleCursorAdapter {
 
 	private static final String TAG = "WDI.EventCursorAdapter";
-	private final java.text.DateFormat mDateFormat;
-	private final java.text.DateFormat mTimeFormat;
-
 
 	public EventCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
-		mDateFormat = DateFormat.getDateFormat(context);
-		mTimeFormat = DateFormat.getTimeFormat(context);
 	}
 
 	@Override

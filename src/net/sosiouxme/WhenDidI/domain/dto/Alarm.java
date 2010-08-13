@@ -1,10 +1,28 @@
 package net.sosiouxme.WhenDidI.domain.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import net.sosiouxme.WhenDidI.C;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Alarm extends AbstractDTO {
+public class Alarm extends AbstractDTO implements Parcelable, Serializable {
+
+	// necessary to make this serializable
+	private static final long serialVersionUID = 1L;
+	// necessary to make this retrievable from a state bundle
+	public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<Alarm>() {
+
+		public Alarm createFromParcel(Parcel in) {
+			return (Alarm) in.readSerializable();
+		}
+
+		public Alarm[] newArray(int size) {
+			return new Alarm[size];
+		}
+		
+	};
 
 	public long trackerId = -1;
 	// Specify the interval for the alarm to go off after, one component at a time
@@ -123,6 +141,15 @@ public class Alarm extends AbstractDTO {
 		if(enabled == isEnabled) return;
 		isEnabled = enabled;
 		changed.put(C.db_ALARM_ENABLED,enabled);
+	}
+
+	// stuff to allow this to be parcelable, i.e. to save as part of state
+	public int describeContents() {
+		return 0;
+	}
+
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeSerializable(this);
 	}
 
 }

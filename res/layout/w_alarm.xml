@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/widget28"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+>
+  <TextView
+    android:id="@+id/units"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Days"
+    android:layout_alignBaseline="@+id/value"
+    android:layout_toRightOf="@+id/value"
+  >
+  </TextView>
+  <TextView
+    android:id="@+id/value"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="0"
+    android:layout_alignBaseline="@+id/enabled"
+    android:layout_toRightOf="@+id/enabled"
+  >
+  </TextView>
+  <CheckBox
+    android:id="@+id/enabled"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Enabled"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentLeft="true"
+  >
+  </CheckBox>
+</RelativeLayout>  <!--  want a ringtone indicator here -->
