@@ -1,29 +1,22 @@
 package net.sosiouxme.WhenDidI.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
-import net.sosiouxme.WhenDidI.custom.AlarmWidget;
+import net.sosiouxme.WhenDidI.custom.AlarmEditActivity;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequireTextFor;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
 import net.sosiouxme.WhenDidI.domain.DbAdapter;
-import net.sosiouxme.WhenDidI.domain.dto.Alarm;
 import net.sosiouxme.WhenDidI.domain.dto.Tracker;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -36,13 +29,9 @@ Activity that presents the UI to edit a single tracker.
 See LICENSE file for this file's GPLv3 distribution license.
 */
 
-public class TrackerEdit extends Activity implements android.view.View.OnClickListener, OnGroupSelectedListener {
+public class TrackerEdit extends AlarmEditActivity implements android.view.View.OnClickListener, OnGroupSelectedListener {
 
 	private static final String TAG = "WDI.TrackerEdit";
-	/** The tracker the activity is currently editing */
-	private Tracker mTracker = null;
-	/** database handle */
-	private DbAdapter mDba = null;
 	/** reference to the text edit field holding the tracker name */
 	private EditText metName;
 	/** reference to the text edit field holding the tracker body */
@@ -54,16 +43,11 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 	/** set if changes made; back button will save any changes by default */
 	private boolean mSaveOnFinish = true;
 
-	private AlarmWidget mAlarmWidget;
-
 /* *********************** lifecycle methods ************************ */	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// get a DB handle
-		mDba = new DbAdapter(this);
 
 		long trackerId = 0;
 		Bundle e = getIntent().getExtras();
@@ -98,13 +82,8 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		metName.addTextChangedListener(new RequireTextFor(okButton, metName));
 		okButton.setOnClickListener(this);
 		
-		createAlarmWidget(savedInstanceState);
+		initAlarmContainer();
 		fillGroupSpinner();
-	}
-
-	private void createAlarmWidget(Bundle savedInstanceState) {
-		LinearLayout alarmContainer = (LinearLayout) findViewById(R.id.alarmContainer);
-		mAlarmWidget = new AlarmWidget(this, mDba, alarmContainer, mTracker, savedInstanceState);
 	}
 	
 	/* get the cursor with all lists and attach to the spinner */
@@ -130,13 +109,7 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		super.onPause();
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		if(!isFinishing()) 
-			mAlarmWidget.saveState(outState);
-		super.onSaveInstanceState(outState);
-	}
-
+	
 /* ************************ event handling ******************************* */	
 	
 	@Override
@@ -169,26 +142,10 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 		case R.id.delete:
 			deleteTracker();
 			break;
-		case R.id.new_alarm:
-			mAlarmWidget.openNewAlarmDialog();
-			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 	
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		Log.d(TAG, "onCreateContextMenu");
-		super.onCreateContextMenu(menu, v, menuInfo);
-		mAlarmWidget.onCreateContextMenu(menu, v, menuInfo);
-	}
-	
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		mAlarmWidget.onContextItemSelected(item);
-		return super.onContextItemSelected(item);
-	}
 
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -236,7 +193,7 @@ public class TrackerEdit extends Activity implements android.view.View.OnClickLi
 				mDba.updateTracker(mTracker);
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_UPDATED);
 			}
-			mAlarmWidget.storeAlarms(trackerId);
+			storeAlarms(trackerId);
 		}
 		return trackerId > -1;
 	}

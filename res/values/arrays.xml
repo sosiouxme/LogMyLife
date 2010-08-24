@@ -11,11 +11,11 @@
 	<item name="trackerClickBehaviorDefault">view</item>
 </string-array>
 <string-array name="alarmIntervals">
-  <item>Month(s)</item>
-  <item>Week(s)</item>
-  <item name="alarmIntervalDay">Day(s)</item>
-  <item>Hour(s)</item>
-  <item>Minute(s)</item>
-  <item>Second(s)</item>
+  <item name="alarmIntervalMonths">Month(s)</item>
+  <item name="alarmIntervalWeeks">Week(s)</item>
+  <item name="alarmIntervalDays">Day(s)</item>
+  <item name="alarmIntervalHours">Hour(s)</item>
+  <item name="alarmIntervalMinutes">Minute(s)</item>
+  <item name="alarmIntervalSeconds">Second(s)</item>
 </string-array>
 </resources>

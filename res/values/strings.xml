@@ -42,4 +42,6 @@ and view log entries for them.
 </string>
 <string name="il_dialog_about_button">OK</string>
 
+<string name="ae_dialog_title">Alarm after last log entry</string>
+
 </resources>
