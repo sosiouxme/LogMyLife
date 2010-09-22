@@ -6,12 +6,11 @@ import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.Util;
 import net.sosiouxme.WhenDidI.WhenDidI;
+import net.sosiouxme.WhenDidI.custom.AlarmEditActivity;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
 import net.sosiouxme.WhenDidI.domain.DbAdapter;
-import net.sosiouxme.WhenDidI.domain.dto.Tracker;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -35,16 +34,13 @@ Activity for displaying the details of one tracker, including log entries
 See LICENSE file for this file's GPLv3 distribution license.
 */
 
-public class TrackerDetail extends ListActivity implements  android.view.View.OnClickListener {
+public class TrackerDetail extends AlarmEditActivity implements  android.view.View.OnClickListener {
 	// Logger tag
 	private static final String TAG = "WDI.TrackerDetail";
 
-	// the Item being handled
-	private Tracker mTracker = null;
-
 	private DbAdapter mDba;
-	TextView mName;
-	TextView mBody;
+	private TextView mName;
+	private TextView mBody;
 	
 
 
@@ -61,6 +57,7 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 		header.setFocusable(false);
 		header.setClickable(false);
 		getListView().addHeaderView(header, null, true);
+		getListView().setItemsCanFocus(true);
 
 		// locate the necessary elements of the layout
 		mName = (TextView) findViewById(R.id.name);
@@ -69,7 +66,9 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 		// set up the log buttons to do what i want
 		findViewById(R.id.quick_log).setOnClickListener(this);
 		findViewById(R.id.detailed_log).setOnClickListener(this);
-
+		
+		saveAlarmChangesImmediately = true;
+		initAlarmContainer();
 	}
 	
 	@Override
@@ -87,6 +86,7 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 				fillLogList();
 			else
 				requeryList();
+			populateAlarms();
 		}
 
 		super.onResume();		
@@ -160,22 +160,26 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getMenuInflater().inflate(R.menu.tracker_detail_context, menu);
+		if(menu.size() == 0) {
+			getMenuInflater().inflate(R.menu.tracker_detail_context, menu);
+		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		long rowId = info.id;
-		switch(item.getItemId()) {
-		case R.id.delete:
-			deleteLog(rowId);
-			break;
-		case R.id.edit:
-			editLogEntry(rowId);
-			break;
+		if(!super.onContextItemSelected(item)) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+			long rowId = info.id;
+			switch(item.getItemId()) {
+			case R.id.delete:
+				deleteLog(rowId);
+				break;
+			case R.id.edit:
+				editLogEntry(rowId);
+				break;
+			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	public void onClick(View v) {
@@ -186,6 +190,8 @@ public class TrackerDetail extends ListActivity implements  android.view.View.On
 		case R.id.detailed_log:
 			newLogEntry();
 			break;
+		default:
+			super.onClick(v);
 		}
 	}
 	/*

@@ -49,6 +49,8 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	private GroupSpinner mSpinner = null;
 	private long mCurrentGroupId = 0;
 	private EventCursorAdapter mAdapter;
+	// TODO: writing my own multithreading code was all well and good,
+	// but there's a better way: http://developer.android.com/resources/articles/timed-ui-updates.html
 	private final Handler mUiHandler = new Handler();
 	private Thread mUpdateThread;
 
@@ -96,7 +98,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		registerForContextMenu(getListView());
 	}
 
-	/* FilterQueryProvide interface - provide a cursor for filtered results */
+	/* FilterQueryProvider interface - provide a cursor for filtered results */
 	public Cursor runQuery(CharSequence constraint) {
 		Cursor cur = mDba.fetchTrackers(mCurrentGroupId, constraint.toString());
 		startManagingCursor(cur);

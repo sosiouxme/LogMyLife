@@ -8,8 +8,6 @@ import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequireTextFor;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
-import net.sosiouxme.WhenDidI.domain.DbAdapter;
-import net.sosiouxme.WhenDidI.domain.dto.Tracker;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -19,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 /**
@@ -83,6 +80,7 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 		okButton.setOnClickListener(this);
 		
 		initAlarmContainer();
+		populateAlarms();
 		fillGroupSpinner();
 	}
 	
@@ -159,6 +157,8 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 			mSaveOnFinish = false;
 			finish();
 			break;
+		default:
+			super.onClick(v);
 		}
 	}
 	

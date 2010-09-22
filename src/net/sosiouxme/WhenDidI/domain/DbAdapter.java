@@ -355,7 +355,7 @@ public class DbAdapter implements C {
 	     */
     public long createAlarm(Alarm newAlarm) {
     	Log.d(TAG, "creating Alarm for tracker " + newAlarm.trackerId);
-       	return mDb.insert(db_LOG_TABLE, null, newAlarm.getChanged());
+       	return mDb.insert(db_ALARM_TABLE, null, newAlarm.getChanged());
     }
 
 	    /** All columns from the Alarms table (for queries) */
@@ -377,7 +377,7 @@ public class DbAdapter implements C {
 		Cursor c = null;
 		Alarm alarm = null;
 		try {
-			c = mDb.query(true, db_LOG_TABLE,
+			c = mDb.query(true, db_ALARM_TABLE,
             		ALARM_COLUMNS,
 					db_ID + "=" + alarmId, null,
 					null, null, null, null);
@@ -439,7 +439,7 @@ public class DbAdapter implements C {
     	Log.d(TAG, "fetching alarms for tracker " + trackerId);
         Cursor c = mDb.query(true, db_ALARM_TABLE,
 				ALARM_COLUMNS,
-				db_LOG_TRACKER + "=" + trackerId, null,
+				db_ALARM_TRACKER + "=" + trackerId, null,
 		        null, null, db_ID, null);
         if (c != null)
             c.moveToFirst();

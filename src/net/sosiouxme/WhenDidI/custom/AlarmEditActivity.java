@@ -7,25 +7,24 @@ import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.domain.DbAdapter;
 import net.sosiouxme.WhenDidI.domain.dto.Alarm;
 import net.sosiouxme.WhenDidI.domain.dto.Tracker;
-import android.app.Activity;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /*
@@ -37,11 +36,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  * Essentially the children of this activity just have to provide a
  * LinearLayout alarmContainer and allow this parent to handle its events.
  */
-public class AlarmEditActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
+public class AlarmEditActivity extends ListActivity implements OnClickListener, OnCheckedChangeListener {
 
-	private static final String STATE_KEY = "alarmList";
 	private static final String TAG = "WDI.AlarmEditActivity";
-	private static final int ALARM_DIALOG = 0;
+	protected static final int ALARM_DIALOG = 0;
+	private static final String STATE_KEY_ALARMS = "mAlarmList";
+	private static final String STATE_KEY_DELETING = "mAlarmsToDeleteList";
 
 	
 	/** database handle */
@@ -49,10 +49,11 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 
 	private LinearLayout mAlarmContainer = null;
 	/** The tracker the activity is currently editing */
-	protected Tracker mTracker = new Tracker(-1);
+	protected Tracker mTracker = null;
 
 	/** Ordered list of alarms attached to this Tracker */
 	private List<Alarm> mAlarmList = null;
+	private List<Alarm> mAlarmsToDeleteList = new ArrayList<Alarm>();
 
 	/** for use in context-aware dialogs **/
 	private Alarm mAlarmToEdit = null;
@@ -70,13 +71,12 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 		// get a DB handle
 		mDba = new DbAdapter(this);
 
-		//TODO: this ain't workin'
 		mIntervalTextArray  = getResources().getTextArray(R.array.alarmIntervals);
 
 		// get the list of Alarms if we stopped in the middle of editing
 		restoreState(savedInstanceState);
 
-		// now child must set layout and call initAlarmContainer
+		// now child must set layout and call initAlarmContainer and populateAlarms
 	}
 
 
@@ -85,45 +85,53 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		if(!isFinishing()) 
-			outState.putParcelableArrayList(STATE_KEY, (ArrayList<Alarm>) mAlarmList);
+		Log.d(TAG, "onSaveInstanceState");
+		if(!isFinishing()) {
+			outState.putSerializable(STATE_KEY_ALARMS, (ArrayList<Alarm>) mAlarmList);
+			outState.putSerializable(STATE_KEY_DELETING, (ArrayList<Alarm>) mAlarmsToDeleteList);
+		}
 	}
 
 	/*
 	 * Get state of alarms during reconstitution
 	 */
+	@SuppressWarnings("unchecked")
 	public void restoreState(Bundle savedInstanceState) {
-		//mAlarmList = (ArrayList<Alarm>) savedInstanceState.getParcelableArrayList(STATE_KEY);
-		//having to do this instead is really asinine:
+		Log.d(TAG, "restoreState");
 		if(savedInstanceState == null) return;
-		ArrayList<Parcelable> dummy = savedInstanceState.getParcelableArrayList(STATE_KEY);
-		if(dummy != null) {
-			mAlarmList = new ArrayList<Alarm>();
-			for( Parcelable alarm : dummy){
-				mAlarmList.add((Alarm) alarm);
-			}
-		}
+		mAlarmList = (ArrayList<Alarm>) savedInstanceState.getSerializable(STATE_KEY_ALARMS);
+		mAlarmsToDeleteList = (ArrayList<Alarm>) savedInstanceState.getSerializable(STATE_KEY_DELETING);
 	}
 
 	protected void initAlarmContainer() {
+		Log.d(TAG, "initAlarmContainer");
 		mAlarmContainer = (LinearLayout) findViewById(R.id.alarmContainer);
-		initAlarms();
+		mAlarmList = new ArrayList<Alarm>();
+		Button addNew = (Button) findViewById(R.id.add_new_alarm);
+		if(addNew != null)
+			addNew.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					openNewAlarmDialog();
+				}
+			});
 	}
 	
 	/*
-	 * If not reconstituted, get the list of alarms for this tracker.
+	 * Get the list of alarms for the tracker if known.
 	 * Either way, redraw the widget.
 	 */
-	protected void initAlarms() {
-		if(mAlarmList == null)
-			mAlarmList = mDba.fetchAlarmList(mTracker.getId());
-		initAlarmViews();
+	protected void populateAlarms() {
+		Log.d(TAG, "populateAlarms");
+		if(mTracker != null)
+				mAlarmList = mDba.fetchAlarmList(mTracker.getId());
+		populateAlarmViews();
 	}
 	
 	/*
 	 * Set up views showing all the alarms we have in the beginning
 	 */
-	private void initAlarmViews() {
+	private void populateAlarmViews() {
+		Log.d(TAG, "populateAlarmViews");
 		mAlarmContainer.removeAllViews();
 		for(Alarm alarm : mAlarmList) {
 			mAlarmContainer.addView(createAlarmElement(alarm));
@@ -136,11 +144,21 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 * Create a view representing a single alarm
 	 */
 	private View createAlarmElement(Alarm alarm) {
+		Log.d(TAG, "createAlarmElement " + alarm.id);
 		View av = getLayoutInflater().inflate(R.layout.w_alarm, null);
 		av.setTag(alarm);
-		av.setClickable(true);
-		av.setOnClickListener(this);
-		registerForContextMenu(av);
+		
+		// each alarm has a checkbox for enable/disable -- attach listener
+		CompoundButton enabled = (CompoundButton) av.findViewById(R.id.enabled);
+		enabled.setOnClickListener(this);
+		enabled.setTag(alarm);
+
+		// each alarm also has a body that can be clicked for interaction
+		ViewGroup alarmBody = (ViewGroup) av.findViewById(R.id.alarmBody);
+		alarmBody.setClickable(true);
+		alarmBody.setOnClickListener(this);
+		alarmBody.setTag(alarm);
+		registerForContextMenu(alarmBody);
 		
 		updateAlarmView(av, alarm);
 		return av;
@@ -150,7 +168,8 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 * Update the alarmView according to the alarm's values
 	 */
 	private void updateAlarmView(View av, Alarm alarm) {
-		CheckBox enabled = (CheckBox) av.findViewById(R.id.enabled);
+		Log.d(TAG, "updateAlarmView " + alarm.id);
+		ToggleButton enabled = (ToggleButton) av.findViewById(R.id.enabled);
 		TextView value = (TextView) av.findViewById(R.id.value);
 		TextView units = (TextView) av.findViewById(R.id.units);
 		
@@ -165,24 +184,17 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 * Add a view representing a newly-created alarm 
 	 */
 	private void addNewAlarmView(Alarm alarm) {
+		Log.d(TAG, "addNewAlarmView");
 		mAlarmContainer.addView(createAlarmElement(alarm));
 	}
 
-	/*
-	 * Open dialog for user to create a new alarm
-	 */
-	public void openNewAlarmDialog() {
-		Alarm alarm = new Alarm(mTracker.getId());
-		alarm.setIvalWeeks(1);
-		mAlarmToEdit = alarm;
-		mViewOfAlarmToEdit = null;
-		showDialog(ALARM_DIALOG);
-	}
+	
 	
 	/* ***************************** event handling *************************** */
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG, "onOptionsItemSelected");
 		switch (item.getItemId()) {
 		case R.id.new_alarm:
 			openNewAlarmDialog();
@@ -191,22 +203,31 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 		return super.onOptionsItemSelected(item);
 	}
 
+
 	/*
 	 * User clicked on an alarm - open context menu to perform contextual action
 	 * Or on dialog button - do the right thing.
 	 */
 	public void onClick(View view) {
+		Alarm alarm;
 		switch (view.getId()) {
-		case R.id.alarmWidget:
-			Alarm alarm = (Alarm) view.getTag();
+		case R.id.alarmBody:
+			alarm = (Alarm) view.getTag();
 			if (alarm == null)
 				return;
 			mAlarmToEdit = alarm;
-			mViewOfAlarmToEdit = view;
-			openContextMenu(view);
+			mViewOfAlarmToEdit = (ViewGroup) view.getParent();
+			showDialog(ALARM_DIALOG);
+			break;
+		case R.id.enabled:
+			alarm = (Alarm) view.getTag();
+			if (alarm == null)
+				return;
+			CompoundButton enabled = (CompoundButton) view;
+			alarm.setIsEnabled(enabled.isChecked());
+			updateAlarm(alarm);
 			break;
 		}
-
 	}
 	
 
@@ -218,8 +239,12 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 			ContextMenuInfo menuInfo) {
 		Log.d(TAG, "onCreateContextMenu");
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if(v.getId() == R.id.alarmWidget) {
+		if(v.getId() == R.id.alarmBody) {
 			getMenuInflater().inflate(R.menu.alarm_widget_context, menu);
+			// evidently this is the only way to record which alarm the
+			// context menu is for: (!)
+			mViewOfAlarmToEdit = (View) v.getParent();
+			mAlarmToEdit = (Alarm) v.getTag();
 		}
 	}
 
@@ -228,35 +253,59 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		View alarmView = ((AdapterContextMenuInfo) item.getMenuInfo()).targetView;
-		if(alarmView.getId() == R.id.alarmWidget) {
-			mViewOfAlarmToEdit = alarmView;
-			mAlarmToEdit = (Alarm) alarmView.getTag();
-			switch(item.getItemId()) {
-			case R.id.edit:
-				showDialog(ALARM_DIALOG);
-				break;
-			case R.id.enable:
-				mAlarmToEdit.setIsEnabled(!mAlarmToEdit.isEnabled);
-				updateAlarmView(mAlarmContainer, mAlarmToEdit);
-				break;
-			case R.id.skip:
-				break;
-			case R.id.delete:
-				mAlarmList.remove(mAlarmToEdit);
-				mAlarmContainer.removeView(mViewOfAlarmToEdit);
-				break;
-			}
+		super.onContextItemSelected(item);
+		switch (item.getItemId()) {
+		case R.id.edit_alarm:
+			showDialog(ALARM_DIALOG);
+			return true;
+		case R.id.skip_alarm:
+			// TODO: change skip, not enablement
+			mAlarmToEdit.setIsEnabled(!mAlarmToEdit.isEnabled);
+			updateAlarmView(mViewOfAlarmToEdit, mAlarmToEdit);
+			updateAlarm(mAlarmToEdit);
+			return true;
+		case R.id.delete_alarm:
+			removeAlarm(mViewOfAlarmToEdit);
+			return true;
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
+	private void removeAlarm(View alarmWidget) {
+		Alarm a = (Alarm) alarmWidget.getTag();
+		mAlarmList.remove(a);
+		mAlarmContainer.removeView(alarmWidget);
+		mAlarmsToDeleteList.add(a);
+		if (saveAlarmChangesImmediately && !a.isNew()) {
+			mDba.deleteAlarm(a.getId());
+			updateAlarmSchedule();
+		} else
+			mAlarmsToDeleteList.add(a);
+	}
+	
+	/*
+	 * Open dialog for user to create a new alarm
+	 */
+
+	protected void openNewAlarmDialog() {
+		Log.d(TAG, "openNewAlarmDialog");
+
+		Alarm alarm = new Alarm(-1);
+		if(mTracker != null) 
+			alarm.setTrackerId(mTracker.getId());
+		alarm.setIvalWeeks(1);
+		mAlarmToEdit = alarm;
+		mViewOfAlarmToEdit = null;
+		showDialog(ALARM_DIALOG);
+	}
+	
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		super.onCreateDialog(id);
 		Dialog dialog = null;
 		switch(id) {
 		case ALARM_DIALOG:
-			dialog = new AlarmEditDialog(getApplicationContext());
+			dialog = new AlarmEditDialog(this);
 			dialog.setContentView(R.layout.d_edit_alarm);
 			break;
 		}
@@ -265,6 +314,7 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
+		Log.d(TAG, "onPrepareDialog");
 		super.onPrepareDialog(id, dialog);
 		switch(id) {
 		case ALARM_DIALOG:
@@ -273,6 +323,7 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 			Spinner units = (Spinner) dialog.findViewById(R.id.units);
 			
 			Alarm alarm = mAlarmToEdit;
+			Log.d(TAG, "editing alarm: " + alarm.id);
 			//enabled.setChecked(alarm.getIsEnabled());
 			//enabled.setOnCheckedChangeListener(this);
 			//enabled.setTag(alarm);
@@ -287,8 +338,10 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 * User changed enablement of the alarm
 	 */
 	public void onCheckedChanged(CompoundButton enabled, boolean checked) {
+		Log.d(TAG, "onCheckedChanged");
 		Alarm alarm = (Alarm) enabled.getTag();
 		if(alarm == null) return;
+		Log.d(TAG, "alarm enablement set: " + alarm.id + " " + checked);
 		alarm.setIsEnabled(checked);
 	}
 
@@ -300,9 +353,14 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 	 * with the tracker that's been stored
 	 */
 	public void storeAlarms(long trackerId){
+		Log.d(TAG, "storeAlarms for tracker " + trackerId);
 		// when building a tracker there won't initially be an ID;
 		// that's why it must be passed in to save the alarms with.
-		mDba.deleteAlarms(trackerId);
+
+		for(Alarm alarm : mAlarmsToDeleteList) {
+			if(!alarm.isNew()) // no need to delete those that weren't created
+				mDba.deleteAlarm(alarm.getId());
+		}
 		for(Alarm alarm : mAlarmList) {
 			if(alarm.isNew()) {
 				alarm.setTrackerId(trackerId);
@@ -318,12 +376,19 @@ public class AlarmEditActivity extends Activity implements OnClickListener, OnCh
 
 	private void processAlarmEdit() {
 		Alarm a = mAlarmToEdit;
+		Log.d(TAG, "processAlarmEdit " + a);
 		if(mViewOfAlarmToEdit == null) {
-			//completely new alarm, create view
+			//completely new alarm, add and create view
+			mAlarmList.add(a);
 			addNewAlarmView(a);
 		} else {
 			updateAlarmView(mViewOfAlarmToEdit, a);
 		}
+		updateAlarm(a);
+	}
+
+
+	private void updateAlarm(Alarm a) {
 		if(saveAlarmChangesImmediately) {
 			if(a.isNew()) {
 				// new alarm for this tracker

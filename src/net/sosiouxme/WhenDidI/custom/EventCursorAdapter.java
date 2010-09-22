@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 public class EventCursorAdapter extends SimpleCursorAdapter {
 
+	//TODO: look into implementing the Filterable interface
 	private static final String TAG = "WDI.EventCursorAdapter";
 
 	public EventCursorAdapter(Context context, int layout, Cursor c,

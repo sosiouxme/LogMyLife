@@ -1,35 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/alarmWidget"
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
+  android:layout_height="wrap_content"
+  android:id="@+id/alarmWidget"
 >
-  <TextView
-    android:id="@+id/units"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Days"
-    android:layout_alignBaseline="@+id/value"
-    android:layout_toRightOf="@+id/value"
-  >
-  </TextView>
-  <TextView
-    android:id="@+id/value"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="0"
-    android:layout_alignBaseline="@+id/enabled"
-    android:layout_toRightOf="@+id/enabled"
-  >
-  </TextView>
-  <CheckBox
+  <ToggleButton
     android:id="@+id/enabled"
     android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+  <!-- the alarmWidget is the target for click and context menu events.
+       it must be the direct child of the alarmWidget so that event handlers
+       can find the alarmWidget from it.
+   -->
+  <RelativeLayout
+    android:id="@+id/alarmBody"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:text="Enabled"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentLeft="true"
+    android:layout_weight="1"
+    android:focusable="true"
+    android:clickable="true"
   >
-  </CheckBox>
-</RelativeLayout>  <!--  want a ringtone indicator here -->
+
+    <TextView
+      android:id="@+id/interval_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Interval: "
+      android:layout_alignParentTop="true"
+      android:layout_alignParentLeft="true" />
+    <TextView
+      android:id="@+id/value"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="0"
+      android:layout_alignBaseline="@id/interval_label"
+      android:layout_toRightOf="@id/interval_label" />
+    <TextView
+      android:id="@+id/units"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Days"
+      android:layout_alignBaseline="@id/value"
+      android:layout_toRightOf="@id/value" />
+    <TextView
+      android:id="@+id/time_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Next: "
+      android:layout_below="@id/interval_label" />
+    <TextView
+      android:id="@+id/next_time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="(None)"
+      android:layout_alignBaseline="@id/time_label"
+      android:layout_toRightOf="@id/time_label" />
+    <TextView
+      android:id="@+id/skip_next"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Skip"
+      android:textColor="#ff0000"
+      android:visibility="invisible"
+      android:layout_alignBaseline="@id/next_time"
+      android:layout_toRightOf="@id/next_time" />
+  </RelativeLayout>
+</LinearLayout>
