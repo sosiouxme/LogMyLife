@@ -37,9 +37,10 @@
       interval_hours INTEGER DEFAULT 0,
       interval_minutes INTEGER DEFAULT 0,
       interval_seconds INTEGER DEFAULT 0,
-      next_time INTEGER DEFAULT 0,
       ringtone TEXT,
-      is_enabled BOOLEAN DEFAULT 1
+      is_enabled BOOLEAN DEFAULT 1,
+      skip_next BOOLEAN DEFAULT 0,
+      next_time DATETIME
     );
   </string>
   <string name="db_create_valuetypes">

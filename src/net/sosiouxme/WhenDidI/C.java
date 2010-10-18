@@ -47,6 +47,7 @@ public interface C {
 	public static final String db_ALARM_NEXT_TIME = "next_time";
 	public static final String db_ALARM_RINGTONE = "ringtone";
 	public static final String db_ALARM_ENABLED = "is_enabled";
+	public static final String db_ALARM_SKIP_NEXT = "skip_next";
 
 	public static final String db_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final DateFormat dbDateFormat = new SimpleDateFormat(db_DATE_FORMAT);

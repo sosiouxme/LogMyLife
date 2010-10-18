@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ringtone_dialog_title">Select Notification</string>
+    <string name="fooo">foo</string>
+    <string name="foo">foo</string>
+    <string name="empty_ringtone">(Silent)</string>
+    <string name="empty_time">(none)</string>
     <string name="toast_group_deleted">Group deleted</string>
     <string name="toast_group_updated">Group updated</string>
     <string name="toast_group_created">Group created</string>

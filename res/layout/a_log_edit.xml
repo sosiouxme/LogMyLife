@@ -41,7 +41,7 @@
         android:id="@+id/log_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:startYear="2009" />
+        android:startYear="2010" />
         <Button
           android:id="@+id/editDate"
           android:layout_width="wrap_content"

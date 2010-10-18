@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,10 +49,6 @@ public abstract class RequiredFieldDialog extends Dialog
 	public void setContentView(int viewId) {
 		super.setContentView(viewId);
 		
-		// make sure only the dialog has focus
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
-	             WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-
 		// wire the buttons listener
 		Button cancel = (Button) findViewById(R.id.cancel);
 		cancel.setOnClickListener(this);

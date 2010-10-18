@@ -1,16 +1,27 @@
 package net.sosiouxme.WhenDidI.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sosiouxme.WhenDidI.R;
+import net.sosiouxme.WhenDidI.Util;
 import net.sosiouxme.WhenDidI.domain.DbAdapter;
 import net.sosiouxme.WhenDidI.domain.dto.Alarm;
+import net.sosiouxme.WhenDidI.domain.dto.LogEntry;
 import net.sosiouxme.WhenDidI.domain.dto.Tracker;
+import net.sosiouxme.WhenDidI.domain.dto.Alarm.Interval;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -18,13 +29,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /*
@@ -61,6 +73,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 	private CharSequence[] mIntervalTextArray = null;
 	
 	protected boolean saveAlarmChangesImmediately = false;
+	private AlarmEditDialog mNotifDialog;
 
 	/* ***************************** lifecycle *************************** */
 
@@ -130,7 +143,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 	/*
 	 * Set up views showing all the alarms we have in the beginning
 	 */
-	private void populateAlarmViews() {
+	protected void populateAlarmViews() {
 		Log.d(TAG, "populateAlarmViews");
 		mAlarmContainer.removeAllViews();
 		for(Alarm alarm : mAlarmList) {
@@ -172,12 +185,20 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		ToggleButton enabled = (ToggleButton) av.findViewById(R.id.enabled);
 		TextView value = (TextView) av.findViewById(R.id.value);
 		TextView units = (TextView) av.findViewById(R.id.units);
+		TextView nextTime = (TextView) av.findViewById(R.id.next_time);
+	
 		
 		enabled.setChecked(alarm.getIsEnabled());
 		enabled.setOnCheckedChangeListener(this);
 		enabled.setTag(alarm);
-		value.setText(Integer.toString(alarm.getSingleIval(alarm.getFirstIntervalSet())));
-		units.setText(mIntervalTextArray[alarm.getFirstIntervalSet().ordinal()]);
+
+		Interval i = alarm.getFirstIntervalSet();
+		int ival = alarm.getSingleIval(i);
+		value.setText(Integer.toString(ival));
+		units.setText(mIntervalTextArray[i.ordinal()]);
+		LogEntry lastLog = mTracker.getLastLog();
+		nextTime.setText(createNextTimeText(lastLog == null ? null : lastLog
+				.getLogDate(), ival, i));
 	}
 
 	/* 
@@ -258,8 +279,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		case R.id.edit_alarm:
 			showDialog(ALARM_DIALOG);
 			return true;
-		case R.id.skip_alarm:
-			// TODO: change skip, not enablement
+		case R.id.toggle_alarm:
 			mAlarmToEdit.setIsEnabled(!mAlarmToEdit.isEnabled);
 			updateAlarmView(mViewOfAlarmToEdit, mAlarmToEdit);
 			updateAlarm(mAlarmToEdit);
@@ -278,7 +298,6 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		mAlarmsToDeleteList.add(a);
 		if (saveAlarmChangesImmediately && !a.isNew()) {
 			mDba.deleteAlarm(a.getId());
-			updateAlarmSchedule();
 		} else
 			mAlarmsToDeleteList.add(a);
 	}
@@ -318,17 +337,8 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		super.onPrepareDialog(id, dialog);
 		switch(id) {
 		case ALARM_DIALOG:
-			//CheckBox enabled = (CheckBox) dialog.findViewById(R.id.enabled);
-			EditText value = (EditText) dialog.findViewById(R.id.editor);
-			Spinner units = (Spinner) dialog.findViewById(R.id.units);
-			
-			Alarm alarm = mAlarmToEdit;
-			Log.d(TAG, "editing alarm: " + alarm.id);
-			//enabled.setChecked(alarm.getIsEnabled());
-			//enabled.setOnCheckedChangeListener(this);
-			//enabled.setTag(alarm);
-			value.setText(Integer.toString(alarm.getSingleIval(alarm.getFirstIntervalSet())));
-			units.setSelection(alarm.getFirstIntervalSet().ordinal());
+			mNotifDialog = (AlarmEditDialog) dialog;
+			mNotifDialog.onPrepare();
 			break;
 		}
 	}
@@ -343,6 +353,17 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		if(alarm == null) return;
 		Log.d(TAG, "alarm enablement set: " + alarm.id + " " + checked);
 		alarm.setIsEnabled(checked);
+	}
+
+	@Override
+	protected void onActivityResult(final int requestCode,
+			final int resultCode, final Intent intent) {
+		if (resultCode == Activity.RESULT_OK
+				&& requestCode == AlarmEditDialog.ACTIVITY_RINGTONE_RETURN_CODE) {
+			Uri uri = intent
+					.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+			((AlarmEditDialog) mNotifDialog).setRingtone(uri);
+		}
 	}
 
 	/* ***************************** worker methods *************************** */
@@ -362,16 +383,15 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 				mDba.deleteAlarm(alarm.getId());
 		}
 		for(Alarm alarm : mAlarmList) {
+			alarm.setNextTimeFromLast(mTracker.getLastLog());
 			if(alarm.isNew()) {
 				alarm.setTrackerId(trackerId);
 				mDba.createAlarm(alarm);				
 			} else {
 				mDba.updateAlarm(alarm);
 			}
-			updateNextAlarm(alarm);
 		}
 		mAlarmList = null; // just in case; because this object should never be reused
-		updateAlarmSchedule();
 	}
 
 	private void processAlarmEdit() {
@@ -389,6 +409,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 
 
 	private void updateAlarm(Alarm a) {
+		a.setNextTimeFromLast(mTracker.getLastLog());
 		if(saveAlarmChangesImmediately) {
 			if(a.isNew()) {
 				// new alarm for this tracker
@@ -396,26 +417,41 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 			} else {
 				mDba.updateAlarm(a);
 			}
-			updateNextAlarm(a);
-			updateAlarmSchedule();
+			mDba.updateAlarmSchedule();
 		}
 	}
 
-	private void updateNextAlarm(Alarm a) {
-		//TODO: update the alarm's next scheduled time to go off, if any
+	
+	private String createNextTimeText(Date mLastTime, int value, Interval i) {
+		String timeStr = getString(R.string.empty_time);
+		if(mLastTime != null) {
+			if(value > 0) {
+				Date nextTime = Alarm.calculateNextTime(mLastTime, i, value);
+				if(nextTime.after(new Date()))
+					timeStr = nextTime.toLocaleString();
+			}
+		}
+		return timeStr;
 	}
 
-	private void updateAlarmSchedule() {
-		//TODO: in light of changes made here,
-		//update the schedule of the next alarm to go off
-	}
-	
 	/********************** inner class for a dialog *********************/
 	
-	class AlarmEditDialog extends RequiredFieldDialog {
+	class AlarmEditDialog extends RequiredFieldDialog implements TextWatcher, OnItemSelectedListener {
 
+		public static final int ACTIVITY_RINGTONE_RETURN_CODE = 1;
+
+		// capture UI elements
 		protected Spinner mUnits;
-		
+		protected Button mChooseRingTone;
+		private CompoundButton mEnabled;
+		private TextView mNextTime;
+
+		// record state of alarm according to dialog
+		private Uri mRingTone;
+		private Date mLastLog;
+
+		private Button mDeleteButton;
+
 		public AlarmEditDialog(Context owner) {
 			super(owner);
 		}
@@ -423,16 +459,115 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		public void setContentView(int viewId) {
 			super.setContentView(viewId);
 			setTitle(R.string.ae_dialog_title);
+			mEditor.addTextChangedListener(this);
+			mEnabled = (CompoundButton) findViewById(R.id.enabled);
 			mUnits = (Spinner) findViewById(R.id.units);
+			mUnits.setOnItemSelectedListener(this);
+			mNextTime = (TextView) findViewById(R.id.next_time);
+			mChooseRingTone = (Button) findViewById(R.id.ringtone);
+			mChooseRingTone.setOnClickListener(this);
+			mDeleteButton = (Button) findViewById(R.id.delete);
+			mDeleteButton.setOnClickListener(this);
+		}
+
+		public void onPrepare() {	
+			Alarm a = mAlarmToEdit;
+			// wire up the "enabled" button
+			mEnabled.setChecked(a.getIsEnabled());
+			
+			// show or hide the "delete" button
+			mDeleteButton.setVisibility(a.isNew() ? View.GONE : View.VISIBLE);
+			
+			// wire up the interval selection area
+			mEditor.setText(Integer.toString(a.getSingleIval(a.getFirstIntervalSet())));
+			mUnits.setSelection(mAlarmToEdit.getFirstIntervalSet().ordinal());
+			
+			// wire up the "next time" area
+			LogEntry lastLogEntry = (mTracker == null) ? null : mTracker.getLastLog();
+			mLastLog = (lastLogEntry == null) ? null : lastLogEntry.getLogDate();
+			showNextTime();
+			
+			// wire up the ringtone picker
+			setRingtone(mAlarmToEdit.getRingtoneUri());
+		}
+
+		private void showNextTime() {
+			int value = getIntervalValue();
+			Interval i = Alarm.Interval.getIntervalForPos(mUnits.getSelectedItemPosition());
+			String timeStr = createNextTimeText(mLastLog, value, i);
+			mNextTime.setText(timeStr);
+		}
+
+		private int getIntervalValue() {
+			String text = mEditor.getText().toString();
+			if(text == null || text.length() == 0)
+				return 0;
+			int value = Integer.parseInt(text);
+			return (value > 0) ? value : 0;
+		}
+
+		public void setRingtone(Uri uri) {
+			mRingTone = uri;
+			String rtTitle = getContext().getString(R.string.empty_ringtone);
+			if(uri != null) {
+				Ringtone rt = RingtoneManager.getRingtone(getOwnerActivity(), uri);
+				if(rt != null)
+					rtTitle = rt.getTitle(getOwnerActivity());
+			}
+			mChooseRingTone.setText(rtTitle);
 		}
 		
 		@Override
 		protected void onClickOk() {
-			// TODO Auto-generated method stub
+			mAlarmToEdit.setIsEnabled(mEnabled.isChecked());
 			mAlarmToEdit.setTotalAlarmValue(
 					Alarm.Interval.getIntervalForPos(mUnits.getSelectedItemPosition()), 
 					Integer.parseInt(mEditor.getText().toString()));
+			mAlarmToEdit.setRingtone(Util.toString(mRingTone));
 			processAlarmEdit();
+		}
+		
+		@Override
+		public void onClick(View v) {
+			if(v == mChooseRingTone) {
+				Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
+				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getContext().getString(R.string.ringtone_dialog_title));
+				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, mRingTone);
+				this.getOwnerActivity().startActivityForResult(intent, ACTIVITY_RINGTONE_RETURN_CODE);
+			} else if(v == mDeleteButton) {
+				removeAlarm(mViewOfAlarmToEdit);
+				dismiss();
+			} else
+				super.onClick(v);
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// do nothing
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// do nothing
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			showNextTime();
+		}
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view,
+				int position, long id) {
+			showNextTime();			
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> parent) {
+			// do nothing
 		}
 		
 	}

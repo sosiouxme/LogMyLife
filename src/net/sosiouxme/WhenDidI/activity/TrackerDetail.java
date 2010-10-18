@@ -4,13 +4,13 @@ import java.util.Date;
 
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.R;
-import net.sosiouxme.WhenDidI.Util;
 import net.sosiouxme.WhenDidI.WhenDidI;
 import net.sosiouxme.WhenDidI.custom.AlarmEditActivity;
 import net.sosiouxme.WhenDidI.custom.EventCursorAdapter;
 import net.sosiouxme.WhenDidI.dialog.LogDeleteDialog;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
 import net.sosiouxme.WhenDidI.domain.DbAdapter;
+import net.sosiouxme.WhenDidI.receiver.AlarmReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -140,7 +140,7 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 			newLogEntry();
 			break;
 		case R.id.test_alarm:
-			Util.setAlarm(this, mTracker.id, System.currentTimeMillis() + (5 * 1000));
+			AlarmReceiver.setAlarm(this, mTracker.id, System.currentTimeMillis() + (5 * 1000));
 			Toast.makeText(this, "Alarm set", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.done:
@@ -221,8 +221,10 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 	
 	private void createQuickLog() {
 		mDba.createLog(mTracker.id, new Date(), null);
+		mDba.requeryTracker(mTracker);
 		((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		requeryList();
+		populateAlarms();
 	}
 
 	private void newLogEntry() {

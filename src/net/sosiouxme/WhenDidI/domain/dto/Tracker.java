@@ -32,6 +32,7 @@ public class Tracker extends AbstractDTO {
 		return lastLogId;
 	}
 
+	// note: this is filled in when the DB creates the DTO, if there is one
 	public LogEntry getLastLog() {
 		return lastLog;
 	}
@@ -75,8 +76,8 @@ public class Tracker extends AbstractDTO {
 		setGroupId(t.groupId);
 		setName(t.name);
 		setBody(t.body);
-		setLastLogId(t.lastLogId);
-		setLastLog(t.lastLog);
+		lastLogId = t.lastLogId;
+		lastLog = t.lastLog;
 		setSkipNextAlarm(skipNextAlarm);
 	}
 }

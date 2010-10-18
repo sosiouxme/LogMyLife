@@ -15,6 +15,7 @@ import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.domain.dto.Alarm;
 import net.sosiouxme.WhenDidI.domain.dto.LogEntry;
 import net.sosiouxme.WhenDidI.domain.dto.Tracker;
+import net.sosiouxme.WhenDidI.receiver.AlarmReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
@@ -47,8 +48,10 @@ public class DbAdapter implements C {
     private DbAdmin mDbHelper;
     /** Actual database handle */
     private SQLiteDatabase mDb;
+    /** Context object from the application **/
+    private final Context mContext;
     /** String resources from the application context */ 
-	private Resources resources;
+	private final Resources resources;
 
 	/**
 	 * Creates the database adapter that mediates all DB access
@@ -56,6 +59,7 @@ public class DbAdapter implements C {
 	 * @param ctx The application context in which this adapter is created
 	 */
     public DbAdapter(Context ctx) {
+        mContext = ctx;
         resources = ctx.getResources();
         open(ctx);
 	}
@@ -147,10 +151,12 @@ public class DbAdapter implements C {
     public boolean deleteGroup(long groupId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting group " + groupId);
-       	mDb.delete(db_LOG_TABLE, 
-    			"tracker_id in (select _id from Trackers where group_id = ?)",
-    			new String[] { Long.toString(groupId)});
+       	String[] whereArgs = new String[] { Long.toString(groupId)};
+		String whereClause = "tracker_id in (select _id from Trackers where group_id = ?)";
+		mDb.delete(db_LOG_TABLE, whereClause, whereArgs);
+        mDb.delete(db_ALARM_TABLE, whereClause, whereArgs);
         mDb.delete(db_TRACKER_TABLE, db_TRACKER_GROUP + "=" + groupId, null);
+        updateAlarmSchedule();
         return mDb.delete(db_GROUP_TABLE, db_ID + "=" + groupId, null) > 0;
     }
 
@@ -245,15 +251,21 @@ public class DbAdapter implements C {
     	}
     }
 
-    private boolean updateTrackerLastLog(long trackerId) {
+    private void updateTrackerLastLog(long trackerId) {
     	mDb.execSQL(str(R.string.db_update_tracker_last_log), new Long[] {trackerId});
-    	return true;
+    	Tracker t = fetchTracker(trackerId);
+		List<Alarm> alarms = fetchAlarmList(trackerId);
+		for(Alarm a : alarms) {
+			a.setNextTimeFromLast(t.getLastLog());
+			updateAlarm(a);
+		}
     }
     
     public boolean deleteTracker(long trackerId) {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting tracker " + trackerId);
     	mDb.delete(db_LOG_TABLE, db_LOG_TRACKER + " = " + trackerId, null);
+    	deleteAlarms(trackerId);
         return mDb.delete(db_TRACKER_TABLE, db_ID + "=" + trackerId, null) > 0;
     }
 
@@ -355,7 +367,9 @@ public class DbAdapter implements C {
 	     */
     public long createAlarm(Alarm newAlarm) {
     	Log.d(TAG, "creating Alarm for tracker " + newAlarm.trackerId);
-       	return mDb.insert(db_ALARM_TABLE, null, newAlarm.getChanged());
+       	long alarmId = mDb.insert(db_ALARM_TABLE, null, newAlarm.getChanged());
+       	updateAlarmSchedule();
+       	return alarmId;
     }
 
 	    /** All columns from the Alarms table (for queries) */
@@ -364,7 +378,7 @@ public class DbAdapter implements C {
 			db_ALARM_INTERVAL_MONTHS, db_ALARM_INTERVAL_WEEKS, 
 			db_ALARM_INTERVAL_DAYS, db_ALARM_INTERVAL_HOURS, 
 			db_ALARM_INTERVAL_MINUTES, db_ALARM_INTERVAL_SECONDS, 
-			db_ALARM_NEXT_TIME, db_ALARM_ENABLED, 
+			db_ALARM_NEXT_TIME, db_ALARM_ENABLED, db_ALARM_SKIP_NEXT,
 			db_ALARM_RINGTONE };
 		
 		/**
@@ -374,13 +388,17 @@ public class DbAdapter implements C {
 		 * @return The corresponding Alarm object, or null if not found
 		 */
 	public Alarm fetchAlarm(long alarmId) {
+		return fetchAlarm(db_ID + "=" + alarmId, null, null, null, null, null);
+	}
+	
+	public Alarm fetchAlarm(String where, String[] where_params, String group_by, String having, String order_by, String limit) {
 		Cursor c = null;
 		Alarm alarm = null;
 		try {
 			c = mDb.query(true, db_ALARM_TABLE,
             		ALARM_COLUMNS,
-					db_ID + "=" + alarmId, null,
-					null, null, null, null);
+					where, where_params,
+					group_by, having, order_by, limit);
 			if (c.getCount() != 1)
 				return null;
             c.moveToFirst();
@@ -419,14 +437,21 @@ public class DbAdapter implements C {
 		Alarm a = new Alarm(c.getLong(0));
 		a.trackerId = c.getLong(c.getColumnIndex(C.db_ALARM_TRACKER));
 		a.isEnabled = c.getInt(c.getColumnIndex(C.db_ALARM_ENABLED)) > 0;
+		a.skipNext = c.getInt(c.getColumnIndex(C.db_ALARM_SKIP_NEXT)) > 0;
 		a.ivalMonths = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_MONTHS));
 		a.ivalWeeks = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_WEEKS));
 		a.ivalDays = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_DAYS));
 		a.ivalHours = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_HOURS));
 		a.ivalMinutes = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_MINUTES));
 		a.ivalSeconds = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_SECONDS));
-		a.nextTime = new Date(c.getLong(c.getColumnIndex(C.db_ALARM_NEXT_TIME)));
 		a.ringtone = c.getString(c.getColumnIndex(C.db_ALARM_RINGTONE));
+		String date = c.getString(c.getColumnIndex(C.db_ALARM_NEXT_TIME));
+		try {
+			if (date != null)
+				a.nextTime = dbDateFormat.parse(date);
+		} catch (ParseException e) {
+			throw new RuntimeException("fetchAlarm couldn't parse nextTime for " + a.id, e);
+		}
 		return a;
 	}
 	
@@ -457,6 +482,7 @@ public class DbAdapter implements C {
 		if(args.size() > 0) {
 	        mDb.update(db_ALARM_TABLE, args, db_ID + "=" + alarm.id, null);
 	        alarm.clearChanged();
+	        updateAlarmSchedule();
 		}
 	}
     
@@ -468,6 +494,7 @@ public class DbAdapter implements C {
 	public void deleteAlarm(long alarmId) {
     	Log.d(TAG, "deleting alarm " + alarmId);
         mDb.delete(db_ALARM_TABLE, db_ID + "=" + alarmId, null);
+        updateAlarmSchedule();
     }
 
 	/**
@@ -478,6 +505,7 @@ public class DbAdapter implements C {
 	public void deleteAlarms(long trackerId) {
 		Log.d(TAG, "deleting alarms for tracker " + trackerId);
 	    mDb.delete(db_ALARM_TABLE, db_ALARM_TRACKER + "=" + trackerId, null);
+        updateAlarmSchedule();
 	}
 
 		/**
@@ -487,9 +515,25 @@ public class DbAdapter implements C {
 		 * @return The Alarm DTO, or none if none are scheduled
 		 */
     public Alarm fetchNextAlarm() {
-		return null;
+		Log.d(TAG, "fetching next alarm");
+		return fetchAlarm(
+			db_ALARM_ENABLED + " = 1 AND " + db_ALARM_SKIP_NEXT + " != 1 AND " +
+			db_ALARM_NEXT_TIME + " > datetime('now', 'localtime')",
+			null, null, null, db_ALARM_NEXT_TIME + " ASC", "1"
+			);
 	}
-
+    
+    public void updateAlarmSchedule() {
+		Alarm next = fetchNextAlarm();
+		if(next == null) {
+			Log.d(TAG, "Clearing alarms");			
+			AlarmReceiver.clearAlarm(mContext);
+		} else {
+			Log.d(TAG, "Next alarm will be at " + next.getNextTime().toLocaleString());
+			AlarmReceiver.setAlarm(mContext, next.getTrackerId(), next.getNextTime().getTime());
+		}
+	}
+	
 	/*
 	 * **************************************************************
      * 

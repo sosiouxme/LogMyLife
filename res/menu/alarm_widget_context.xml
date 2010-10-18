@@ -9,9 +9,9 @@
  android:id="@+id/edit_alarm"
  />
  <item
- android:title="Toggle skip next" 
- android:titleCondensed="Toggle skip" 
- android:id="@+id/skip_alarm"
+ android:title="Toggle on/off" 
+ android:titleCondensed="Toggle" 
+ android:id="@+id/toggle_alarm"
  android:orderInCategory="3" 
  />
 <item

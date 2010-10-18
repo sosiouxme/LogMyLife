@@ -4,26 +4,14 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import net.sosiouxme.WhenDidI.C;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.net.Uri;
 
-public class Alarm extends AbstractDTO implements Parcelable, Serializable {
+import net.sosiouxme.WhenDidI.C;
+
+public class Alarm extends AbstractDTO implements Serializable {
 
 	// necessary to make this serializable
 	private static final long serialVersionUID = 1L;
-	// necessary to make this retrievable from a state bundle
-	public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<Alarm>() {
-
-		public Alarm createFromParcel(Parcel in) {
-			return (Alarm) in.readSerializable();
-		}
-
-		public Alarm[] newArray(int size) {
-			return new Alarm[size];
-		}
-		
-	};
 
 	public long trackerId = -1;
 	// Specify the interval for the alarm to go off after, one component at a time
@@ -46,6 +34,8 @@ public class Alarm extends AbstractDTO implements Parcelable, Serializable {
 	public String ringtone = null;
 	/** Whether the alarm is enabled and will notify */
 	public boolean isEnabled = true;
+	/** Whether to skip the next alarm */
+	public boolean skipNext = false;
 	
 	public Alarm(long id) {
 		super(id);
@@ -63,8 +53,16 @@ public class Alarm extends AbstractDTO implements Parcelable, Serializable {
 		return ringtone;
 	}
 
+	public Uri getRingtoneUri() {
+		return ringtone == null ? null : Uri.parse(ringtone);
+	}
+
 	public boolean getIsEnabled() {
 		return isEnabled;
+	}
+
+	public boolean getSkipNext() {
+		return skipNext;
 	}
 
 	public int getIvalMonths() {
@@ -127,32 +125,32 @@ public class Alarm extends AbstractDTO implements Parcelable, Serializable {
 	}
 
 	public void setNextTime(Date nextTime) {
-		if (nextTime != null && !nextTime.equals(this.nextTime)) return;
+		if (nextTime != null && nextTime.equals(this.nextTime)) return;
 		this.nextTime = nextTime;
-		changed.put(C.db_ALARM_NEXT_TIME, nextTime.getTime());
+		changed.put(C.db_ALARM_NEXT_TIME, nextTime == null ? null : C.dbDateFormat.format(nextTime));
 	}	
 
 	public void setRingtone(String ringtone) {
-		if(ringtone != null && !ringtone.equals(this.ringtone)) return;
+		if(ringtone != null && ringtone.equals(this.ringtone)) return;
 		this.ringtone = ringtone;
 		changed.put(C.db_ALARM_RINGTONE,ringtone);
 	}
-
+	
+	public void setRingtone(Uri u) {
+		setRingtone(u == null ? null : u.toString());
+	}
+	
 	public void setIsEnabled(boolean enabled) {
 		if(enabled == isEnabled) return;
 		isEnabled = enabled;
 		changed.put(C.db_ALARM_ENABLED,enabled);
 	}
 
-	// stuff to allow this to be parcelable, i.e. to save as part of state
-	public int describeContents() {
-		return 0;
+	public void setSkipNext(boolean skip) {
+		if(skip == skipNext) return;
+		skipNext = skip;
+		changed.put(C.db_ALARM_SKIP_NEXT,skip);
 	}
-
-	public void writeToParcel(Parcel out, int flags) {
-		out.writeSerializable(this);
-	}
-
 
 	// TODO: all this stuff regarding intervals might really not belong in a DTO.
 	// Should probably move to some util class or something.
@@ -251,5 +249,29 @@ public class Alarm extends AbstractDTO implements Parcelable, Serializable {
 			cal.add(i.getCalField(), getSingleIval(i));
 		}
 		return cal.getTime();
+	}
+	
+	public Date calculateNextTime(Date lastTime) {
+		if(lastTime == null) return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(lastTime);
+		for (Interval i : Interval.values()) {
+			int value = getSingleIval(i);
+			if(value < 1) continue;
+			cal.add(i.getCalField(), value);			
+		}
+		return cal.getTime();
+	}
+	
+	public static Date calculateNextTime(Date lastTime, Interval i, int value) {
+		if(value < 1) return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(lastTime);
+		cal.add(i.getCalField(), value);
+		return cal.getTime();
+	}
+	
+	public void setNextTimeFromLast(LogEntry lastLog) {
+		setNextTime((lastLog == null) ? null : calculateNextTime(lastLog.getLogDate()));
 	}
 }
