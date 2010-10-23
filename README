@@ -5,7 +5,7 @@ Eclipse project for an Android application. You'll probably need Eclipse
 and the Android SDK and ADT plugin to make sense of it. The code is
 licensed under the GPLv3 (see LICENSE file).
 
-WhenDidI helps with recurring events and tasks by:
+LogMyLife helps with recurring events and tasks by:
 * Logging when an item (event or task) was performed
 * Alerting when an item has not been performed for a specified period.
 * Hopefully soon, serving as input to a website for the same purpose

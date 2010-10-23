@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="net.sosiouxme.WhenDidI"
+      package="net.sosiouxme.logmylife"
       android:versionName="1.0" android:versionCode="1">
     <application android:icon="@drawable/icon"
      android:label="@string/app_name" 
-     android:debuggable="true" android:name="WhenDidI" android:theme="@style/AppTheme">
+     android:debuggable="true" android:name="LogMyLife" android:theme="@style/AppTheme">
         <activity android:name=".activity.Main"
-                  android:label="WhenDidI">
+                  android:label="LogMyLife">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 <activity android:name=".activity.GroupsEdit"
- android:label="WhenDidI - Edit Groups"
+ android:label="LogMyLife - Edit Groups"
 />
 <activity
  android:name=".activity.TrackerEdit"
- android:label="WhenDidI - Edit Tracker"
+ android:label="LogMyLife - Edit Tracker"
 />
 <activity
  android:name=".activity.TrackerDetail"
- android:label="WhenDidI - View Tracker Details"
+ android:label="LogMyLife - View Tracker Details"
 />
 <activity android:name=".activity.LogEdit"
- android:label="WhenDidI - Edit Log"
+ android:label="LogMyLife - Edit Log"
 />
 <activity android:name=".activity.Prefs"
- android:label="WhenDidI - Preferences"
+ android:label="LogMyLife - Preferences"
 />
 <receiver android:name=".receiver.AlarmReceiver"
  android:process=":remote" 
