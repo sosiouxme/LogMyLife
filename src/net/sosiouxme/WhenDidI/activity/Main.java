@@ -200,7 +200,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	}
 
 	private void quickLog(long rowId) {
-		mDba.createLog(rowId, null, null);
+		mDba.createLog(rowId);
 		((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		mAdapter.requery();
 

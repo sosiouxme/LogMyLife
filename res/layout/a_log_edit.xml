@@ -25,29 +25,34 @@
       android:id="@+id/tracker_details"
       android:layout_height="wrap_content"
       android:layout_width="fill_parent" />
+    <TextView
+      style="@style/LineLabel"
+      android:text="Log value" />
+    <LinearLayout
+      style="@style/horizontalLL"
+    >
+      <TextView
+        style="@style/Label"
+        android:text="Value: "
+        android:layout_weight="1" />
+      <EditText
+        android:id="@+id/logValue"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:inputType="number" />
+    </LinearLayout>
     <LinearLayout
       style="@style/horizontalLL"
     >
       <TextView
         style="@style/Label"
         android:text="Date: " />
-        <TextView
-        android:id="@+id/dateDisplay"
+      <Button
+        android:id="@+id/editDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="date goes here"        
-        />
-      <DatePicker
-        android:id="@+id/log_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:startYear="2010" />
-        <Button
-          android:id="@+id/editDate"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="Edit"
-          />
+        android:text="Edit" />
     </LinearLayout>
     <LinearLayout
       style="@style/horizontalLL"
@@ -55,17 +60,11 @@
       <TextView
         style="@style/Label"
         android:text="Time: " />
-      <TimePicker
-        android:id="@+id/log_time"
+      <Button
+        android:id="@+id/editTime"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-      <net.sosiouxme.WhenDidI.custom.NumberPicker
-        android:id="@+id/log_time_seconds"
         android:layout_height="wrap_content"
-        android:layout_width="70dip"
-        android:layout_marginLeft="5dip"
-        android:focusable="true"
-        android:focusableInTouchMode="true" />
+        android:text="Edit" />
     </LinearLayout>
     <TextView
       android:layout_width="fill_parent"
@@ -83,14 +82,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
-        android:padding="5sp"
+        android:padding="15sp"
         android:text="Save" />
       <Button
         android:id="@+id/cancel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
-        android:padding="5sp"
+        android:padding="15sp"
         android:text="Cancel" />
     </LinearLayout>
   </LinearLayout>

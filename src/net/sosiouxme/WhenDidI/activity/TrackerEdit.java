@@ -8,6 +8,7 @@ import net.sosiouxme.WhenDidI.custom.GroupSpinner;
 import net.sosiouxme.WhenDidI.custom.RequireTextFor;
 import net.sosiouxme.WhenDidI.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.WhenDidI.dialog.TrackerDeleteDialog;
+import net.sosiouxme.WhenDidI.domain.dto.Tracker;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -57,6 +58,8 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 				finish(); // nothing to do...
 				return;
 			}
+		} else {
+			mTracker = new Tracker(-1);
 		}
 		
 		// Set the layout for this activity.
@@ -66,7 +69,7 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 		metName = (EditText) findViewById(R.id.name);
 		metBody = (EditText) findViewById(R.id.body);
 
-		if(mTracker != null) {			
+		if(!mTracker.isNew()) {			
 			// set the data in the views
 			metName.setText(mTracker.name);
 			metBody.setText(mTracker.body);
@@ -114,7 +117,7 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.d(TAG, "onCreateOptionsMenu");
 		getMenuInflater().inflate(R.menu.tracker_edit, menu);
-		if(mTracker != null) {
+		if(!mTracker.isNew()) {
 			// modify menus to show edit mode
 			menu.findItem(R.id.cancel_new).setVisible(false);
 			menu.findItem(R.id.cancel_existing).setVisible(true);
@@ -182,14 +185,15 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 		String name = metName.getText().toString();
 		long trackerId = -1;
 		if (name.length() > 0) {
-			if(mTracker == null) {
-				trackerId = mDba.createTracker(mCurrentGroupId, name, metBody.getText().toString());
+			mTracker.setName(name);
+			mTracker.setBody(metBody.getText().toString());
+			mTracker.setGroupId(mCurrentGroupId);
+			mTracker.setSkipNextAlarm(false);
+			if(mTracker.isNew()) {
+				trackerId = mDba.createTracker(mTracker);
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_CREATED);
 			} else {
 				trackerId = mTracker.getId();
-				mTracker.setName(name);
-				mTracker.setBody(metBody.getText().toString());
-				mTracker.setGroupId(mCurrentGroupId);
 				mDba.updateTracker(mTracker);
 				((WhenDidI) getApplication()).showToast(C.TOAST_TRACKER_UPDATED);
 			}

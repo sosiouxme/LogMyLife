@@ -135,7 +135,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 	 */
 	protected void populateAlarms() {
 		Log.d(TAG, "populateAlarms");
-		if(mTracker != null)
+		if(!mTracker.isNew())
 				mAlarmList = mDba.fetchAlarmList(mTracker.getId());
 		populateAlarmViews();
 	}
@@ -310,8 +310,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 		Log.d(TAG, "openNewAlarmDialog");
 
 		Alarm alarm = new Alarm(-1);
-		if(mTracker != null) 
-			alarm.setTrackerId(mTracker.getId());
+		alarm.setTrackerId(mTracker.getId());
 		alarm.setIvalWeeks(1);
 		mAlarmToEdit = alarm;
 		mViewOfAlarmToEdit = null;
@@ -483,7 +482,7 @@ public class AlarmEditActivity extends ListActivity implements OnClickListener, 
 			mUnits.setSelection(mAlarmToEdit.getFirstIntervalSet().ordinal());
 			
 			// wire up the "next time" area
-			LogEntry lastLogEntry = (mTracker == null) ? null : mTracker.getLastLog();
+			LogEntry lastLogEntry = mTracker.getLastLog();
 			mLastLog = (lastLogEntry == null) ? null : lastLogEntry.getLogDate();
 			showNextTime();
 			

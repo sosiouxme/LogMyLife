@@ -22,8 +22,8 @@
       _id INTEGER PRIMARY KEY,
       tracker_id INTEGER NOT NULL,
       log_time DATETIME NOT NULL,
-      body TEXT,
-      value NUMERIC,
+      body TEXT default "",
+      value NUMERIC default NULL,
       is_break BOOLEAN default 0
     );
   </string>

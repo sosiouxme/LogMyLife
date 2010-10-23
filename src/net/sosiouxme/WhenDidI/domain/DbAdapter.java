@@ -166,15 +166,10 @@ public class DbAdapter implements C {
      * Handle Trackers table
      */
 
-	public long createTracker(long groupId, String name, String body) {
+	public long createTracker(Tracker tr) {
         // @return rowId or -1 if failed
-		Log.d(TAG, "creating item " + groupId + ":" + name);
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(db_TRACKER_GROUP, groupId);
-        initialValues.put(db_TRACKER_NAME, name);
-        initialValues.put(db_TRACKER_BODY, body);
-        initialValues.put(db_TRACKER_SKIP_NEXT_ALARM, 0);
-        return mDb.insert(db_TRACKER_TABLE, null, initialValues);
+		Log.d(TAG, "creating item " + tr.groupId + ":" + tr.name);
+		return mDb.insert(db_TRACKER_TABLE, null, tr.getChanged());
     }
 
     public Cursor fetchTrackerCursor(long trackerId) {
@@ -275,22 +270,19 @@ public class DbAdapter implements C {
      * Handle TrackerLogs table
      */
     
-    public Date createLog(long trackerId, Date time, String body) {
-        // @return rowId or -1 if failed
-    	Log.d(TAG, "creating log for tracker " + trackerId);
-    	time = (time == null) ? new Date() : time;
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(db_LOG_TRACKER, trackerId);
-        initialValues.put(db_LOG_TIME, dbDateFormat.format(time));
-        initialValues.put(db_LOG_BODY, body);
-        try {
-        	mDb.insert(db_LOG_TABLE, null, initialValues);
-        	updateTrackerLastLog(trackerId);
-        	return time;
-        } catch(Exception e) {
-        	Log.e(TAG, "Could not insert log for tracker " + trackerId);
-        	return null;
-        }
+	public long createLog(long trackerId) {
+		LogEntry le = new LogEntry(-1);
+		le.setTrackerId(trackerId);
+		return createLog(le);
+	}
+    
+    public long createLog(LogEntry log) {
+    	Log.d(TAG, "creating log for tracker " + log.trackerId);
+    	if(log.logDate == null) 
+    		log.setLogDate(new Date());
+    	long logId = mDb.insert(db_LOG_TABLE, null, log.getChanged());
+    	updateTrackerLastLog(log.trackerId);
+    	return logId;
     }
 
 	public LogEntry fetchLog(long logId) {
@@ -313,7 +305,10 @@ public class DbAdapter implements C {
 				le.logDate = dbDateFormat.parse(date);
 			le.isBreak = c.getInt(c.getColumnIndex(C.db_LOG_IS_BREAK)) > 0;
 			//le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
-			le.value = c.getString(c.getColumnIndex(C.db_LOG_VALUE));
+			if (c.isNull(c.getColumnIndex(C.db_LOG_VALUE)))
+				le.value = null;
+			else
+				le.value = c.getInt(c.getColumnIndex(C.db_LOG_VALUE));
 		} catch (ParseException e) {
 			throw new RuntimeException("fetchLog couldn't parse date for " + logId, e);
 		} finally {
@@ -604,6 +599,7 @@ public class DbAdapter implements C {
 
 
 	}
+
 
 
 

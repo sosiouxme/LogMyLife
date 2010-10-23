@@ -1,16 +1,18 @@
 package net.sosiouxme.WhenDidI.domain.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import net.sosiouxme.WhenDidI.C;
 
-public class LogEntry extends AbstractDTO {
+public class LogEntry extends AbstractDTO implements Serializable {
 
+	private static final long serialVersionUID = 5259202378934469262L;
 	public long trackerId;
 	public String body;
 	public Date logDate;
 	public long valueType;
-	public Object value;
+	public Integer value;
 	public boolean isBreak;
 	
 	public LogEntry(long id) {
@@ -37,7 +39,7 @@ public class LogEntry extends AbstractDTO {
 		return valueType;
 	}
 
-	public Object getValue() {
+	public Integer getValue() {
 		return value;
 	}
 
@@ -67,9 +69,9 @@ public class LogEntry extends AbstractDTO {
 		changed.put(C.db_LOG_VALUE_TYPE, valueType);
 	}
 
-	public void setValue(Object value) {
+	public void setValue(Integer value) {
 		this.value = value;
-		changed.put(C.db_LOG_VALUE, value == null ? null : value.toString()); //TODO
+		changed.put(C.db_LOG_VALUE, value == null ? null : value);
 	}
 
 	public void setBreak(boolean isBreak) {

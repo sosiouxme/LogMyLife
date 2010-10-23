@@ -1,7 +1,5 @@
 package net.sosiouxme.WhenDidI.activity;
 
-import java.util.Date;
-
 import net.sosiouxme.WhenDidI.C;
 import net.sosiouxme.WhenDidI.R;
 import net.sosiouxme.WhenDidI.WhenDidI;
@@ -220,7 +218,7 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 	}
 	
 	private void createQuickLog() {
-		mDba.createLog(mTracker.id, new Date(), null);
+		mDba.createLog(mTracker.getId());
 		mDba.requeryTracker(mTracker);
 		((WhenDidI) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		requeryList();
