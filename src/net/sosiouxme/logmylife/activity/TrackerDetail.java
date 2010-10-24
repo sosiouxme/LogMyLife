@@ -3,12 +3,12 @@ package net.sosiouxme.logmylife.activity;
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.LogMyLife;
 import net.sosiouxme.logmylife.R;
-import net.sosiouxme.logmylife.custom.AlarmEditActivity;
+import net.sosiouxme.logmylife.custom.AlertEditActivity;
 import net.sosiouxme.logmylife.custom.EventCursorAdapter;
 import net.sosiouxme.logmylife.dialog.LogDeleteDialog;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
-import net.sosiouxme.logmylife.receiver.AlarmReceiver;
+import net.sosiouxme.logmylife.receiver.AlertReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -32,7 +32,7 @@ Activity for displaying the details of one tracker, including log entries
 See LICENSE file for this file's GPLv3 distribution license.
 */
 
-public class TrackerDetail extends AlarmEditActivity implements  android.view.View.OnClickListener {
+public class TrackerDetail extends AlertEditActivity implements  android.view.View.OnClickListener {
 	// Logger tag
 	private static final String TAG = "LML.TrackerDetail";
 
@@ -65,8 +65,8 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 		findViewById(R.id.quick_log).setOnClickListener(this);
 		findViewById(R.id.detailed_log).setOnClickListener(this);
 		
-		saveAlarmChangesImmediately = true;
-		initAlarmContainer();
+		saveAlertChangesImmediately = true;
+		initAlertContainer();
 	}
 	
 	@Override
@@ -84,7 +84,7 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 				fillLogList();
 			else
 				requeryList();
-			populateAlarms();
+			populateAlerts();
 		}
 
 		super.onResume();		
@@ -137,9 +137,9 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 		case R.id.new_log:
 			newLogEntry();
 			break;
-		case R.id.test_alarm:
-			AlarmReceiver.setAlarm(this, mTracker.id, System.currentTimeMillis() + (5 * 1000));
-			Toast.makeText(this, "Alarm set", Toast.LENGTH_LONG).show();
+		case R.id.test_alert:
+			AlertReceiver.setAlert(this, mTracker.id, System.currentTimeMillis() + (5 * 1000));
+			Toast.makeText(this, "Alert set", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.done:
 			finish();
@@ -222,7 +222,7 @@ public class TrackerDetail extends AlarmEditActivity implements  android.view.Vi
 		mDba.requeryTracker(mTracker);
 		((LogMyLife) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		requeryList();
-		populateAlarms();
+		populateAlerts();
 	}
 
 	private void newLogEntry() {

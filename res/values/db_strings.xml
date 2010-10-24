@@ -14,7 +14,7 @@
       name TEXT NOT NULL,
       body TEXT,
       last_log_id INTEGER,
-      flag_skip_next_alarm BOOLEAN DEFAULT 0
+      flag_skip_next_alert BOOLEAN DEFAULT 0
     );
   </string>
   <string name="db_create_logs">
@@ -27,8 +27,8 @@
       is_break BOOLEAN default 0
     );
   </string>
-  <string name="db_create_alarms">
-    create table Alarms (
+  <string name="db_create_alerts">
+    create table Alerts (
       _id INTEGER PRIMARY KEY,
       tracker_id INTEGER NOT NULL,
       interval_months INTEGER DEFAULT 0,
@@ -82,8 +82,8 @@
   <string name="db_create_log_tracker_time_idx">
     create index log_tracker_time_idx on TrackerLogs (tracker_id ASC, log_time DESC);
   </string>
-  <string name="db_create_alarm_tracker_id_idx">
-    create index alarm_tracker_id_idx on Alarms (tracker_id);
+  <string name="db_create_alert_tracker_id_idx">
+    create index alert_tracker_id_idx on Alerts (tracker_id);
   </string>  
   <string name="db_first_list">General</string>
   <string name="db_first_value_type">Number</string>

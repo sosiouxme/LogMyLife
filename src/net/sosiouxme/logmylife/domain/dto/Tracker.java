@@ -9,8 +9,8 @@ public class Tracker extends AbstractDTO {
 	public String body;
 	public long lastLogId;
 	public LogEntry lastLog = null;
-	/** A flag that can be set to skip the alarm just once */
-	public boolean skipNextAlarm;
+	/** A flag that can be set to skip the alert just once */
+	public boolean skipNextAlert;
 	
 	public Tracker(long id) {
 		super(id);
@@ -37,13 +37,13 @@ public class Tracker extends AbstractDTO {
 		return lastLog;
 	}
 
-	public boolean getSkipNextAlarm() {
-		return skipNextAlarm;
+	public boolean getSkipNextAlert() {
+		return skipNextAlert;
 	}
 
-	public void setSkipNextAlarm(boolean skipNextAlarm) {
-		if(this.skipNextAlarm != skipNextAlarm)
-			changed.put(C.db_TRACKER_SKIP_NEXT_ALARM, this.skipNextAlarm = skipNextAlarm);
+	public void setSkipNextAlert(boolean skipNextAlert) {
+		if(this.skipNextAlert != skipNextAlert)
+			changed.put(C.db_TRACKER_SKIP_NEXT_ALERT, this.skipNextAlert = skipNextAlert);
 	}
 
 	public void setName(String name) {
@@ -78,6 +78,6 @@ public class Tracker extends AbstractDTO {
 		setBody(t.body);
 		lastLogId = t.lastLogId;
 		lastLog = t.lastLog;
-		setSkipNextAlarm(skipNextAlarm);
+		setSkipNextAlert(skipNextAlert);
 	}
 }

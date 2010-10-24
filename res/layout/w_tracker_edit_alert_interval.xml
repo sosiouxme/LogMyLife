@@ -6,25 +6,25 @@
   android:orientation="horizontal"
 >
   <EditText
-    android:id="@+id/alarmInterval"
+    android:id="@+id/alertInterval"
     android:layout_height="wrap_content"
     android:inputType="number"
     android:maxLength="5"
     android:layout_weight="1"
     android:layout_width="wrap_content" />
   <Spinner
-    android:entries="@array/alarmIntervals"
+    android:entries="@array/alertIntervals"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    android:id="@+id/alarmIntervalType" />
+    android:id="@+id/alertIntervalType" />
   <Button
-  	android:id="@+id/alarmFieldAddButton"
+  	android:id="@+id/alertFieldAddButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="+" />
   <Button
-  	android:id="@+id/alarmFieldDropButton"
+  	android:id="@+id/alertFieldDropButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="-" />  

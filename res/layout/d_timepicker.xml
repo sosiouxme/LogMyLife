@@ -8,7 +8,7 @@
 >
 
   <!-- hours -->
-  <net.sosiouxme.LogMyLife.custom.NumberPicker
+  <net.sosiouxme.logmylife.custom.NumberPicker
     android:id="@+id/hours"
     android:layout_width="70dip"
     android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
     android:focusableInTouchMode="true" />
 
   <!-- minutes -->
-  <net.sosiouxme.LogMyLife.custom.NumberPicker
+  <net.sosiouxme.logmylife.custom.NumberPicker
     android:id="@+id/minutes"
     android:layout_width="70dip"
     android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
     android:focusableInTouchMode="true" />
 
   <!-- seconds -->
-  <net.sosiouxme.LogMyLife.custom.NumberPicker
+  <net.sosiouxme.logmylife.custom.NumberPicker
     android:id="@+id/seconds"
     android:layout_height="wrap_content"
     android:layout_width="70dip"

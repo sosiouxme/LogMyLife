@@ -10,12 +10,12 @@
 	<item>log_detail</item>
 	<item name="trackerClickBehaviorDefault">view</item>
 </string-array>
-<string-array name="alarmIntervals">
-  <item name="alarmIntervalMonths">Month(s)</item>
-  <item name="alarmIntervalWeeks">Week(s)</item>
-  <item name="alarmIntervalDays">Day(s)</item>
-  <item name="alarmIntervalHours">Hour(s)</item>
-  <item name="alarmIntervalMinutes">Minute(s)</item>
-  <item name="alarmIntervalSeconds">Second(s)</item>
+<string-array name="alertIntervals">
+  <item name="alertIntervalMonths">Month(s)</item>
+  <item name="alertIntervalWeeks">Week(s)</item>
+  <item name="alertIntervalDays">Day(s)</item>
+  <item name="alertIntervalHours">Hour(s)</item>
+  <item name="alertIntervalMinutes">Minute(s)</item>
+  <item name="alertIntervalSeconds">Second(s)</item>
 </string-array>
 </resources>

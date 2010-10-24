@@ -1,9 +1,10 @@
 package net.sosiouxme.logmylife.receiver;
 
 import net.sosiouxme.logmylife.C;
+import net.sosiouxme.logmylife.R;
 import net.sosiouxme.logmylife.activity.TrackerDetail;
 import net.sosiouxme.logmylife.domain.DbAdapter;
-import net.sosiouxme.logmylife.domain.dto.Alarm;
+import net.sosiouxme.logmylife.domain.dto.Alert;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -14,38 +15,51 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
-public class AlarmReceiver extends BroadcastReceiver {
+public class AlertReceiver extends BroadcastReceiver {
 
-	private static final String TAG = "LML.AlarmReceiver";
+	private static final String TAG = "LML.AlertReceiver";
 
 	public void onReceive(Context context, Intent intent) {
-        long trackerId = intent.getLongExtra(C.db_ALARM_TRACKER, -1);
-		DbAdapter Dba = new DbAdapter(context);
-		Tracker tracker = (trackerId > 0) ? Dba.fetchTracker(trackerId) : null;
-        Toast.makeText(context, "Alarm firing for " + tracker.name, Toast.LENGTH_SHORT).show();
+        long alertId = intent.getLongExtra(C.db_ALERT_TABLE, -1);
+		DbAdapter db = new DbAdapter(context);
 
-		// reset alarm for next time a tracker is due
-		Alarm nextAlarm = Dba.fetchNextAlarm();
-		if(nextAlarm != null) {
-			setAlarm(context, nextAlarm.getTrackerId(), nextAlarm.nextTime.getTime());
+		// reset alert for next time a tracker is due
+		Alert nextAlert = db.fetchNextAlert();
+		if(nextAlert != null) {
+			setAlert(context, nextAlert.getId(), nextAlert.getNextTime().getTime());
 		}
-		Dba.close();
+
+		// get this alert and make a notification
+		Alert alert = (alertId > 0) ? db.fetchAlert(alertId) : null;
+		Tracker tracker;
+		if(alert == null) {
+	        Log.w(TAG, "No alert matches intent!");
+	        db.close();
+	        return;
+		} else {
+			tracker = db.fetchTracker(alert.getTrackerId());
+			if(tracker == null) {
+		        Log.e(TAG, "No tracker matches alert " + alert.getId());
+		        db.close();
+		        return;
+			}
+		}
+		db.close();
 
 		// create the notification to show the user
 		Notification notification = new Notification(
 				android.R.drawable.stat_notify_error,
-				"LogMyLife Alarm - " + tracker.name,
+				context.getString(R.string.alert_prefix) + tracker.getName(),
 				System.currentTimeMillis()
 				);		
 		notification.flags = Notification.DEFAULT_SOUND 
 		   | Notification.FLAG_AUTO_CANCEL
 		   ;
-		/*
-	 	notification.sound = (Uri) intent.getParcelableExtra("Ringtone"); 
-		notification.vibrate = (long[]) intent.getExtras().get("vibrationPatern");
-		*or*
+		
+	 	notification.sound = alert.getRingtoneUri(); 
+		// notification.vibrate = (long[]) intent.getExtras().get("vibrationPatern");
+		/*or*
 		notification.flags = Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_SHOW_LIGHTS;
 		notification.ledARGB = Color.GREEN;
 		notification.ledOnMS = 1000;
@@ -54,33 +68,33 @@ public class AlarmReceiver extends BroadcastReceiver {
 		*/
 		// set up the activity that will start when the user clicks the notification
 		Intent showTrackerIntent = new Intent(context, TrackerDetail.class)
-											.putExtra(C.db_ID, trackerId)
+											.putExtra(C.db_ID, tracker.getId())
 				// the data keeps the PendingIntents distinguishable:
-											.setData(Uri.parse("tracker://"+trackerId));
+											.setData(Uri.parse("alert://"+alertId));
 		PendingIntent showTrackerPI = PendingIntent.getActivity(context, 0,	showTrackerIntent, 0);
-		String trackerMsg = (tracker == null) ? "Unknown alarm" : tracker.name;
-		notification.setLatestEventInfo(context, "LogMyLife Alarm", trackerMsg, showTrackerPI);
+		notification.setLatestEventInfo(context, context.getString(R.string.alert_message), tracker.getName(), showTrackerPI);
 
 		// use notification manager to send the notification
 		NotificationManager notifMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		notifMgr.notify((int)trackerId, notification); // re-use trackerId as notification Id
+		notifMgr.notify((int)alertId, notification); // re-use alertId as notification Id
 	}
 
 	/**
+	 * 
 	 * Hands an alarm to the alarm manager to go off later.
 	 * 
 	 * @param context
 	 *            Application context
-	 * @param trackerId
-	 *            rowId of the tracker that the alarm refers to
+	 * @param alertId
+	 *            rowId of the tracker that the alert refers to
 	 * @param time
 	 *            Time at which to go off (system time in milliseconds)
 	 */
 
-	public static void setAlarm(Context context, long trackerId, long time) {
-		Log.d(TAG, "Setting alarm for tracker " + trackerId);
-		Intent intent = new Intent(context, AlarmReceiver.class);
-		intent.putExtra(C.db_ALARM_TRACKER, trackerId);
+	public static void setAlert(Context context, long alertId, long time) {
+		Log.d(TAG, "Setting alert for alert " + alertId);
+		Intent intent = new Intent(context, AlertReceiver.class);
+		intent.putExtra(C.db_ALERT_TABLE, alertId);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
 				AlarmManager.RTC_WAKEUP, intent,
 				PendingIntent.FLAG_CANCEL_CURRENT // keeps from re-using the
@@ -93,7 +107,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 			alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
 	}
 
-	public static void clearAlarm(Context context) {
-		setAlarm(context, 0, 0);
+	public static void clearAlert(Context context) {
+		setAlert(context, 0, 0);
 	}
 }

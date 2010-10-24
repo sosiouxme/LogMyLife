@@ -22,11 +22,11 @@
     android:id="@+id/new_log" />
   <item
     android:visible="true"
-    android:titleCondensed="Test alarm"
-    android:title="Test alarm"
+    android:titleCondensed="Test alert"
+    android:title="Test alert"
     android:orderInCategory="3"
     android:icon="@android:drawable/ic_popup_reminder"
-    android:id="@+id/test_alarm" />
+    android:id="@+id/test_alert" />
   <item
     android:titleCondensed="Done"
     android:title="Return to group"

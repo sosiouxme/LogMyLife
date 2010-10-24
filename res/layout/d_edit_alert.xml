@@ -18,14 +18,14 @@
   <TextView
   android:layout_width="wrap_content"
   android:layout_height="wrap_content"
-  android:text="Toggle alarm on and off"
+  android:text="Toggle alert on and off"
   android:layout_alignParentRight="true"
   />    
   </RelativeLayout>
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="This alarm will activate after the most recent log entry is this old:" />
+    android:text="This alert will activate after the most recent log entry is this old:" />
   <LinearLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
       android:layout_weight="1"
       android:layout_width="wrap_content" />
     <Spinner
-      android:entries="@array/alarmIntervals"
+      android:entries="@array/alertIntervals"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_weight="1"

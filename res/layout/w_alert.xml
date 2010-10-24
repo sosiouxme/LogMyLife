@@ -3,18 +3,18 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="wrap_content"
-  android:id="@+id/alarmWidget"
+  android:id="@+id/alertWidget"
 >
   <ToggleButton
     android:id="@+id/enabled"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" />
-  <!-- the alarmWidget is the target for click and context menu events.
-       it must be the direct child of the alarmWidget so that event handlers
-       can find the alarmWidget from it.
+  <!-- the alertWidget is the target for click and context menu events.
+       it must be the direct child of the alertWidget so that event handlers
+       can find the alertWidget from it.
    -->
   <RelativeLayout
-    android:id="@+id/alarmBody"
+    android:id="@+id/alertBody"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_weight="1"

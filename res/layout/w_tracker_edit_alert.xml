@@ -6,7 +6,7 @@
   android:orientation="vertical"
 >
   <TextView
-    android:text="Alarm"
+    android:text="Alert"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" />
   <LinearLayout
@@ -30,7 +30,7 @@
     android:id="@+id/intervalList"
   >
     <include
-      layout="@layout/w_tracker_edit_alarm_interval" />
+      layout="@layout/w_tracker_edit_alert_interval" />
   </LinearLayout>
   <!--  want a ringtone picker here -->
 </LinearLayout>

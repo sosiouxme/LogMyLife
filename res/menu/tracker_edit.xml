@@ -24,11 +24,11 @@
     android:id="@+id/cancel_existing" />
   <item
     android:visible="true"
-    android:titleCondensed="New alarm"
-    android:title="Add new alarm"
+    android:titleCondensed="New alert"
+    android:title="Add new alert"
     android:orderInCategory="2"
     android:icon="@android:drawable/ic_popup_reminder"
-    android:id="@+id/new_alarm" />
+    android:id="@+id/new_alert" />
   <item
     android:titleCondensed="Delete"
     android:title="Delete item"

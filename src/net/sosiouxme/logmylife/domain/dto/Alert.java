@@ -8,36 +8,36 @@ import android.net.Uri;
 
 import net.sosiouxme.logmylife.C;
 
-public class Alarm extends AbstractDTO implements Serializable {
+public class Alert extends AbstractDTO implements Serializable {
 
 	// necessary to make this serializable
 	private static final long serialVersionUID = 1L;
 
 	public long trackerId = -1;
-	// Specify the interval for the alarm to go off after, one component at a time
-	/** Number of months to add in the alarm interval */
+	// Specify the interval for the alert to go off after, one component at a time
+	/** Number of months to add in the alert interval */
 	public int ivalMonths = 0;
-	/** Number of weeks to add in the alarm interval */
+	/** Number of weeks to add in the alert interval */
 	public int ivalWeeks = 0;
-	/** Number of days to add in the alarm interval */
+	/** Number of days to add in the alert interval */
 	public int ivalDays = 0;
-	/** Number of hours to add in the alarm interval */
+	/** Number of hours to add in the alert interval */
 	public int ivalHours = 0;
-	/** Number of minutes to add in the alarm interval */
+	/** Number of minutes to add in the alert interval */
 	public int ivalMinutes = 0;
-	/** Number of seconds to add in the alarm interval */
+	/** Number of seconds to add in the alert interval */
 	public int ivalSeconds = 0;
-	/** The next time the alarm for this tracker will go off 
+	/** The next time the alert for this tracker will go off 
 	 * (DateTime stored as a long) */
 	public Date nextTime = null;
-	/** The ringtone to play when the alarm goes off (empty if default) */
+	/** The ringtone to play when the alert goes off (empty if default) */
 	public String ringtone = null;
-	/** Whether the alarm is enabled and will notify */
+	/** Whether the alert is enabled and will notify */
 	public boolean isEnabled = true;
-	/** Whether to skip the next alarm */
+	/** Whether to skip the next alert */
 	public boolean skipNext = false;
 	
-	public Alarm(long id) {
+	public Alert(long id) {
 		super(id);
 	}
 
@@ -91,49 +91,49 @@ public class Alarm extends AbstractDTO implements Serializable {
 
 	public void setIvalMonths(int ivalMonths) {
 		if(this.ivalMonths != ivalMonths)
-			changed.put(C.db_ALARM_INTERVAL_MONTHS, this.ivalMonths = ivalMonths);
+			changed.put(C.db_ALERT_INTERVAL_MONTHS, this.ivalMonths = ivalMonths);
 	}
 
 	public void setIvalWeeks(int ivalWeeks) {
 		if(this.ivalWeeks != ivalWeeks)
-			changed.put(C.db_ALARM_INTERVAL_WEEKS, this.ivalWeeks = ivalWeeks);
+			changed.put(C.db_ALERT_INTERVAL_WEEKS, this.ivalWeeks = ivalWeeks);
 	}
 
 	public void setIvalDays(int ivalDays) {
 		if(this.ivalDays != ivalDays)
-			changed.put(C.db_ALARM_INTERVAL_DAYS, this.ivalDays = ivalDays);
+			changed.put(C.db_ALERT_INTERVAL_DAYS, this.ivalDays = ivalDays);
 	}
 
 	public void setIvalHours(int ivalHours) {
 		if(this.ivalHours != ivalHours)
-			changed.put(C.db_ALARM_INTERVAL_HOURS, this.ivalHours = ivalHours);
+			changed.put(C.db_ALERT_INTERVAL_HOURS, this.ivalHours = ivalHours);
 	}
 
 	public void setIvalMinutes(int ivalMinutes) {
 		if(this.ivalMinutes != ivalMinutes)
-			changed.put(C.db_ALARM_INTERVAL_MINUTES, this.ivalMinutes = ivalMinutes);
+			changed.put(C.db_ALERT_INTERVAL_MINUTES, this.ivalMinutes = ivalMinutes);
 	}
 
 	public void setIvalSeconds(int ivalSeconds) {
 		if(this.ivalSeconds != ivalSeconds)
-			changed.put(C.db_ALARM_INTERVAL_SECONDS, this.ivalSeconds = ivalSeconds);
+			changed.put(C.db_ALERT_INTERVAL_SECONDS, this.ivalSeconds = ivalSeconds);
 	}
 
 	public void setTrackerId(long trackerId) {
 		if(this.trackerId != trackerId)
-			changed.put(C.db_ALARM_TRACKER, this.trackerId = trackerId);
+			changed.put(C.db_ALERT_TRACKER, this.trackerId = trackerId);
 	}
 
 	public void setNextTime(Date nextTime) {
 		if (nextTime != null && nextTime.equals(this.nextTime)) return;
 		this.nextTime = nextTime;
-		changed.put(C.db_ALARM_NEXT_TIME, nextTime == null ? null : C.dbDateFormat.format(nextTime));
+		changed.put(C.db_ALERT_NEXT_TIME, nextTime == null ? null : C.dbDateFormat.format(nextTime));
 	}	
 
 	public void setRingtone(String ringtone) {
 		if(ringtone != null && ringtone.equals(this.ringtone)) return;
 		this.ringtone = ringtone;
-		changed.put(C.db_ALARM_RINGTONE,ringtone);
+		changed.put(C.db_ALERT_RINGTONE,ringtone);
 	}
 	
 	public void setRingtone(Uri u) {
@@ -143,13 +143,13 @@ public class Alarm extends AbstractDTO implements Serializable {
 	public void setIsEnabled(boolean enabled) {
 		if(enabled == isEnabled) return;
 		isEnabled = enabled;
-		changed.put(C.db_ALARM_ENABLED,enabled);
+		changed.put(C.db_ALERT_ENABLED,enabled);
 	}
 
 	public void setSkipNext(boolean skip) {
 		if(skip == skipNext) return;
 		skipNext = skip;
-		changed.put(C.db_ALARM_SKIP_NEXT,skip);
+		changed.put(C.db_ALERT_SKIP_NEXT,skip);
 	}
 
 	// TODO: all this stuff regarding intervals might really not belong in a DTO.
@@ -205,7 +205,7 @@ public class Alarm extends AbstractDTO implements Serializable {
 		setIvalSeconds(0);
 	}
 
-	public void setTotalAlarmValue(Interval i, int value) {
+	public void setTotalAlertValue(Interval i, int value) {
 		clearIvals();
 		setSingleIval(i, value);
 	}

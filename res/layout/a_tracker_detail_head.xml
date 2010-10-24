@@ -29,16 +29,16 @@
     <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Alarms: " />
+      android:text="Alerts: " />
     <Button
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="Add new"
-      android:id="@+id/add_new_alarm" />
+      android:id="@+id/add_new_alert" />
   </LinearLayout>
 
   <LinearLayout
-    android:id="@+id/alarmContainer"
+    android:id="@+id/alertContainer"
     style="@style/verticalLL"
     android:layout_width="fill_parent" />
   <LinearLayout

@@ -22,7 +22,7 @@ public interface C {
 	public static final String db_TRACKER_NAME = "name";
 	public static final String db_TRACKER_BODY = "body";
 	public static final String db_TRACKER_LAST_LOG_ID = "last_log_id";
-	public static final String db_TRACKER_SKIP_NEXT_ALARM = "flag_skip_next_alarm";
+	public static final String db_TRACKER_SKIP_NEXT_ALERT = "flag_skip_next_alert";
 	//
 	public static final String db_LOG_TABLE = "TrackerLogs";
 	public static final String db_LOG_TRACKER = "tracker_id";
@@ -36,18 +36,18 @@ public interface C {
 	public static final String db_VALUE_NAME = "name";
 	public static final String db_VALUE_TYPE = "type";
 	//
-	public static final String db_ALARM_TABLE = "Alarms";
-	public static final String db_ALARM_TRACKER = "tracker_id";
-	public static final String db_ALARM_INTERVAL_MONTHS = "interval_months";
-	public static final String db_ALARM_INTERVAL_WEEKS = "interval_weeks";
-	public static final String db_ALARM_INTERVAL_DAYS = "interval_days";
-	public static final String db_ALARM_INTERVAL_HOURS = "interval_hours";
-	public static final String db_ALARM_INTERVAL_MINUTES = "interval_minutes";
-	public static final String db_ALARM_INTERVAL_SECONDS = "interval_seconds";
-	public static final String db_ALARM_NEXT_TIME = "next_time";
-	public static final String db_ALARM_RINGTONE = "ringtone";
-	public static final String db_ALARM_ENABLED = "is_enabled";
-	public static final String db_ALARM_SKIP_NEXT = "skip_next";
+	public static final String db_ALERT_TABLE = "Alerts";
+	public static final String db_ALERT_TRACKER = "tracker_id";
+	public static final String db_ALERT_INTERVAL_MONTHS = "interval_months";
+	public static final String db_ALERT_INTERVAL_WEEKS = "interval_weeks";
+	public static final String db_ALERT_INTERVAL_DAYS = "interval_days";
+	public static final String db_ALERT_INTERVAL_HOURS = "interval_hours";
+	public static final String db_ALERT_INTERVAL_MINUTES = "interval_minutes";
+	public static final String db_ALERT_INTERVAL_SECONDS = "interval_seconds";
+	public static final String db_ALERT_NEXT_TIME = "next_time";
+	public static final String db_ALERT_RINGTONE = "ringtone";
+	public static final String db_ALERT_ENABLED = "is_enabled";
+	public static final String db_ALERT_SKIP_NEXT = "skip_next";
 
 	public static final String db_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final DateFormat dbDateFormat = new SimpleDateFormat(db_DATE_FORMAT);

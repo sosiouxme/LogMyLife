@@ -12,10 +12,10 @@ import java.util.List;
 
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.R;
-import net.sosiouxme.logmylife.domain.dto.Alarm;
+import net.sosiouxme.logmylife.domain.dto.Alert;
 import net.sosiouxme.logmylife.domain.dto.LogEntry;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
-import net.sosiouxme.logmylife.receiver.AlarmReceiver;
+import net.sosiouxme.logmylife.receiver.AlertReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
@@ -154,9 +154,9 @@ public class DbAdapter implements C {
        	String[] whereArgs = new String[] { Long.toString(groupId)};
 		String whereClause = "tracker_id in (select _id from Trackers where group_id = ?)";
 		mDb.delete(db_LOG_TABLE, whereClause, whereArgs);
-        mDb.delete(db_ALARM_TABLE, whereClause, whereArgs);
+        mDb.delete(db_ALERT_TABLE, whereClause, whereArgs);
         mDb.delete(db_TRACKER_TABLE, db_TRACKER_GROUP + "=" + groupId, null);
-        updateAlarmSchedule();
+        updateAlertSchedule();
         return mDb.delete(db_GROUP_TABLE, db_ID + "=" + groupId, null) > 0;
     }
 
@@ -179,7 +179,7 @@ public class DbAdapter implements C {
 		Cursor mCursor = mDb.query(
 				db_TRACKER_TABLE, 
 				new String[] { db_ID, db_TRACKER_NAME, db_TRACKER_BODY,
-						db_TRACKER_SKIP_NEXT_ALARM, db_TRACKER_GROUP,
+						db_TRACKER_SKIP_NEXT_ALERT, db_TRACKER_GROUP,
 						db_TRACKER_LAST_LOG_ID },
 				db_ID + "=" + trackerId,
 				null, null,	null, null);
@@ -205,7 +205,7 @@ public class DbAdapter implements C {
 			t.body = c.getString(c.getColumnIndex(C.db_TRACKER_BODY));
 			t.groupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
 			t.lastLogId = c.getLong(c.getColumnIndex(C.db_TRACKER_LAST_LOG_ID));
-			t.skipNextAlarm = c.getInt(c.getColumnIndex(C.db_TRACKER_SKIP_NEXT_ALARM)) > 0;
+			t.skipNextAlert = c.getInt(c.getColumnIndex(C.db_TRACKER_SKIP_NEXT_ALERT)) > 0;
 
 			if(t.lastLogId > 0)
 				t.lastLog = fetchLog(t.lastLogId);
@@ -249,10 +249,10 @@ public class DbAdapter implements C {
     private void updateTrackerLastLog(long trackerId) {
     	mDb.execSQL(str(R.string.db_update_tracker_last_log), new Long[] {trackerId});
     	Tracker t = fetchTracker(trackerId);
-		List<Alarm> alarms = fetchAlarmList(trackerId);
-		for(Alarm a : alarms) {
+		List<Alert> alerts = fetchAlertList(trackerId);
+		for(Alert a : alerts) {
 			a.setNextTimeFromLast(t.getLastLog());
-			updateAlarm(a);
+			updateAlert(a);
 		}
     }
     
@@ -260,7 +260,7 @@ public class DbAdapter implements C {
         // @return true if deleted, false otherwise
     	Log.d(TAG, "deleting tracker " + trackerId);
     	mDb.delete(db_LOG_TABLE, db_LOG_TRACKER + " = " + trackerId, null);
-    	deleteAlarms(trackerId);
+    	deleteAlerts(trackerId);
         return mDb.delete(db_TRACKER_TABLE, db_ID + "=" + trackerId, null) > 0;
     }
 
@@ -351,115 +351,115 @@ public class DbAdapter implements C {
 
     /*
      * ******************************************************************************
-     * Handle Alarms table
+     * Handle Alerts table
      */
     
 	    /**
-	     * Create a DB alarm entry from an Alarm DTO
+	     * Create a DB alert entry from an Alert DTO
 	     * 
-	     * @param newAlarm the DTO to create in the DB
-	     * @return rowId of the alarm created
+	     * @param newAlert the DTO to create in the DB
+	     * @return rowId of the alert created
 	     */
-    public long createAlarm(Alarm newAlarm) {
-    	Log.d(TAG, "creating Alarm for tracker " + newAlarm.trackerId);
-       	long alarmId = mDb.insert(db_ALARM_TABLE, null, newAlarm.getChanged());
-       	updateAlarmSchedule();
-       	return alarmId;
+    public long createAlert(Alert newAlert) {
+    	Log.d(TAG, "creating Alert for tracker " + newAlert.trackerId);
+       	long alertId = mDb.insert(db_ALERT_TABLE, null, newAlert.getChanged());
+       	updateAlertSchedule();
+       	return alertId;
     }
 
-	    /** All columns from the Alarms table (for queries) */
-	private static final String[] ALARM_COLUMNS = new String[] { 
-			db_ID, db_ALARM_TRACKER,
-			db_ALARM_INTERVAL_MONTHS, db_ALARM_INTERVAL_WEEKS, 
-			db_ALARM_INTERVAL_DAYS, db_ALARM_INTERVAL_HOURS, 
-			db_ALARM_INTERVAL_MINUTES, db_ALARM_INTERVAL_SECONDS, 
-			db_ALARM_NEXT_TIME, db_ALARM_ENABLED, db_ALARM_SKIP_NEXT,
-			db_ALARM_RINGTONE };
+	    /** All columns from the Alerts table (for queries) */
+	private static final String[] ALERT_COLUMNS = new String[] { 
+			db_ID, db_ALERT_TRACKER,
+			db_ALERT_INTERVAL_MONTHS, db_ALERT_INTERVAL_WEEKS, 
+			db_ALERT_INTERVAL_DAYS, db_ALERT_INTERVAL_HOURS, 
+			db_ALERT_INTERVAL_MINUTES, db_ALERT_INTERVAL_SECONDS, 
+			db_ALERT_NEXT_TIME, db_ALERT_ENABLED, db_ALERT_SKIP_NEXT,
+			db_ALERT_RINGTONE };
 		
 		/**
-		 * Fetches an Alarm DTO from the DB with the given rowId
+		 * Fetches an Alert DTO from the DB with the given rowId
 		 * 
-		 * @param alarmId The rowId of the alarm
-		 * @return The corresponding Alarm object, or null if not found
+		 * @param alertId The rowId of the alert
+		 * @return The corresponding Alert object, or null if not found
 		 */
-	public Alarm fetchAlarm(long alarmId) {
-		return fetchAlarm(db_ID + "=" + alarmId, null, null, null, null, null);
+	public Alert fetchAlert(long alertId) {
+		return fetchAlert(db_ID + "=" + alertId, null, null, null, null, null);
 	}
 	
-	public Alarm fetchAlarm(String where, String[] where_params, String group_by, String having, String order_by, String limit) {
+	public Alert fetchAlert(String where, String[] where_params, String group_by, String having, String order_by, String limit) {
 		Cursor c = null;
-		Alarm alarm = null;
+		Alert alert = null;
 		try {
-			c = mDb.query(true, db_ALARM_TABLE,
-            		ALARM_COLUMNS,
+			c = mDb.query(true, db_ALERT_TABLE,
+            		ALERT_COLUMNS,
 					where, where_params,
 					group_by, having, order_by, limit);
 			if (c.getCount() != 1)
 				return null;
             c.moveToFirst();
-            alarm = getAlarmFromCursor(c);
+            alert = getAlertFromCursor(c);
 		} finally {
 			if (c != null) {
 				c.close();
 			}
 		}
-		return alarm;
+		return alert;
 	}
 	
-    public List<Alarm> fetchAlarmList(long trackerId) {
-        // @return ArrayList of matching alarms, if found
+    public List<Alert> fetchAlertList(long trackerId) {
+        // @return ArrayList of matching alerts, if found
     	// WARN: this has never been tested
-    	Log.d(TAG, "fetching alarms for tracker " + trackerId);
-        List<Alarm> alarms = new ArrayList<Alarm>();
-        Cursor c = fetchAlarmsCursor(trackerId);
+    	Log.d(TAG, "fetching alerts for tracker " + trackerId);
+        List<Alert> alerts = new ArrayList<Alert>();
+        Cursor c = fetchAlertsCursor(trackerId);
         if (c != null) {
 	        c.moveToFirst();
 	        while(!c.isAfterLast()) {
-	        	alarms.add(getAlarmFromCursor(c));
+	        	alerts.add(getAlertFromCursor(c));
 	        	c.moveToNext();
 	        }
 	        c.close();
         }
-        return alarms;
+        return alerts;
     }
 	
 		/**
-		 * Turns a single cursor row from the DB into an Alarm object
+		 * Turns a single cursor row from the DB into an Alert object
 		 * @param c The cursor
-		 * @return The filled out Alarm oject
+		 * @return The filled out Alert oject
 		 */
-	private Alarm getAlarmFromCursor(Cursor c) {
-		Alarm a = new Alarm(c.getLong(0));
-		a.trackerId = c.getLong(c.getColumnIndex(C.db_ALARM_TRACKER));
-		a.isEnabled = c.getInt(c.getColumnIndex(C.db_ALARM_ENABLED)) > 0;
-		a.skipNext = c.getInt(c.getColumnIndex(C.db_ALARM_SKIP_NEXT)) > 0;
-		a.ivalMonths = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_MONTHS));
-		a.ivalWeeks = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_WEEKS));
-		a.ivalDays = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_DAYS));
-		a.ivalHours = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_HOURS));
-		a.ivalMinutes = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_MINUTES));
-		a.ivalSeconds = c.getInt(c.getColumnIndex(C.db_ALARM_INTERVAL_SECONDS));
-		a.ringtone = c.getString(c.getColumnIndex(C.db_ALARM_RINGTONE));
-		String date = c.getString(c.getColumnIndex(C.db_ALARM_NEXT_TIME));
+	private Alert getAlertFromCursor(Cursor c) {
+		Alert a = new Alert(c.getLong(0));
+		a.trackerId = c.getLong(c.getColumnIndex(C.db_ALERT_TRACKER));
+		a.isEnabled = c.getInt(c.getColumnIndex(C.db_ALERT_ENABLED)) > 0;
+		a.skipNext = c.getInt(c.getColumnIndex(C.db_ALERT_SKIP_NEXT)) > 0;
+		a.ivalMonths = c.getInt(c.getColumnIndex(C.db_ALERT_INTERVAL_MONTHS));
+		a.ivalWeeks = c.getInt(c.getColumnIndex(C.db_ALERT_INTERVAL_WEEKS));
+		a.ivalDays = c.getInt(c.getColumnIndex(C.db_ALERT_INTERVAL_DAYS));
+		a.ivalHours = c.getInt(c.getColumnIndex(C.db_ALERT_INTERVAL_HOURS));
+		a.ivalMinutes = c.getInt(c.getColumnIndex(C.db_ALERT_INTERVAL_MINUTES));
+		a.ivalSeconds = c.getInt(c.getColumnIndex(C.db_ALERT_INTERVAL_SECONDS));
+		a.ringtone = c.getString(c.getColumnIndex(C.db_ALERT_RINGTONE));
+		String date = c.getString(c.getColumnIndex(C.db_ALERT_NEXT_TIME));
 		try {
 			if (date != null)
 				a.nextTime = dbDateFormat.parse(date);
 		} catch (ParseException e) {
-			throw new RuntimeException("fetchAlarm couldn't parse nextTime for " + a.id, e);
+			throw new RuntimeException("fetchAlert couldn't parse nextTime for " + a.id, e);
 		}
 		return a;
 	}
 	
 		/**
-		 * Fetches an Alarm cursor of all alarms for a tracker 
+		 * Fetches an Alert cursor of all alerts for a tracker 
 		 * @param trackerId The rowId of the tracker
-		 * @return Cursor of all the tracker's alarms
+		 * @return Cursor of all the tracker's alerts
 		 */
-    public Cursor fetchAlarmsCursor(long trackerId) {
-    	Log.d(TAG, "fetching alarms for tracker " + trackerId);
-        Cursor c = mDb.query(true, db_ALARM_TABLE,
-				ALARM_COLUMNS,
-				db_ALARM_TRACKER + "=" + trackerId, null,
+    public Cursor fetchAlertsCursor(long trackerId) {
+    	Log.d(TAG, "fetching alerts for tracker " + trackerId);
+        Cursor c = mDb.query(true, db_ALERT_TABLE,
+				ALERT_COLUMNS,
+				db_ALERT_TRACKER + "=" + trackerId, null,
 		        null, null, db_ID, null);
         if (c != null)
             c.moveToFirst();
@@ -468,64 +468,64 @@ public class DbAdapter implements C {
     }
     
     	/**
-    	 * Updates an alarm in the DB according to changes in the DTO (if any)
+    	 * Updates an alert in the DB according to changes in the DTO (if any)
     	 * 
-    	 * @param alarm The Alarm DTO of the alarm to be updated
+    	 * @param alert The Alert DTO of the alert to be updated
     	 */
-	public void updateAlarm(Alarm alarm) {
-		ContentValues args = alarm.getChanged();
+	public void updateAlert(Alert alert) {
+		ContentValues args = alert.getChanged();
 		if(args.size() > 0) {
-	        mDb.update(db_ALARM_TABLE, args, db_ID + "=" + alarm.id, null);
-	        alarm.clearChanged();
-	        updateAlarmSchedule();
+	        mDb.update(db_ALERT_TABLE, args, db_ID + "=" + alert.id, null);
+	        alert.clearChanged();
+	        updateAlertSchedule();
 		}
 	}
     
 		/**
-		 * Deletes an alarm from the DB
+		 * Deletes an alert from the DB
 		 * 
-		 * @param alarmId The rowId of the alarm to delete
+		 * @param alertId The rowId of the alert to delete
 		 */
-	public void deleteAlarm(long alarmId) {
-    	Log.d(TAG, "deleting alarm " + alarmId);
-        mDb.delete(db_ALARM_TABLE, db_ID + "=" + alarmId, null);
-        updateAlarmSchedule();
+	public void deleteAlert(long alertId) {
+    	Log.d(TAG, "deleting alert " + alertId);
+        mDb.delete(db_ALERT_TABLE, db_ID + "=" + alertId, null);
+        updateAlertSchedule();
     }
 
 	/**
-	 * Deletes an alarm from the DB
+	 * Deletes an alert from the DB
 	 * 
-	 * @param trackerId The rowId of the tracker to delete alarms for
+	 * @param trackerId The rowId of the tracker to delete alerts for
 	 */
-	public void deleteAlarms(long trackerId) {
-		Log.d(TAG, "deleting alarms for tracker " + trackerId);
-	    mDb.delete(db_ALARM_TABLE, db_ALARM_TRACKER + "=" + trackerId, null);
-        updateAlarmSchedule();
+	public void deleteAlerts(long trackerId) {
+		Log.d(TAG, "deleting alerts for tracker " + trackerId);
+	    mDb.delete(db_ALERT_TABLE, db_ALERT_TRACKER + "=" + trackerId, null);
+        updateAlertSchedule();
 	}
 
 		/**
-		 * Fetches the Alarm from the DB that is enabled and has the soonest
+		 * Fetches the Alert from the DB that is enabled and has the soonest
 		 * scheduled time to go off (even if it may be skipped once reached).
 		 *   
-		 * @return The Alarm DTO, or none if none are scheduled
+		 * @return The Alert DTO, or none if none are scheduled
 		 */
-    public Alarm fetchNextAlarm() {
-		Log.d(TAG, "fetching next alarm");
-		return fetchAlarm(
-			db_ALARM_ENABLED + " = 1 AND " + db_ALARM_SKIP_NEXT + " != 1 AND " +
-			db_ALARM_NEXT_TIME + " > datetime('now', 'localtime')",
-			null, null, null, db_ALARM_NEXT_TIME + " ASC", "1"
+    public Alert fetchNextAlert() {
+		Log.d(TAG, "fetching next alert");
+		return fetchAlert(
+			db_ALERT_ENABLED + " = 1 AND " + db_ALERT_SKIP_NEXT + " != 1 AND " +
+			db_ALERT_NEXT_TIME + " > datetime('now', 'localtime')",
+			null, null, null, db_ALERT_NEXT_TIME + " ASC", "1"
 			);
 	}
     
-    public void updateAlarmSchedule() {
-		Alarm next = fetchNextAlarm();
+    public void updateAlertSchedule() {
+		Alert next = fetchNextAlert();
 		if(next == null) {
-			Log.d(TAG, "Clearing alarms");			
-			AlarmReceiver.clearAlarm(mContext);
+			Log.d(TAG, "Clearing alerts");			
+			AlertReceiver.clearAlert(mContext);
 		} else {
-			Log.d(TAG, "Next alarm will be at " + next.getNextTime().toLocaleString());
-			AlarmReceiver.setAlarm(mContext, next.getTrackerId(), next.getNextTime().getTime());
+			Log.d(TAG, "Next alert will be at " + next.getNextTime().toLocaleString());
+			AlertReceiver.setAlert(mContext, next.getTrackerId(), next.getNextTime().getTime());
 		}
 	}
 	
@@ -574,12 +574,12 @@ public class DbAdapter implements C {
 					db.execSQL(str(R.string.db_create_logs));
 					Log.i(TAG, "Created table " + db_LOG_TABLE);
 			
-					db.execSQL(str(R.string.db_create_alarms));
-					Log.i(TAG, "Created table " + db_ALARM_TABLE);
+					db.execSQL(str(R.string.db_create_alerts));
+					Log.i(TAG, "Created table " + db_ALERT_TABLE);
 					
 					db.execSQL(str(R.string.db_create_tracker_group_id_idx));
 					db.execSQL(str(R.string.db_create_log_tracker_time_idx));
-					db.execSQL(str(R.string.db_create_alarm_tracker_id_idx));
+					db.execSQL(str(R.string.db_create_alert_tracker_id_idx));
 					Log.i(TAG, "Created indexes");
 
 /*					db.execSQL(str(R.string.db_create_valuetypes));

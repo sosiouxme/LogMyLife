@@ -3,7 +3,7 @@ package net.sosiouxme.logmylife.activity;
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.LogMyLife;
 import net.sosiouxme.logmylife.R;
-import net.sosiouxme.logmylife.custom.AlarmEditActivity;
+import net.sosiouxme.logmylife.custom.AlertEditActivity;
 import net.sosiouxme.logmylife.custom.GroupSpinner;
 import net.sosiouxme.logmylife.custom.RequireTextFor;
 import net.sosiouxme.logmylife.custom.GroupSpinner.OnGroupSelectedListener;
@@ -27,7 +27,7 @@ Activity that presents the UI to edit a single tracker.
 See LICENSE file for this file's GPLv3 distribution license.
 */
 
-public class TrackerEdit extends AlarmEditActivity implements android.view.View.OnClickListener, OnGroupSelectedListener {
+public class TrackerEdit extends AlertEditActivity implements android.view.View.OnClickListener, OnGroupSelectedListener {
 
 	private static final String TAG = "LML.TrackerEdit";
 	/** reference to the text edit field holding the tracker name */
@@ -82,8 +82,8 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 		metName.addTextChangedListener(new RequireTextFor(okButton, metName));
 		okButton.setOnClickListener(this);
 		
-		initAlarmContainer();
-		populateAlarms();
+		initAlertContainer();
+		populateAlerts();
 		fillGroupSpinner();
 	}
 	
@@ -188,7 +188,7 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 			mTracker.setName(name);
 			mTracker.setBody(metBody.getText().toString());
 			mTracker.setGroupId(mCurrentGroupId);
-			mTracker.setSkipNextAlarm(false);
+			mTracker.setSkipNextAlert(false);
 			if(mTracker.isNew()) {
 				trackerId = mDba.createTracker(mTracker);
 				((LogMyLife) getApplication()).showToast(C.TOAST_TRACKER_CREATED);
@@ -197,7 +197,7 @@ public class TrackerEdit extends AlarmEditActivity implements android.view.View.
 				mDba.updateTracker(mTracker);
 				((LogMyLife) getApplication()).showToast(C.TOAST_TRACKER_UPDATED);
 			}
-			storeAlarms(trackerId);
+			storeAlerts(trackerId);
 		}
 		return trackerId > -1;
 	}
