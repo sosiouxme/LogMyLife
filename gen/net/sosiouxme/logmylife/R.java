@@ -73,6 +73,7 @@ public final class R {
         public static final int group_info=0x7f0a000b;
         public static final int group_list_spinner=0x7f0a000a;
         public static final int group_spinner=0x7f0a001a;
+        public static final int help=0x7f0a004b;
         public static final int hours=0x7f0a0027;
         public static final int increment=0x7f0a0031;
         public static final int info_alert=0x7f0a001f;
@@ -153,7 +154,7 @@ public final class R {
         public static final int tracker_edit=0x7f090008;
     }
     public static final class string {
-        public static final int ae_dialog_title=0x7f06003b;
+        public static final int ae_dialog_title=0x7f06003f;
         public static final int alert_message=0x7f06000e;
         public static final int alert_prefix=0x7f06000f;
         public static final int app_name=0x7f06001d;
@@ -212,12 +213,16 @@ public final class R {
         public static final int tdd_delete_button=0x7f060024;
         public static final int tdd_msg=0x7f060023;
         public static final int tdd_title=0x7f060022;
-        public static final int te_dialog_alert_html=0x7f060038;
-        public static final int te_dialog_alert_title=0x7f060037;
-        public static final int te_dialog_group_html=0x7f060036;
-        public static final int te_dialog_group_title=0x7f060035;
-        public static final int te_dialog_value_html=0x7f06003a;
-        public static final int te_dialog_value_title=0x7f060039;
+        public static final int te_dialog_alert_html=0x7f06003c;
+        public static final int te_dialog_alert_title=0x7f06003b;
+        public static final int te_dialog_create_html=0x7f060036;
+        public static final int te_dialog_create_title=0x7f060035;
+        public static final int te_dialog_edit_html=0x7f060038;
+        public static final int te_dialog_edit_title=0x7f060037;
+        public static final int te_dialog_group_html=0x7f06003a;
+        public static final int te_dialog_group_title=0x7f060039;
+        public static final int te_dialog_value_html=0x7f06003e;
+        public static final int te_dialog_value_title=0x7f06003d;
         public static final int toast_group_created=0x7f060015;
         public static final int toast_group_deleted=0x7f060013;
         public static final int toast_group_updated=0x7f060014;

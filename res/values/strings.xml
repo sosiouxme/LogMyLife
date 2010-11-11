@@ -45,6 +45,10 @@
 <string name="main_dialog_change_title">LogMyLife change log</string>
 <string name="main_dialog_group_asset">main_group.html</string>
 <string name="main_dialog_group_title">About groups</string>
+<string name="te_dialog_create_title">Create a tracker</string>
+<string name="te_dialog_create_html">te_create_info.html</string>
+<string name="te_dialog_edit_title">Edit a tracker</string>
+<string name="te_dialog_edit_html">te_edit_info.html</string>
 <string name="te_dialog_group_title">About groups</string>
 <string name="te_dialog_group_html">te_group.html</string>
 <string name="te_dialog_alert_title">About Alerts</string>

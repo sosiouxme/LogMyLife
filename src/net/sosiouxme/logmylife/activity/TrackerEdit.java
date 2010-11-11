@@ -3,6 +3,7 @@ package net.sosiouxme.logmylife.activity;
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.LogMyLife;
 import net.sosiouxme.logmylife.R;
+import net.sosiouxme.logmylife.Util;
 import net.sosiouxme.logmylife.custom.AlertEditActivity;
 import net.sosiouxme.logmylife.custom.GroupSpinner;
 import net.sosiouxme.logmylife.custom.RequireTextFor;
@@ -31,6 +32,8 @@ See LICENSE file for this file's GPLv3 distribution license.
 public class TrackerEdit extends AlertEditActivity implements android.view.View.OnClickListener, OnGroupSelectedListener {
 
 	private static final String TAG = "LML.TrackerEdit";
+	private static final int DIALOG_EDIT_HELP = 10;
+	private static final int DIALOG_CREATE_HELP = 11;
 	/** reference to the text edit field holding the tracker name */
 	private EditText metName;
 	/** reference to the text edit field holding the tracker body */
@@ -151,6 +154,8 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		case R.id.delete:
 			deleteTracker();
 			break;
+		case R.id.help:
+			showDialog(mTracker.isNew() ? DIALOG_CREATE_HELP : DIALOG_EDIT_HELP);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -185,7 +190,16 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
-		
+		case DIALOG_CREATE_HELP:
+			return Util.getHtmlDialogBuilder(this, R.string.te_dialog_create_html)
+				.setTitle(R.string.te_dialog_create_title)
+				.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+				.create();
+		case DIALOG_EDIT_HELP:
+			return Util.getHtmlDialogBuilder(this, R.string.te_dialog_edit_html)
+			.setTitle(R.string.te_dialog_edit_title)
+			.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+			.create();
 		}
 		return super.onCreateDialog(id);
 	}
