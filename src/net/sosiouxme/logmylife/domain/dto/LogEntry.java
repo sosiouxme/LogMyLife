@@ -11,7 +11,6 @@ public class LogEntry extends AbstractDTO implements Serializable {
 	public long trackerId;
 	public String body;
 	public Date logDate;
-	public long valueType;
 	public Integer value;
 	public boolean isBreak;
 	
@@ -35,10 +34,6 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		return logDate;
 	}
 	
-	public long getValueType() {
-		return valueType;
-	}
-
 	public Integer getValue() {
 		return value;
 	}
@@ -64,11 +59,6 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		changed.put(C.db_LOG_TRACKER, trackerId);
 	}
 
-	public void setValueType(long valueType) {
-		this.valueType = valueType;
-		changed.put(C.db_LOG_VALUE_TYPE, valueType);
-	}
-
 	public void setValue(Integer value) {
 		this.value = value;
 		changed.put(C.db_LOG_VALUE, value == null ? null : value);
@@ -83,7 +73,6 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		setTrackerId(le.trackerId);
 		setBody(le.body);
 		setLogDate(le.logDate);
-		setValueType(le.valueType);
 		setValue(le.value);
 		setBreak(le.isBreak);
 	}

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+<!-- Database level 1 (initial) -->
   <string name="db_create_groups">
     CREATE TABLE Groups (
       _id INTEGER PRIMARY KEY,
@@ -43,6 +44,24 @@
       next_time DATETIME
     );
   </string>
+  <string name="db_create_tracker_group_id_idx">
+    create index tracker_group_id_idx on Trackers (group_id);
+  </string>
+  <string name="db_create_log_tracker_time_idx">
+    create index log_tracker_time_idx on TrackerLogs (tracker_id ASC, log_time DESC);
+  </string>
+  <string name="db_create_alert_tracker_id_idx">
+    create index alert_tracker_id_idx on Alerts (tracker_id);
+  </string>  
+<!-- Database level 2 -->
+  <string name="db_alter_tracker_add_value_label">
+    alter table Trackers add value_label TEXT;
+  </string>
+  <string name="db_alter_tracker_add_value_label_pos">
+    alter table Trackers add value_label_position BOOLEAN DEFAULT 1;
+  </string>
+<!-- Database level ? - future -->
+
   <string name="db_create_valuetypes">
     create table ValueTypes (
       _id INTEGER PRIMARY KEY,
@@ -50,6 +69,8 @@
       type TEXT NOT NULL
     );
   </string>
+
+<!-- Canned queries to be used -->
   
   <string name="db_select_trackers">
     select  t._id, name, log_time, tl.body
@@ -76,17 +97,10 @@
               where _id = ?
       ;
   </string>
-  <string name="db_create_tracker_group_id_idx">
-    create index tracker_group_id_idx on Trackers (group_id);
-  </string>
-  <string name="db_create_log_tracker_time_idx">
-    create index log_tracker_time_idx on TrackerLogs (tracker_id ASC, log_time DESC);
-  </string>
-  <string name="db_create_alert_tracker_id_idx">
-    create index alert_tracker_id_idx on Alerts (tracker_id);
-  </string>  
+
+<!-- configuration of values user sees -->
   <string name="db_first_list">General</string>
-  <string name="db_first_value_type">Number</string>
-  <string name="db_first_value_name">Number</string>
+  <!--  string name="db_first_value_type">Number</string>
+  <string name="db_first_value_name">Number</string -->
 
 </resources>

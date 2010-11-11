@@ -7,8 +7,6 @@ import net.sosiouxme.logmylife.custom.AlertEditActivity;
 import net.sosiouxme.logmylife.custom.EventCursorAdapter;
 import net.sosiouxme.logmylife.dialog.LogDeleteDialog;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
-import net.sosiouxme.logmylife.domain.DbAdapter;
-import net.sosiouxme.logmylife.receiver.AlertReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -22,7 +20,6 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
@@ -36,7 +33,6 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 	// Logger tag
 	private static final String TAG = "LML.TrackerDetail";
 
-	private DbAdapter mDba;
 	private TextView mName;
 	private TextView mBody;
 	
@@ -45,9 +41,6 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// get a DB handle
-		mDba = new DbAdapter(this);
 
 		// Set the layout for this activity.
 		setContentView(R.layout.a_tracker_detail);
@@ -101,10 +94,11 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 		Cursor cur = mDba.fetchLogs(mTracker.id);
 		startManagingCursor(cur);
 		EventCursorAdapter adapter = new EventCursorAdapter(this,
+				mTracker,
 				R.layout.a_tracker_detail_row,
 				cur, // Give the cursor to the list adapter
-				new String[] { C.db_LOG_TIME, C.db_LOG_BODY },
-				new int[] { R.id.logTime, R.id.logBody });
+				new String[] { C.db_LOG_TIME, C.db_LOG_BODY, C.db_LOG_VALUE },
+				new int[] { R.id.logTime, R.id.logBody, R.id.logValue });
 		this.setListAdapter(adapter);
 		
 		// enable context menu for list items
@@ -136,10 +130,6 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 			break;
 		case R.id.new_log:
 			newLogEntry();
-			break;
-		case R.id.test_alert:
-			AlertReceiver.setAlert(this, mTracker.id, System.currentTimeMillis() + (5 * 1000));
-			Toast.makeText(this, "Alert set", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.done:
 			finish();

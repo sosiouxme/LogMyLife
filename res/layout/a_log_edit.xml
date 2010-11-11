@@ -32,33 +32,17 @@
       style="@style/horizontalLL"
     >
       <TextView
-        style="@style/Label"
-        android:text="Value: "
-        android:layout_weight="1" />
-      <EditText
-        android:id="@+id/logValue"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="number" />
-    </LinearLayout>
-    <LinearLayout
-      style="@style/horizontalLL"
-    >
-      <TextView
-        style="@style/Label"
         android:text="Date: " />
       <Button
         android:id="@+id/editDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Edit" />
-    </LinearLayout>
-    <LinearLayout
-      style="@style/horizontalLL"
-    >
       <TextView
-        style="@style/Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Time: " />
       <Button
         android:id="@+id/editTime"
@@ -74,6 +58,17 @@
       android:id="@+id/body"
       style="@style/BodyEditor"
       android:hint="Log body" />
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Value: "
+        android:layout_weight="1" />
+      <EditText
+        android:id="@+id/logValue"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:inputType="number" />
     <LinearLayout
       style="@style/horizontalLL"
     >

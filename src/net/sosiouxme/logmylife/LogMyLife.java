@@ -54,4 +54,37 @@ public class LogMyLife extends Application {
 	public void setSelectedGroup(long groupId) {
 		mPrefs.edit().putLong(GROUP_SELECTED, groupId).commit();
 	}
+
+	private static final String FIRST_TIME = "firstTime";
+	/**
+	 * Returns whether this is the first time the user has ever used
+	 * this application.
+	 *
+	 * @return True if this is the first time. False forever after.
+	 */
+	public boolean getFirstTime() {
+		boolean first = mPrefs.getBoolean(FIRST_TIME, true);
+		if(first)
+			mPrefs.edit().putBoolean(FIRST_TIME, false).commit();	
+		return first;
+	}
+	
+	private static final String SHOW_CHANGED = "showChanged";
+	private static final int CHANGE_VERSION = 0;
+	/**
+	 * Has something been updated that we should tell users about?
+	 * 
+	 * @return True if the version number here changes; false otherwise
+	 */
+	public boolean getShowChangedDialog() {
+		int stored = mPrefs.getInt(SHOW_CHANGED, -1);
+		int version = mPrefs.getInt(SHOW_CHANGED, CHANGE_VERSION);
+		if(version < CHANGE_VERSION) {
+			mPrefs.edit().putInt(SHOW_CHANGED, CHANGE_VERSION).commit();	
+			return true;
+		} else if (stored == -1) //first time we ever come here
+			mPrefs.edit().putInt(SHOW_CHANGED, CHANGE_VERSION).commit();	
+		return false;
+	}
+	
 }

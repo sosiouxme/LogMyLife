@@ -24,11 +24,7 @@ public class AlertReceiver extends BroadcastReceiver {
         long alertId = intent.getLongExtra(C.db_ALERT_TABLE, -1);
 		DbAdapter db = new DbAdapter(context);
 
-		// reset alert for next time a tracker is due
-		Alert nextAlert = db.fetchNextAlert();
-		if(nextAlert != null) {
-			setAlert(context, nextAlert.getId(), nextAlert.getNextTime().getTime());
-		}
+		setNextAlert(context, db);
 
 		// get this alert and make a notification
 		Alert alert = (alertId > 0) ? db.fetchAlert(alertId) : null;
@@ -77,6 +73,14 @@ public class AlertReceiver extends BroadcastReceiver {
 		// use notification manager to send the notification
 		NotificationManager notifMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		notifMgr.notify((int)alertId, notification); // re-use alertId as notification Id
+	}
+
+	public static void setNextAlert(Context context, DbAdapter db) {
+		// reset alert for next time a tracker is due
+		Alert nextAlert = db.fetchNextAlert();
+		if(nextAlert != null) {
+			setAlert(context, nextAlert.getId(), nextAlert.getNextTime().getTime());
+		}
 	}
 
 	/**

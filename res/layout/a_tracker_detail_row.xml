@@ -9,8 +9,39 @@
     android:text="Time"
     android:id="@+id/logTime"
     android:textAppearance="@style/ListTextAppearance"
-    android:layout_width="fill_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content" />
+    <LinearLayout
+    android:id="@+id/logValWidget"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="5sp"
+    >
+    <TextView
+    android:id="@+id/logValLabelPre"
+    android:textAppearance="@style/SubTextAppearance"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+    android:paddingLeft="5sp"
+    android:paddingRight="5sp"
+    />
+    <TextView
+    android:id="@+id/logValue"
+    android:textAppearance="@style/SubTextAppearance"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+    android:text="Value"
+    />
+    <TextView
+    android:id="@+id/logValLabelPost"
+    android:textAppearance="@style/SubTextAppearance"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+    android:paddingLeft="5sp"
+    android:paddingRight="5sp"
+    />
+    </LinearLayout>
   <TextView
     android:text="Body"
     android:id="@+id/logBody"

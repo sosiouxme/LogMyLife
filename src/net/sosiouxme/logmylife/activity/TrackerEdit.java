@@ -9,6 +9,7 @@ import net.sosiouxme.logmylife.custom.RequireTextFor;
 import net.sosiouxme.logmylife.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 	private EditText metName;
 	/** reference to the text edit field holding the tracker body */
 	private EditText metBody;
+	/** reference to the text edit field holding the log value label */
+	private EditText metValLabel;
 	/** reference to the group spinner so group can be changed for this tracker */
 	private GroupSpinner mSpinner;
 	/** current group for this tracker (shown in spinner) */
@@ -68,11 +71,13 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		// locate and fill the necessary elements of the layout
 		metName = (EditText) findViewById(R.id.name);
 		metBody = (EditText) findViewById(R.id.body);
+		metValLabel = (EditText) findViewById(R.id.logValueLabel);
 
 		if(!mTracker.isNew()) {			
 			// set the data in the views
-			metName.setText(mTracker.name);
-			metBody.setText(mTracker.body);
+			metName.setText(mTracker.getName());
+			metBody.setText(mTracker.getBody());
+			metValLabel.setText(mTracker.getLogValueLabel());
 		}
 		
 		// wire up the buttons
@@ -81,6 +86,9 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		Button okButton = (Button) findViewById(R.id.ok);
 		metName.addTextChangedListener(new RequireTextFor(okButton, metName));
 		okButton.setOnClickListener(this);
+		findViewById(R.id.info_group).setOnClickListener(this);
+		findViewById(R.id.info_alert).setOnClickListener(this);
+		findViewById(R.id.info_value).setOnClickListener(this);
 		
 		initAlertContainer();
 		populateAlerts();
@@ -160,9 +168,26 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 			mSaveOnFinish = false;
 			finish();
 			break;
+		case R.id.info_group:
+			showDialog(DIALOG_INFO_GROUP);
+			break;
+		case R.id.info_value:
+			showDialog(DIALOG_INFO_VALUE);
+			break;
+		case R.id.info_alert:
+			showDialog(DIALOG_INFO_ALERT);
+			break;
 		default:
 			super.onClick(v);
 		}
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		
+		}
+		return super.onCreateDialog(id);
 	}
 	
 /* **************************** worker methods ************************** */	
@@ -187,6 +212,7 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		if (name.length() > 0) {
 			mTracker.setName(name);
 			mTracker.setBody(metBody.getText().toString());
+			mTracker.setLogValueLabel(metValLabel.getText().toString());
 			mTracker.setGroupId(mCurrentGroupId);
 			mTracker.setSkipNextAlert(false);
 			if(mTracker.isNew()) {

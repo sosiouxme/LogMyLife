@@ -2,6 +2,11 @@ package net.sosiouxme.logmylife;
 
 import java.util.Date;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.webkit.WebView;
+
 /**
  * A few utility methods that didn't seem to go anywhere else.
  * 
@@ -55,5 +60,27 @@ public class Util {
 
 	public static String toString(Object o, String defaultString) {
 		return (o == null) ? defaultString : o.toString();
+	}
+	
+	/**
+	 * 
+	 * @param a Activity to attach this dialog to
+	 * @param filename file in assets/dialogs/ dir which contains the HTML
+	 * @return Builder for creating an AlertDialog with the HTML content
+	 */
+	public static Builder getHtmlDialogBuilder(Activity a, String filename) {
+		WebView wv = (WebView) a.getLayoutInflater().inflate(R.layout.d_generic_info, null);
+		wv.loadUrl("file:///android_asset/dialogs/" + filename);
+		return new AlertDialog.Builder(a).setView(wv);
+	}
+
+	/**
+	 * 
+	 * @param a Activity to attach this dialog to
+	 * @param resId string for file in assets/dialogs/ dir which contains the HTML
+	 * @return Builder for creating an AlertDialog with the HTML content
+	 */
+	public static Builder getHtmlDialogBuilder(Activity a, int rId) {
+		return getHtmlDialogBuilder(a, a.getString(rId));
 	}
 }

@@ -3,8 +3,6 @@
     <string name="alert_message">LogMyLife Alert</string>
     <string name="alert_prefix">LogMyLife Alert - </string>
     <string name="ringtone_dialog_title">Select Notification</string>
-    <string name="fooo">foo</string>
-    <string name="foo">foo</string>
     <string name="empty_ringtone">(Silent)</string>
     <string name="empty_time">(none)</string>
     <string name="toast_group_deleted">Group deleted</string>
@@ -39,15 +37,21 @@
 <string name="ge_dialog_delete_button">Delete</string>
 <string name="ge_dialog_cancel_button">Cancel</string>
 
-<string name="il_dialog_about_title">About LogMyLife</string>
-<string name="il_dialog_about_text">\
-LogMyLife is an application that helps you track
-when some recurring event last occurred, for 
-instance a task that you perform. You may 
-create multiple groups of trackers and create 
-and view log entries for them.
-</string>
-<string name="il_dialog_about_button">OK</string>
+<!-- info dialogs -->
+<string name="info_dialog_dismiss_button">OK</string>
+<string name="main_dialog_info_asset">main_info.html</string>
+<string name="main_dialog_info_title">About LogMyLife</string>
+<string name="main_dialog_change_asset">main_changelog.html</string>
+<string name="main_dialog_change_title">LogMyLife change log</string>
+<string name="main_dialog_group_asset">main_group.html</string>
+<string name="main_dialog_group_title">About groups</string>
+<string name="te_dialog_group_title">About groups</string>
+<string name="te_dialog_group_html">te_group.html</string>
+<string name="te_dialog_alert_title">About Alerts</string>
+<string name="te_dialog_alert_html">te_alert.html</string>
+<string name="te_dialog_value_title">About Values</string>
+<string name="te_dialog_value_html">te_value.html</string>
+
 
 <string name="ae_dialog_title">Alert after last log entry</string>
 

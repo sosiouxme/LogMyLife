@@ -15,42 +15,95 @@
       android:layout_height="fill_parent"
       android:orientation="vertical"
     >
-      <Spinner
-        android:id="@+id/group_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name" />
+      <LinearLayout
+        style="@style/horizontalLL"
+      >
+        <Spinner
+          android:id="@+id/group_spinner"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="9" />
+        <ImageView
+          android:id="@+id/info_group"
+          style="@style/InfoButton" />
+      </LinearLayout>
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="9"
+          android:text="Name" />
       <EditText
         android:id="@+id/name"
         style="@style/NameEditor"
         android:hint="Tracker name" />
-      <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Notes" />
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="9"
+          android:text="Notes" />
       <EditText
         android:id="@+id/body"
         style="@style/BodyEditor"
         android:hint="Optional notes about this tracker" />
-          <LinearLayout
-    style="@style/LineLabel"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-  >
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Alerts: " />
-    <Button
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Add new"
-      android:id="@+id/add_new_alert" />
-  </LinearLayout>
+      <RelativeLayout
+        style="@style/LineLabel"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+      >
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_margin="5dip"
+          android:text="Log value" />
+        <ImageView
+          android:layout_width="wrap_content"
+          android:layout_alignParentRight="true"
+          android:id="@+id/info_value"
+          style="@style/InfoButton" />
+      </RelativeLayout>
+      <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Label: "
+        />
+      <EditText
+        android:id="@+id/logValueLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="25"
+        android:inputType="textShortMessage|text|textAutoComplete"
+        android:hint="Label text for the value"
+         />
+      <RelativeLayout
+        style="@style/LineLabel"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+      >
+        <TextView
+          android:id="@+id/z1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_alignParentBottom="true"
+          android:layout_margin="5dip"
+          android:text="Alerts: " />
+        <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toRightOf="@id/z1"
+          android:clickable="true"
+          android:focusable="true"
+          android:src="@android:drawable/ic_menu_add"
+          android:id="@+id/add_new_alert" />
+        <ImageView
+          android:id="@+id/info_alert"
+          android:layout_width="wrap_content"
+          android:layout_alignParentRight="true"
+          style="@style/InfoButton" />
+      </RelativeLayout>
       <LinearLayout
         android:id="@+id/alertContainer"
         style="@style/verticalLL"

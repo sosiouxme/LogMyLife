@@ -6,9 +6,14 @@ public class Tracker extends AbstractDTO {
 
 	public long groupId;
 	public String name;
-	public String body;
+	public String body = null;
 	public long lastLogId;
 	public LogEntry lastLog = null;
+	public String logValueLabel = null;
+	public static final int LABEL_LEFT = 0;
+	public static final int LABEL_RIGHT = 1;
+	public int logValueLabelPos = LABEL_RIGHT;
+
 	/** A flag that can be set to skip the alert just once */
 	public boolean skipNextAlert;
 	
@@ -39,6 +44,27 @@ public class Tracker extends AbstractDTO {
 
 	public boolean getSkipNextAlert() {
 		return skipNextAlert;
+	}
+
+	public String getLogValueLabel() {
+		return logValueLabel;
+	}
+
+
+	public int getLogValueLabelPos() {
+		return logValueLabelPos;
+	}
+
+	public void setLogValueLabelPos(int logValueLabelPos) {
+		if (logValueLabelPos == this.logValueLabelPos) return;
+		this.logValueLabelPos = logValueLabelPos;
+		changed.put(C.db_TRACKER_VALUE_LABEL_POS, logValueLabelPos);
+	}
+
+	public void setLogValueLabel(String logValueLabel) {
+		if (logValueLabel != null && logValueLabel.equals(this.logValueLabel)) return;
+		this.logValueLabel = logValueLabel;
+		changed.put(C.db_TRACKER_VALUE_LABEL, logValueLabel);
 	}
 
 	public void setSkipNextAlert(boolean skipNextAlert) {
@@ -78,6 +104,8 @@ public class Tracker extends AbstractDTO {
 		setBody(t.body);
 		lastLogId = t.lastLogId;
 		lastLog = t.lastLog;
+		setLogValueLabel(t.logValueLabel);
+		setLogValueLabelPos(t.logValueLabelPos);
 		setSkipNextAlert(skipNextAlert);
 	}
 }

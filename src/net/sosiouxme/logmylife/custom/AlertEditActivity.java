@@ -52,6 +52,9 @@ public class AlertEditActivity extends ListActivity implements OnClickListener, 
 
 	private static final String TAG = "LML.AlertEditActivity";
 	protected static final int ALERT_DIALOG = 0;
+	protected static final int DIALOG_INFO_GROUP = 1;
+	protected static final int DIALOG_INFO_VALUE = 2;
+	protected static final int DIALOG_INFO_ALERT = 3;
 	private static final String STATE_KEY_ALERTS = "mAlertList";
 	private static final String STATE_KEY_DELETING = "mAlertsToDeleteList";
 
@@ -120,7 +123,7 @@ public class AlertEditActivity extends ListActivity implements OnClickListener, 
 		Log.d(TAG, "initAlertContainer");
 		mAlertContainer = (LinearLayout) findViewById(R.id.alertContainer);
 		mAlertList = new ArrayList<Alert>();
-		Button addNew = (Button) findViewById(R.id.add_new_alert);
+		View addNew = findViewById(R.id.add_new_alert);
 		if(addNew != null)
 			addNew.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
@@ -326,6 +329,22 @@ public class AlertEditActivity extends ListActivity implements OnClickListener, 
 			dialog = new AlertEditDialog(this);
 			dialog.setContentView(R.layout.d_edit_alert);
 			break;
+		case DIALOG_INFO_GROUP:
+			return Util.getHtmlDialogBuilder(this, R.string.te_dialog_group_html)
+			.setTitle(R.string.te_dialog_group_title)
+			.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+			.create();
+		case DIALOG_INFO_VALUE:
+			return Util.getHtmlDialogBuilder(this, R.string.te_dialog_value_html)
+			.setTitle(R.string.te_dialog_value_title)
+			.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+			.create();
+		case DIALOG_INFO_ALERT:
+			return Util.getHtmlDialogBuilder(this, R.string.te_dialog_alert_html)
+			.setTitle(R.string.te_dialog_alert_title)
+			.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+			.create();
+
 		}
 		return dialog;
 	}

@@ -40,7 +40,7 @@ public class DbAdapter implements C {
 	/**	 name of the file used for the sqlite DB */
 	private static final String DATABASE_NAME = "LogMyLife.db";
 	/** version of the DB (to determine if migration is needed) */
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	/** Logging tag for this class */
     private static final String TAG = "LML.DBAdapter";
 
@@ -166,6 +166,11 @@ public class DbAdapter implements C {
      * Handle Trackers table
      */
 
+	private static final String[] TRACKER_COLUMNS = new String[] { db_ID,
+			db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_SKIP_NEXT_ALERT,
+			db_TRACKER_GROUP, db_TRACKER_LAST_LOG_ID, db_TRACKER_VALUE_LABEL,
+			db_TRACKER_VALUE_LABEL_POS };
+
 	public long createTracker(Tracker tr) {
         // @return rowId or -1 if failed
 		Log.d(TAG, "creating item " + tr.groupId + ":" + tr.name);
@@ -178,9 +183,7 @@ public class DbAdapter implements C {
 				
 		Cursor mCursor = mDb.query(
 				db_TRACKER_TABLE, 
-				new String[] { db_ID, db_TRACKER_NAME, db_TRACKER_BODY,
-						db_TRACKER_SKIP_NEXT_ALERT, db_TRACKER_GROUP,
-						db_TRACKER_LAST_LOG_ID },
+				TRACKER_COLUMNS,
 				db_ID + "=" + trackerId,
 				null, null,	null, null);
         if (mCursor != null) {
@@ -206,7 +209,9 @@ public class DbAdapter implements C {
 			t.groupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
 			t.lastLogId = c.getLong(c.getColumnIndex(C.db_TRACKER_LAST_LOG_ID));
 			t.skipNextAlert = c.getInt(c.getColumnIndex(C.db_TRACKER_SKIP_NEXT_ALERT)) > 0;
-
+			t.logValueLabel = c.getString(c.getColumnIndex(C.db_TRACKER_VALUE_LABEL));
+			t.logValueLabelPos = c.getInt(c.getColumnIndex(C.db_TRACKER_VALUE_LABEL_POS));
+			
 			if(t.lastLogId > 0)
 				t.lastLog = fetchLog(t.lastLogId);
 		} finally {
@@ -270,6 +275,10 @@ public class DbAdapter implements C {
      * Handle TrackerLogs table
      */
     
+	private static final String[] LOG_COLUMNS = new String[] { db_ID,
+			db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY, db_LOG_VALUE,
+			db_LOG_IS_BREAK };
+
 	public long createLog(long trackerId) {
 		LogEntry le = new LogEntry(-1);
 		le.setTrackerId(trackerId);
@@ -290,8 +299,7 @@ public class DbAdapter implements C {
 		LogEntry le = null;
 		try {
 			c = mDb.query(true, db_LOG_TABLE,
-            		new String[] {db_ID, db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY,
-					  db_LOG_VALUE, /*db_LOG_VALUE_TYPE,*/ db_LOG_IS_BREAK},
+            		LOG_COLUMNS,
 					db_ID + "=" + logId, null,
 					null, null, null, null);
 			if (c.getCount() != 1)
@@ -304,7 +312,6 @@ public class DbAdapter implements C {
 			if (date != null)
 				le.logDate = dbDateFormat.parse(date);
 			le.isBreak = c.getInt(c.getColumnIndex(C.db_LOG_IS_BREAK)) > 0;
-			//le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
 			if (c.isNull(c.getColumnIndex(C.db_LOG_VALUE)))
 				le.value = null;
 			else
@@ -323,7 +330,7 @@ public class DbAdapter implements C {
         // @return Cursor positioned to matching log, if found
     	Log.d(TAG, "fetching logs for item " + trackerId);
         Cursor c = mDb.query(true, db_LOG_TABLE,
-				new String[] {db_ID, db_LOG_TIME, db_LOG_BODY},
+				new String[] {db_ID, db_LOG_TIME, db_LOG_BODY, db_LOG_VALUE},
 				db_LOG_TRACKER + "=" + trackerId, null,
 		        null, null, db_LOG_TIME + " DESC", null);
         if (c != null)
@@ -560,7 +567,8 @@ public class DbAdapter implements C {
 						+ " to " + newVersion);
 
 			try {
-				if (oldVersion < 1) {
+				switch(oldVersion) {
+				case 0:
 					db.execSQL(str(R.string.db_create_groups));
 					Log.i(TAG, "Created table " + db_GROUP_TABLE);
 
@@ -581,7 +589,11 @@ public class DbAdapter implements C {
 					db.execSQL(str(R.string.db_create_log_tracker_time_idx));
 					db.execSQL(str(R.string.db_create_alert_tracker_id_idx));
 					Log.i(TAG, "Created indexes");
-
+				case 1:
+					db.execSQL(str(R.string.db_alter_tracker_add_value_label));
+					db.execSQL(str(R.string.db_alter_tracker_add_value_label_pos));
+					Log.i(TAG, "Added tracker value types");	
+					
 /*					db.execSQL(str(R.string.db_create_valuetypes));
 					ContentValues firstRow = new ContentValues();
 					firstRow.put(db_VALUE_NAME, str(R.string.db_first_value_name));
@@ -596,12 +608,5 @@ public class DbAdapter implements C {
 				throw (e);
 			}
 		}
-
-
 	}
-
-
-
-
-
 }

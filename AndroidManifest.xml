@@ -1,38 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="net.sosiouxme.logmylife"
-      android:versionName="1.0" android:versionCode="1">
-    <application android:icon="@drawable/icon"
-     android:label="@string/app_name" 
-     android:debuggable="true" android:name="LogMyLife" android:theme="@style/AppTheme">
-        <activity android:name=".activity.Main"
-                  android:label="LogMyLife">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-<activity android:name=".activity.GroupsEdit"
- android:label="LogMyLife - Edit Groups"
-/>
-<activity
- android:name=".activity.TrackerEdit"
- android:label="LogMyLife - Edit Tracker"
-/>
-<activity
- android:name=".activity.TrackerDetail"
- android:label="LogMyLife - View Tracker Details"
-/>
-<activity android:name=".activity.LogEdit"
- android:label="LogMyLife - Edit Log"
-/>
-<activity android:name=".activity.Prefs"
- android:label="LogMyLife - Preferences"
-/>
-<receiver android:name=".receiver.AlertReceiver"
- android:process=":remote" 
-/>
-</application>
-    <uses-sdk android:minSdkVersion="3"/>
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  package="net.sosiouxme.logmylife"
+  android:versionName="1.0"
+  android:versionCode="1"
+>
+  <application
+    android:icon="@drawable/icon"
+    android:label="@string/app_name"
+    android:debuggable="true"
+    android:name="LogMyLife"
+    android:theme="@style/AppTheme"
+  >
+    <activity
+      android:name=".activity.Main"
+      android:label="LogMyLife"
+    >
+      <intent-filter>
+        <action
+          android:name="android.intent.action.MAIN" />
+        <category
+          android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity
+      android:name=".activity.GroupsEdit"
+      android:label="LogMyLife - Edit Groups" />
+    <activity
+      android:name=".activity.TrackerEdit"
+      android:label="LogMyLife - Edit Tracker" />
+    <activity
+      android:name=".activity.TrackerDetail"
+      android:label="LogMyLife - View Tracker Details" />
+    <activity
+      android:name=".activity.LogEdit"
+      android:label="LogMyLife - Edit Log" />
+    <activity
+      android:name=".activity.Prefs"
+      android:label="LogMyLife - Preferences" />
+    <receiver
+      android:name=".receiver.AlertReceiver"
+      android:process=":remote" />
+    <receiver
+      android:name=".receiver.BootReceiver"
+      android:process=":remote"
+    >
+      <intent-filter>
+        <action
+          android:name="android.intent.action.BOOT_COMPLETED" />
+      </intent-filter>
+    </receiver>
+  </application>
+  <uses-sdk   android:minSdkVersion="3" />
 
+
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 </manifest> 

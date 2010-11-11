@@ -11,7 +11,6 @@ import net.sosiouxme.logmylife.custom.GroupSpinner;
 import net.sosiouxme.logmylife.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -42,9 +41,11 @@ displays all trackers for the currently selected group.
 See LICENSE file for this file's GPLv3 distribution license.
 */
 
-public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener, FilterQueryProvider {
-	private static final String TAG = "LML.TrackerGroup";
+public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener, FilterQueryProvider, android.view.View.OnClickListener {
+	private static final String TAG = "LML.Main";
 	private static final int DIALOG_ABOUT = 0;
+	private static final int DIALOG_CHANGELOG = 1;
+	private static final int DIALOG_GROUP_INFO = 2;
 	private DbAdapter mDba;
 	private GroupSpinner mSpinner = null;
 	private long mCurrentGroupId = 0;
@@ -62,16 +63,24 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		setContentView(R.layout.a_main);
 		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_main_new, null));
 
+		findViewById(R.id.group_info).setOnClickListener(this);
+		
 		mDba = new DbAdapter(this);
 		fillGroupSpinner();
 		fillTrackerList();
+		
+		
+		if(((LogMyLife) getApplication()).getFirstTime())
+			showDialog(DIALOG_ABOUT);
+		if(((LogMyLife) getApplication()).getShowChangedDialog())
+			showDialog(DIALOG_CHANGELOG);
 	}
 
 	/* get the cursor with all lists and attach to the spinner */
 	private void fillGroupSpinner() {
 		Log.d(TAG, "fillGroupSpinner");
 		GroupSpinner spinner = new GroupSpinner(this,
-				(Spinner) findViewById(R.id.il_list_spinner), mDba);
+				(Spinner) findViewById(R.id.group_list_spinner), mDba);
 		mCurrentGroupId = spinner.getSelectedItemId();
 		spinner.setOnGroupSelectedListener(this);
 		mSpinner = spinner;
@@ -144,13 +153,21 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		Log.d(TAG, "onCreateDialog");
 		switch (id) {
 		case DIALOG_ABOUT:
-			return new AlertDialog.Builder(this).setTitle(
-					R.string.il_dialog_about_title).setMessage(
-					R.string.il_dialog_about_text).setPositiveButton(
-					R.string.il_dialog_about_button, null).create();
+		case DIALOG_CHANGELOG:
+			return Util.getHtmlDialogBuilder(this, R.string.main_dialog_info_asset)
+				.setTitle(R.string.main_dialog_info_title)
+				.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+				.create();
+		case DIALOG_GROUP_INFO:
+			return Util.getHtmlDialogBuilder(this, R.string.main_dialog_group_asset)
+				.setTitle(R.string.main_dialog_group_title)
+				.setPositiveButton(R.string.info_dialog_dismiss_button, null)
+				.create();
 		}
 		return null;
 	}
+
+
 
 	public void onItemClick(AdapterView<?> parent, View v, int position,
 			long itemId) {
@@ -197,6 +214,15 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			return true;
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.group_info:
+			showDialog(DIALOG_GROUP_INFO);
+			break;
+		}
 	}
 
 	private void quickLog(long rowId) {
