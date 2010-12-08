@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="import_unknown_version">Don\'t know how to import this version of LogMyLife data: </string>
+    <string name="export_fail">Export failed: </string>
+    <string name="export_success">Exported file: </string>
+    <string name="exporting_data">Exporting LogMyLife data...</string>
+    <string name="import_fail">Import failed: </string>
+    <string name="import_success">Import successful!</string>
+    <string name="importing_data">Importing LogMyLife data...</string>
     <string name="alert_message">LogMyLife Alert</string>
     <string name="alert_prefix">LogMyLife Alert - </string>
     <string name="ringtone_dialog_title">Select Notification</string>

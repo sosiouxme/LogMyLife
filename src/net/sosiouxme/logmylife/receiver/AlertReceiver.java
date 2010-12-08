@@ -45,7 +45,8 @@ public class AlertReceiver extends BroadcastReceiver {
 
 		// create the notification to show the user
 		Notification notification = new Notification(
-				android.R.drawable.stat_notify_error,
+//				android.R.drawable.stat_notify_error,
+				R.drawable.ic_stat_lml_notif,
 				context.getString(R.string.alert_prefix) + tracker.getName(),
 				System.currentTimeMillis()
 				);		

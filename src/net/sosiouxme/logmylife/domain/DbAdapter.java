@@ -89,6 +89,10 @@ public class DbAdapter implements C {
         mDbHelper = null;
     }
     
+    public String getDbPath() {
+    	return mDb.getPath();
+    }
+    
     /**
      *  Return a string defined in resource file
      * @param id The R.id for the string

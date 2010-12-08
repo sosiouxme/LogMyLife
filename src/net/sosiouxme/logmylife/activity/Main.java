@@ -11,6 +11,8 @@ import net.sosiouxme.logmylife.custom.GroupSpinner;
 import net.sosiouxme.logmylife.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
+import net.sosiouxme.logmylife.domain.ExportHelper;
+import net.sosiouxme.logmylife.domain.ImportHelper;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -144,6 +146,18 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		case R.id.settings:
 			startActivity(new Intent(this, Prefs.class));
 			return true;
+		case R.id.export:
+			ExportHelper export = new ExportHelper(this, mDba.getDbPath());
+			mDba.close();
+			export.execute();
+			mDba.open(this);
+			return true;
+		case R.id.import_it:
+			ImportHelper importer = new ImportHelper(this, mDba.getDbPath());
+			mDba.close(); // flush connections
+			mDba.open(this);
+			importer.execute();
+			return true;			
 		}
 		return super.onOptionsItemSelected(item);
 	}
