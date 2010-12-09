@@ -24,6 +24,9 @@
       </intent-filter>
     </activity>
     <activity
+      android:name=".activity.Data"
+      android:label="LogMyLife - Import/Export Data" />
+    <activity
       android:name=".activity.GroupsEdit"
       android:label="LogMyLife - Edit Groups" />
     <activity

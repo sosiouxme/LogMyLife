@@ -16,7 +16,6 @@ import net.sosiouxme.logmylife.R;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 public class ImportHelper extends AbstractImportExportHelper {
     private static final String TAG = "LML.Import";
@@ -64,21 +63,14 @@ public class ImportHelper extends AbstractImportExportHelper {
 			deleteExtractedFiles(importDir);
 			
 			return null;
-		} catch (IOException e) {
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, e.getMessage(), e);
+			return "No such file: " + e.getMessage();
+		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 			return e.getMessage();
 		}
     }
-
-    // UI thread
-	protected void onPostExecute(final String errMsg) {
-	   if (mDialog.isShowing())
-	      mDialog.dismiss();
-	   String result = (errMsg == null)
-	   		? str(R.string.import_success)
-	   		: str(R.string.import_fail) + errMsg;
-	   Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-	}
 
 	private int findVersion(File importDir) throws FileNotFoundException,
 			IOException, NumberFormatException {

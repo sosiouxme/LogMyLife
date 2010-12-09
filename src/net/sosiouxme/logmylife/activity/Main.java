@@ -11,8 +11,6 @@ import net.sosiouxme.logmylife.custom.GroupSpinner;
 import net.sosiouxme.logmylife.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
-import net.sosiouxme.logmylife.domain.ExportHelper;
-import net.sosiouxme.logmylife.domain.ImportHelper;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -44,6 +42,7 @@ See LICENSE file for this file's GPLv3 distribution license.
 */
 
 public class Main extends ListActivity implements OnItemClickListener, OnGroupSelectedListener, FilterQueryProvider, android.view.View.OnClickListener {
+	private static final int RC_IMPEXP_DATA = 2;
 	private static final String TAG = "LML.Main";
 	private static final int DIALOG_ABOUT = 0;
 	private static final int DIALOG_CHANGELOG = 1;
@@ -60,13 +59,11 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.a_main);
+		findViewById(R.id.group_info).setOnClickListener(this);
 		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_main_new, null));
 
-		findViewById(R.id.group_info).setOnClickListener(this);
-		
 		mDba = new DbAdapter(this);
 		fillGroupSpinner();
 		fillTrackerList();
@@ -146,18 +143,9 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		case R.id.settings:
 			startActivity(new Intent(this, Prefs.class));
 			return true;
-		case R.id.export:
-			ExportHelper export = new ExportHelper(this, mDba.getDbPath());
-			mDba.close();
-			export.execute();
-			mDba.open(this);
+		case R.id.data:
+			startActivityForResult(new Intent(this, Data.class), RC_IMPEXP_DATA);
 			return true;
-		case R.id.import_it:
-			ImportHelper importer = new ImportHelper(this, mDba.getDbPath());
-			mDba.close(); // flush connections
-			mDba.open(this);
-			importer.execute();
-			return true;			
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -273,6 +261,20 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		super.onPause();
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch(requestCode) {
+		case RC_IMPEXP_DATA: // from the Data activity - possibly imported new data
+			if(resultCode == RESULT_FIRST_USER) { // import occurred!
+				// simplest just to restart this activity.
+				Intent intent = getIntent();
+				finish();
+				startActivity(intent);
+			}
+		}
+	}
+	
 	@Override
 	protected void onDestroy() {
 		Log.d(TAG, "onDestroy");

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="import_dialog_ok">Import</string>
+    <string name="import_dialog_cancel">Cancel</string>
+    <string name="import_warning_text">Data is NOT merged during an input. A successful import will ERASE ALL DATA currently in the application in order to import data. Are you sure you want to do this?</string>
     <string name="import_unknown_version">Don\'t know how to import this version of LogMyLife data: </string>
     <string name="export_fail">Export failed: </string>
     <string name="export_success">Exported file: </string>

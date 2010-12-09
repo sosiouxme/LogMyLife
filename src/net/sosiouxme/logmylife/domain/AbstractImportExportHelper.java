@@ -36,7 +36,10 @@ public abstract class AbstractImportExportHelper extends
 	abstract protected String doInBackground(final String... noargs);
 	
 	// UI thread
-	abstract protected void onPostExecute(final String errMsg);
+	protected void onPostExecute(final String errMsg) {
+		   if (mDialog.isShowing())
+		      mDialog.dismiss();
+		}
 
 	public String str(int resource) {
 		return mContext.getString(resource);

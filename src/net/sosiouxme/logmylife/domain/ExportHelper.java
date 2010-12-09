@@ -13,11 +13,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import net.sosiouxme.logmylife.R;
-
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 public class ExportHelper extends AbstractImportExportHelper {
     private static final String TAG = "LML.Export";
@@ -60,21 +58,11 @@ public class ExportHelper extends AbstractImportExportHelper {
 			zipFilesToArchive(exportDir, exportFile);
 			
 			return null;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 			return e.getMessage();
 		}
     }
-
-	// UI thread
-	protected void onPostExecute(final String errMsg) {
-	   if (mDialog.isShowing())
-	      mDialog.dismiss();
-	   String result = (errMsg == null)
-	   		? str(R.string.export_success) + EXPORT_FILE
-	   		: str(R.string.export_fail) + errMsg;
-	   Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-	}
 
 	private void writeVersionFile(File versionFile) throws IOException {
 		Log.d(TAG, "Creating version file");

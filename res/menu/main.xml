@@ -18,16 +18,9 @@
  android:orderInCategory="3"
  />
 <item
- android:title="Export data" 
- android:id="@+id/export" 
- android:titleCondensed="Export" 
- android:orderInCategory="4" 
- android:icon="@android:drawable/ic_menu_save"
- />
-<item
- android:title="Import data" 
- android:id="@+id/import_it" 
- android:titleCondensed="Import" 
+ android:title="Import/Export data" 
+ android:id="@+id/data" 
+ android:titleCondensed="Data" 
  android:orderInCategory="4" 
  android:icon="@android:drawable/ic_menu_save"
  />
