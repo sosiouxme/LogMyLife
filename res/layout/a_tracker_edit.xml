@@ -89,7 +89,7 @@
           android:layout_alignParentLeft="true"
           android:layout_alignParentBottom="true"
           android:layout_margin="5dip"
-          android:text="Alerts: " />
+          android:text="Reminders: " />
         <ImageView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"

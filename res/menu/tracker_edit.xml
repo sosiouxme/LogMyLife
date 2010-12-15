@@ -24,8 +24,8 @@
     android:id="@+id/cancel_existing" />
   <item
     android:visible="true"
-    android:titleCondensed="New alert"
-    android:title="Add new alert"
+    android:titleCondensed="New reminder"
+    android:title="Add new reminder"
     android:orderInCategory="2"
     android:icon="@android:drawable/ic_popup_reminder"
     android:id="@+id/new_alert" />
@@ -39,7 +39,7 @@
   <item
 	 android:title="Help" 
 	 android:id="@+id/help" 
-	 android:titleCondensed="About" 
+	 android:titleCondensed="Help" 
 	 android:orderInCategory="4" 
 	 android:icon="@android:drawable/ic_menu_help" />
 </menu>

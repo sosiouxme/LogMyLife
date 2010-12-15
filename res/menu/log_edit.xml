@@ -29,4 +29,11 @@
     android:visible="false"
     android:icon="@android:drawable/ic_menu_delete"
     android:id="@+id/delete" />
+  <item
+    android:title="Help"
+    android:id="@+id/help"
+    android:titleCondensed="Help"
+    android:orderInCategory="4"
+    android:icon="@android:drawable/ic_menu_help" />
+
 </menu>

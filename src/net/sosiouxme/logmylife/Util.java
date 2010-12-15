@@ -71,7 +71,9 @@ public class Util {
 	public static Builder getHtmlDialogBuilder(Activity a, String filename) {
 		WebView wv = (WebView) a.getLayoutInflater().inflate(R.layout.d_generic_info, null);
 		wv.loadUrl("file:///android_asset/dialogs/" + filename);
-		return new AlertDialog.Builder(a).setView(wv);
+		return new AlertDialog.Builder(a)
+					.setView(wv)
+					.setPositiveButton(R.string.info_dialog_dismiss_button, null);
 	}
 
 	/**

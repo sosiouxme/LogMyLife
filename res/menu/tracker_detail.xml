@@ -20,11 +20,18 @@
     android:orderInCategory="2"
     android:icon="@android:drawable/ic_menu_add"
     android:id="@+id/new_log" />
-  
+
   <item
     android:titleCondensed="Done"
     android:title="Return to group"
     android:orderInCategory="4"
     android:icon="@android:drawable/ic_menu_revert"
     android:id="@+id/done" />
+  <item
+    android:title="Help"
+    android:id="@+id/help"
+    android:titleCondensed="Help"
+    android:orderInCategory="5"
+    android:icon="@android:drawable/ic_menu_help" />
+
 </menu>

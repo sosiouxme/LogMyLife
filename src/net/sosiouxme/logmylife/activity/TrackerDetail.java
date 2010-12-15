@@ -3,10 +3,12 @@ package net.sosiouxme.logmylife.activity;
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.LogMyLife;
 import net.sosiouxme.logmylife.R;
+import net.sosiouxme.logmylife.Util;
 import net.sosiouxme.logmylife.custom.AlertEditActivity;
 import net.sosiouxme.logmylife.custom.EventCursorAdapter;
 import net.sosiouxme.logmylife.dialog.LogDeleteDialog;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
@@ -33,6 +35,10 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 	// Logger tag
 	private static final String TAG = "LML.TrackerDetail";
 
+	private static final int DIALOG_INFO_LOGS = 100;
+
+	private static final int DIALOG_HELP = 101;
+
 	private TextView mName;
 	private TextView mBody;
 	
@@ -57,7 +63,11 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 		// set up the log buttons to do what i want
 		findViewById(R.id.quick_log).setOnClickListener(this);
 		findViewById(R.id.detailed_log).setOnClickListener(this);
-		
+
+		// as well as the info buttons
+		findViewById(R.id.info_logs).setOnClickListener(this);
+		findViewById(R.id.info_alert).setOnClickListener(this);
+
 		saveAlertChangesImmediately = true;
 		initAlertContainer();
 	}
@@ -134,6 +144,9 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 		case R.id.done:
 			finish();
 			break;
+		case R.id.help:
+			showDialog(DIALOG_HELP);
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -178,10 +191,33 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 		case R.id.detailed_log:
 			newLogEntry();
 			break;
+		case R.id.info_alert:
+			showDialog(DIALOG_INFO_ALERT);
+			break;
+		case R.id.info_logs:
+			showDialog(DIALOG_INFO_LOGS);
+			break;
 		default:
 			super.onClick(v);
 		}
 	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DIALOG_INFO_LOGS:
+			return Util.getHtmlDialogBuilder(this, R.string.td_dialog_logs_html)
+			.setTitle(R.string.td_dialog_logs_title)
+			.create();
+		case DIALOG_HELP:
+			return Util.getHtmlDialogBuilder(this, R.string.td_dialog_help_html)
+				.setTitle(R.string.td_dialog_help_title)
+				.create();
+		default:
+			return super.onCreateDialog(id);
+		}
+	}
+	
 	/*
 	// repository for created toasts
 	private Map<Long,Toast> mToasts = new HashMap<Long,Toast>();

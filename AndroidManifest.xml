@@ -14,7 +14,7 @@
   >
     <activity
       android:name=".activity.Main"
-      android:label="LogMyLife"
+      android:label="LogMyLife - Main"
     >
       <intent-filter>
         <action

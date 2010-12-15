@@ -3,6 +3,7 @@ package net.sosiouxme.logmylife.activity;
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.LogMyLife;
 import net.sosiouxme.logmylife.R;
+import net.sosiouxme.logmylife.Util;
 import net.sosiouxme.logmylife.custom.RequiredFieldDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
 import android.app.AlertDialog;
@@ -37,6 +38,7 @@ public class GroupsEdit extends ListActivity {
 	private static final int DIALOG_GROUP_NAME = 0;
 	private long mGroupEditId = 0;
 	private static final int DIALOG_GROUP_DELETE = 1;
+	private static final int DIALOG_HELP = 2;
 	private long mGroupDeleteId = 0;
 
 	@Override
@@ -90,6 +92,9 @@ public class GroupsEdit extends ListActivity {
     			return true;
     		case R.id.done:
     			finish();
+    			return true;
+    		case R.id.help:
+    			showDialog(DIALOG_HELP);
     			return true;
     	}
     	return super.onOptionsItemSelected(item);
@@ -159,6 +164,10 @@ public class GroupsEdit extends ListActivity {
 					}
 				})
 			.create();
+		case DIALOG_HELP:
+			return Util.getHtmlDialogBuilder(this, R.string.group_dialog_help_html)
+				.setTitle(R.string.group_dialog_help_title)
+				.create();
 		}
 		return null;
 	}

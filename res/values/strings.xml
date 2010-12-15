@@ -10,8 +10,8 @@
     <string name="import_fail">Import failed: </string>
     <string name="import_success">Import successful!</string>
     <string name="importing_data">Importing LogMyLife data...</string>
-    <string name="alert_message">LogMyLife Alert</string>
-    <string name="alert_prefix">LogMyLife Alert - </string>
+    <string name="alert_message">LogMyLife Reminder</string>
+    <string name="alert_prefix">LogMyLife Reminder - </string>
     <string name="ringtone_dialog_title">Select Notification</string>
     <string name="empty_ringtone">(Silent)</string>
     <string name="empty_time">(none)</string>
@@ -55,18 +55,26 @@
 <string name="main_dialog_change_title">LogMyLife change log</string>
 <string name="main_dialog_group_asset">main_group.html</string>
 <string name="main_dialog_group_title">About groups</string>
+<string name="group_dialog_help_html">group_help.html</string>
+<string name="group_dialog_help_title">About groups</string>
 <string name="te_dialog_create_title">Create a tracker</string>
-<string name="te_dialog_create_html">te_create_info.html</string>
+<string name="te_dialog_create_html">te_help_create.html</string>
 <string name="te_dialog_edit_title">Edit a tracker</string>
-<string name="te_dialog_edit_html">te_edit_info.html</string>
+<string name="te_dialog_edit_html">te_help_edit.html</string>
 <string name="te_dialog_group_title">About groups</string>
 <string name="te_dialog_group_html">te_group.html</string>
-<string name="te_dialog_alert_title">About Alerts</string>
+<string name="te_dialog_alert_title">About Reminders</string>
 <string name="te_dialog_alert_html">te_alert.html</string>
 <string name="te_dialog_value_title">About Values</string>
 <string name="te_dialog_value_html">te_value.html</string>
+<string name="td_dialog_logs_title">Creating logs</string>
+<string name="td_dialog_logs_html">td_logs.html</string>
+<string name="td_dialog_help_html">td_help.html</string>
+<string name="td_dialog_help_title">Tracker details</string>
+<string name="log_dialog_help_html">log_help.html</string>
+<string name="log_dialog_help_title">Log entry</string>
 
 
-<string name="ae_dialog_title">Alert after last log entry</string>
+<string name="ae_dialog_title">Reminder after last log entry</string>
 
 </resources>

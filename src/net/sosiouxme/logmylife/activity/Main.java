@@ -158,12 +158,10 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		case DIALOG_CHANGELOG:
 			return Util.getHtmlDialogBuilder(this, R.string.main_dialog_info_asset)
 				.setTitle(R.string.main_dialog_info_title)
-				.setPositiveButton(R.string.info_dialog_dismiss_button, null)
 				.create();
 		case DIALOG_GROUP_INFO:
 			return Util.getHtmlDialogBuilder(this, R.string.main_dialog_group_asset)
 				.setTitle(R.string.main_dialog_group_title)
-				.setPositiveButton(R.string.info_dialog_dismiss_button, null)
 				.create();
 		}
 		return null;

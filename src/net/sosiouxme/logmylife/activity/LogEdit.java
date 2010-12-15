@@ -48,6 +48,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private static final int DIALOG_TIME = 1;
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	private static final int DIALOG_HELP = 100;
 	private LogEntry mLogEntry = null;
 	private Tracker mTracker = null;
 	private DbAdapter mDba = null;
@@ -161,6 +162,9 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		case R.id.delete:
 			deleteLog();
 			return true;
+		case R.id.help:
+			showDialog(DIALOG_HELP);
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -194,6 +198,10 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 			return new DatePickerDialog(this, this, date.getYear()+1900, date.getMonth(), date.getDate());
 		case DIALOG_TIME:
 			return new ExtendedTimePickerDialog(this, date.getHours(), date.getMinutes(), date.getSeconds());
+		case DIALOG_HELP:
+			return Util.getHtmlDialogBuilder(this, R.string.log_dialog_help_html)
+				.setTitle(R.string.log_dialog_help_title)
+				.create();
 		default:
 		return super.onCreateDialog(id);
 		}

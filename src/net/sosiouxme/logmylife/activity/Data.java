@@ -28,7 +28,7 @@ public class Data extends Activity implements OnClickListener {
 
 		findViewById(R.id.export_button).setOnClickListener(this);
 		findViewById(R.id.import_button).setOnClickListener(this);
-		mResultText = (TextView) findViewById(R.id.result);
+		mResultText = (TextView) findViewById(R.id.result); //TODO: persist contents
 		
 		setResult(RESULT_OK);
 	}

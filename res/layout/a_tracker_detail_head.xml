@@ -20,65 +20,64 @@
     android:layout_height="wrap_content"
     android:text="Tracker body"
     android:maxLines="5" />
-        <RelativeLayout
-        style="@style/LineLabel"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-      >
-        <TextView
-          android:id="@+id/z1"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentLeft="true"
-          android:layout_alignParentBottom="true"
-          android:layout_margin="5dip"
-          android:text="Alerts: " />
-        <ImageView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_toRightOf="@id/z1"
-          android:clickable="true"
-          android:focusable="true"
-          android:src="@android:drawable/ic_menu_add"
-          android:id="@+id/add_new_alert" />
-        <ImageView
-          android:id="@+id/info_alert"
-          android:layout_width="wrap_content"
-          android:layout_alignParentRight="true"
-          style="@style/InfoButton" />
-      </RelativeLayout>
-
+  <RelativeLayout
+    style="@style/LineLabel"
+  >
+    <TextView
+      android:id="@+id/z1"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentLeft="true"
+      android:layout_alignParentBottom="true"
+      android:layout_margin="5dip"
+      android:text="Reminders: " />
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@id/z1"
+      android:clickable="true"
+      android:focusable="true"
+      android:src="@android:drawable/ic_menu_add"
+      android:layout_margin="5dip"
+      android:id="@+id/add_new_alert" />
+    <ImageView
+      android:id="@+id/info_alert"
+      android:layout_width="wrap_content"
+      android:layout_alignParentRight="true"
+      android:layout_margin="5dip"
+      style="@style/InfoButton" />
+  </RelativeLayout>
   <LinearLayout
     android:id="@+id/alertContainer"
     style="@style/verticalLL"
     android:layout_width="fill_parent" />
   <LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    style="@style/LineLabel"
+      style="@style/LineLabel"
+      android:orientation="horizontal"
   >
     <TextView
-      android:layout_width="fill_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_weight="0"
       android:layout_margin="5dip"
-      android:layout_weight="1"
       android:text="Logs: " />
     <Button
-      style="@style/BigButton"
       android:id="@+id/quick_log"
-      android:layout_weight="0.5"
+      style="@style/BigButton"
+      android:layout_weight="1"
+      android:layout_margin="5dip"
       android:text="Log now" />
     <Button
-      style="@style/BigButton"
       android:id="@+id/detailed_log"
-      android:layout_weight="0.5"
+      style="@style/BigButton"
+      android:layout_weight="1"
+      android:layout_margin="5dip"
       android:text="Log details" />
     <ImageView
       android:id="@+id/info_logs"
-      style="@style/InfoButton" 
-      android:layout_width="fill_parent"
-      android:layout_weight="1"
+      android:layout_margin="5dip"
+      style="@style/InfoButton"
+      android:layout_weight="0" 
       />
   </LinearLayout>
 </LinearLayout>
