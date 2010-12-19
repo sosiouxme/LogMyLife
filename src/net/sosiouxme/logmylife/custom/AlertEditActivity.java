@@ -50,6 +50,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 public class AlertEditActivity extends ListActivity implements OnClickListener, OnCheckedChangeListener {
 
+	private static final String STATE_KEY_ALERT_EDIT = "mAlertToEdit";
 	private static final String TAG = "LML.AlertEditActivity";
 	protected static final int ALERT_DIALOG = 0;
 	protected static final int DIALOG_INFO_GROUP = 1;
@@ -103,6 +104,7 @@ public class AlertEditActivity extends ListActivity implements OnClickListener, 
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.d(TAG, "onSaveInstanceState");
 		if(!isFinishing()) {
+			outState.putSerializable(STATE_KEY_ALERT_EDIT, mAlertToEdit);
 			outState.putSerializable(STATE_KEY_ALERTS, (ArrayList<Alert>) mAlertList);
 			outState.putSerializable(STATE_KEY_DELETING, (ArrayList<Alert>) mAlertsToDeleteList);
 		}
@@ -112,9 +114,10 @@ public class AlertEditActivity extends ListActivity implements OnClickListener, 
 	 * Get state of alerts during reconstitution
 	 */
 	@SuppressWarnings("unchecked")
-	public void restoreState(Bundle savedInstanceState) {
+	protected void restoreState(Bundle savedInstanceState) {
 		Log.d(TAG, "restoreState");
 		if(savedInstanceState == null) return;
+		mAlertToEdit = (Alert) savedInstanceState.getSerializable(STATE_KEY_ALERT_EDIT);
 		mAlertList = (ArrayList<Alert>) savedInstanceState.getSerializable(STATE_KEY_ALERTS);
 		mAlertsToDeleteList = (ArrayList<Alert>) savedInstanceState.getSerializable(STATE_KEY_DELETING);
 	}

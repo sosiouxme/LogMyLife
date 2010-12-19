@@ -3,8 +3,12 @@ package net.sosiouxme.logmylife;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sosiouxme.logmylife.domain.DbAdapter;
+import net.sosiouxme.logmylife.receiver.AlertReceiver;
+
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 /**
@@ -17,20 +21,17 @@ See LICENSE file for this file's GPLv3 distribution license.
 public class LogMyLife extends Application {
 	
 	private SharedPreferences mPrefs = null;
-	private static final String PREFS_FILE = "prefs";
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		this.mPrefs = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
-	}
-
-	public static final String TRACKER_CLICK_BEHAVIOR = "trackerClickBehavior";
-	public static final String TRACKER_CLICK_BEHAVIOR_LOG = "log";
-	public static final String TRACKER_CLICK_BEHAVIOR_LOG_DETAIL = "log_detail";
-	public static final String TRACKER_CLICK_BEHAVIOR_VIEW = "view";
-	public String getTrackerClickBehavior() {
-		return mPrefs.getString(TRACKER_CLICK_BEHAVIOR, TRACKER_CLICK_BEHAVIOR_VIEW);
+		this.mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		// as backup to the broadcast receivers, make sure the next
+		// reminder alert is set when starting the app.
+		DbAdapter db = new DbAdapter(this);
+		AlertReceiver.setNextAlert(this, db);
+		db.close();
 	}
 	
 	// repository for created toasts
@@ -60,16 +61,15 @@ public class LogMyLife extends Application {
 	 * Returns whether this is the first time the user has ever used
 	 * this application.
 	 *
-	 * @return True if this is the first time. False forever after.
+	 * @return True if this is the first time opening this app. False forever after.
 	 */
 	public boolean getFirstTime() {
 		boolean first = mPrefs.getBoolean(FIRST_TIME, true);
-		if(first)
-			mPrefs.edit().putBoolean(FIRST_TIME, false).commit();	
+		if(first)mPrefs.edit().putBoolean(FIRST_TIME, false).commit();	
 		return first;
 	}
 	
-	private static final String SHOW_CHANGED = "showChanged";
+	private static final String STORED_CHANGE_VERSION = "storedChangeVersion";
 	private static final int CHANGE_VERSION = 0;
 	/**
 	 * Has something been updated that we should tell users about?
@@ -77,13 +77,14 @@ public class LogMyLife extends Application {
 	 * @return True if the version number here changes; false otherwise
 	 */
 	public boolean getShowChangedDialog() {
-		int stored = mPrefs.getInt(SHOW_CHANGED, -1);
-		int version = mPrefs.getInt(SHOW_CHANGED, CHANGE_VERSION);
-		if(version < CHANGE_VERSION) {
-			mPrefs.edit().putInt(SHOW_CHANGED, CHANGE_VERSION).commit();	
+		int stored = mPrefs.getInt(STORED_CHANGE_VERSION, CHANGE_VERSION);
+		if(stored < CHANGE_VERSION) {
+			// previously stored version has changed
+			mPrefs.edit().putInt(STORED_CHANGE_VERSION, CHANGE_VERSION).commit();	
 			return true;
-		} else if (stored == -1) //first time we ever come here
-			mPrefs.edit().putInt(SHOW_CHANGED, CHANGE_VERSION).commit();	
+		} else if (mPrefs.getInt(STORED_CHANGE_VERSION, -1) == -1) 
+			// first time we ever checked - initialize
+			mPrefs.edit().putInt(STORED_CHANGE_VERSION, CHANGE_VERSION).commit();	
 		return false;
 	}
 	

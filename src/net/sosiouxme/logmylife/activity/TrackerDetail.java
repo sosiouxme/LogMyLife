@@ -73,8 +73,21 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 	}
 	
 	@Override
-	protected void onResume() {
-		// get (or refresh) item info
+	protected void onStart() {
+		// This is in onStart rather than onResume because
+		// it needs to proceed onPrepareDialog(reminder alert dialog) -
+		// which requires mTracker.
+		//
+		// If there's ever a case where the activity's not stopped but only
+		// paused, will need to duplicate this in onResume().
+
+		Log.d(TAG, "Activity.onStart");
+		refreshTracker();
+		super.onStart();		
+	}
+
+
+	private void refreshTracker() {
 		mTracker = mDba.fetchTracker(getIntent().getExtras().getLong(C.db_ID));
 		if(mTracker == null){
 			finish(); // nothing to show!
@@ -89,8 +102,6 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 				requeryList();
 			populateAlerts();
 		}
-
-		super.onResume();		
 	}
 
 	@Override

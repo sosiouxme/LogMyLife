@@ -55,8 +55,8 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		super.onCreate(savedInstanceState);
 
 		long trackerId = 0;
-		Bundle e = getIntent().getExtras();
-		if(e!= null) trackerId = e.getLong(C.db_ID);
+		Bundle x = getIntent().getExtras();
+		if(x != null) trackerId = x.getLong(C.db_ID);
 		
 		if(trackerId > 0) {
 			// get item info
