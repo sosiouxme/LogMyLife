@@ -52,7 +52,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 	public void setViewText(TextView v, String text) {
 		int id = v.getId();
 		if (id == R.id.logTime || id == R.id.lastLog) {
-			v.setTag(null); // make sure this is reset as it's used by updater
+			v.setTag(null); // make sure tag is reset as it's used by lastLog "ago" updater
 			if (text != null && text.length() > 0) {
 
 				// try to reformat date text for the field
@@ -61,14 +61,16 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 					if (id == R.id.logTime)
 					    text = mDateTimeFormat.format(d);
 					else if (id == R.id.lastLog) {
-						v.setTag(d);
+						v.setTag(d); // set tag so lastLog "ago" updater can read it
 						text = Util.getTimeSince(d, new Date());
 					}
 				} catch (ParseException e) {
 					Log.w(TAG, "Date parsing failed for " + text, e);
 				}
 			}
-
+		}
+		if (id == R.id.logDetails) {
+			v.setVisibility(text == null || text.equals("") ? View.GONE : View.VISIBLE);
 		}
 		super.setViewText(v, text);
 	}

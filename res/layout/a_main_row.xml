@@ -22,11 +22,19 @@
     android:layout_alignLeft="@id/name"
     android:layout_marginLeft="10sp" />
   <TextView
+    android:id="@+id/logTime"
+    android:textAppearance="@style/SubTextAppearance"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toRightOf="@id/lastLog"
+    android:layout_alignBaseline="@id/lastLog"
+    android:layout_marginLeft="10sp" />
+  <TextView
     android:id="@+id/logDetails"
     android:textAppearance="@style/SubTextAppearance"
     style="@style/EllipseText"
-    android:layout_toRightOf="@id/lastLog"
-    android:layout_alignTop="@id/lastLog"
+    android:layout_below="@id/lastLog"
+    android:layout_alignLeft="@id/lastLog"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" />
 </RelativeLayout>

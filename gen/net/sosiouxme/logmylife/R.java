@@ -52,11 +52,11 @@ public final class R {
         public static final int _to_button=0x7f0a0039;
         public static final int _to_edit_text=0x7f0a0038;
         public static final int about=0x7f0a004d;
-        public static final int add_new_alert=0x7f0a0014;
+        public static final int add_new_alert=0x7f0a0015;
         public static final int add_new_group=0x7f0a0003;
         public static final int add_new_tracker=0x7f0a000f;
         public static final int alertBody=0x7f0a002f;
-        public static final int alertContainer=0x7f0a0016;
+        public static final int alertContainer=0x7f0a0017;
         public static final int alertFieldAddButton=0x7f0a003d;
         public static final int alertFieldDropButton=0x7f0a003e;
         public static final int alertInterval=0x7f0a003b;
@@ -70,7 +70,7 @@ public final class R {
         public static final int decrement=0x7f0a0037;
         public static final int delete=0x7f0a002a;
         public static final int delete_alert=0x7f0a0041;
-        public static final int detailed_log=0x7f0a0018;
+        public static final int detailed_log=0x7f0a0019;
         public static final int done=0x7f0a0043;
         public static final int edit=0x7f0a0047;
         public static final int editDate=0x7f0a0007;
@@ -87,18 +87,18 @@ public final class R {
         public static final int hours=0x7f0a002b;
         public static final int import_button=0x7f0a0001;
         public static final int increment=0x7f0a0035;
-        public static final int info_alert=0x7f0a0015;
+        public static final int info_alert=0x7f0a0016;
         public static final int info_group=0x7f0a0021;
-        public static final int info_logs=0x7f0a0019;
+        public static final int info_logs=0x7f0a001a;
         public static final int info_value=0x7f0a0022;
         public static final int intervalList=0x7f0a003a;
         public static final int interval_label=0x7f0a0030;
         public static final int lastLog=0x7f0a0011;
         public static final int listName=0x7f0a0004;
         public static final int logBody=0x7f0a001f;
-        public static final int logDetails=0x7f0a0012;
-        public static final int logRow=0x7f0a001a;
-        public static final int logTime=0x7f0a001b;
+        public static final int logDetails=0x7f0a0013;
+        public static final int logRow=0x7f0a001b;
+        public static final int logTime=0x7f0a0012;
         public static final int logValLabelPost=0x7f0a001e;
         public static final int logValLabelPre=0x7f0a001d;
         public static final int logValWidget=0x7f0a001c;
@@ -113,7 +113,7 @@ public final class R {
         public static final int new_tracker=0x7f0a004a;
         public static final int next_time=0x7f0a0028;
         public static final int ok=0x7f0a0024;
-        public static final int quick_log=0x7f0a0017;
+        public static final int quick_log=0x7f0a0018;
         public static final int quicklog=0x7f0a004e;
         public static final int result=0x7f0a0002;
         public static final int ringtone=0x7f0a0029;
@@ -129,7 +129,7 @@ public final class R {
         public static final int units=0x7f0a0027;
         public static final int value=0x7f0a0031;
         public static final int view=0x7f0a0046;
-        public static final int z1=0x7f0a0013;
+        public static final int z1=0x7f0a0014;
     }
     public static final class layout {
         public static final int a_data=0x7f030000;
