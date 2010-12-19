@@ -1,11 +1,13 @@
 package net.sosiouxme.logmylife.custom;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.R;
 import net.sosiouxme.logmylife.Util;
+import net.sosiouxme.logmylife.activity.Settings;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,16 +22,20 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 	//TODO: look into implementing the Filterable interface
 	private static final String TAG = "LML.EventCursorAdapter";
 	private Tracker mTracker = null;
+	private final DateFormat mDateTimeFormat;
 	
 	public EventCursorAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
+		mDateTimeFormat = Settings.getDateTimeFormat(context);
 	}
+
 
 	public EventCursorAdapter(Context context, Tracker tracker, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
 		mTracker = tracker;
+		mDateTimeFormat = Settings.getDateTimeFormat(context);
 	}
 	
 	@Override
@@ -53,15 +59,13 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 				try {
 					Date d = C.dbDateFormat.parse(text);
 					if (id == R.id.logTime)
-						//text = mDateFormat.format(d) + " "
-						//		+ mTimeFormat.format(d);
-					    text = d.toLocaleString();
+					    text = mDateTimeFormat.format(d);
 					else if (id == R.id.lastLog) {
 						v.setTag(d);
 						text = Util.getTimeSince(d, new Date());
 					}
 				} catch (ParseException e) {
-					Log.d(TAG, "Date parsing failed for " + text);
+					Log.w(TAG, "Date parsing failed for " + text, e);
 				}
 			}
 

@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -92,6 +93,9 @@ public class GroupsEdit extends ListActivity {
     			return true;
     		case R.id.done:
     			finish();
+    			return true;
+    		case R.id.settings:
+    			startActivity(new Intent(this, Settings.class));
     			return true;
     		case R.id.help:
     			showDialog(DIALOG_HELP);

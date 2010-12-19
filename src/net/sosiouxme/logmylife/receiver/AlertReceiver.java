@@ -2,6 +2,7 @@ package net.sosiouxme.logmylife.receiver;
 
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.R;
+import net.sosiouxme.logmylife.activity.Settings;
 import net.sosiouxme.logmylife.activity.TrackerDetail;
 import net.sosiouxme.logmylife.domain.DbAdapter;
 import net.sosiouxme.logmylife.domain.dto.Alert;
@@ -53,8 +54,8 @@ public class AlertReceiver extends BroadcastReceiver {
 		notification.flags = Notification.DEFAULT_SOUND 
 		   | Notification.FLAG_AUTO_CANCEL
 		   ;
-		
-	 	notification.sound = alert.getRingtoneUri(); 
+		if(!Settings.getQuietHours(context).isQuietTime())
+			notification.sound = alert.getRingtoneUri(); 
 		// notification.vibrate = (long[]) intent.getExtras().get("vibrationPatern");
 		/*or*
 		notification.flags = Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_SHOW_LIGHTS;

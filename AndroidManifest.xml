@@ -39,8 +39,8 @@
       android:name=".activity.LogEdit"
       android:label="LogMyLife - Edit Log" />
     <activity
-      android:name=".activity.Prefs"
-      android:label="LogMyLife - Preferences" />
+      android:name=".activity.Settings"
+      android:label="LogMyLife - Settings" />
     <receiver
       android:name=".receiver.AlertReceiver"
       android:process=":remote" />

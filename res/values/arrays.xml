@@ -10,6 +10,146 @@
 	<item>log_detail</item>
 	<item name="trackerClickBehaviorDefault">view</item>
 </string-array>
+<string-array name="dateFormatVisible">
+  <item>December 31, 2011</item>
+  <item>Dec. 31, 2011</item>
+  <item name="default">2011/12/31</item>
+  <item>2011.12.31</item>
+  <item>2011-12-31</item>
+  <item>12/31/2011</item>
+  <item>12/31/11</item>
+  <item>31/12/2011</item>
+  <item>31.12.2011</item>
+  <item>31-12-2011</item>  
+</string-array>
+<string-array name="dateFormatStored">
+  <item>MMMM dd, yyyy</item>
+  <item>MMM dd, yyyy</item>
+  <item name="default">yyyy/MM/dd</item>
+  <item>yyyy.MM.dd</item>
+  <item>yyyy-MM-dd</item>
+  <item>MM/dd/yyyy</item>
+  <item>MM/dd/yy</item>
+  <item>dd/MM/yyyy</item>
+  <item>dd.MM.yyyy</item>
+  <item>dd-MM-yyyy</item>  
+</string-array>
+<string-array name="timeFormatVisible">
+  <item name="default">2:34 PM</item>
+  <item>2:34:56 PM</item>
+  <item>14:34</item>
+  <item>14:34:56</item>
+  <item>1434</item>
+</string-array>
+<string-array name="timeFormatStored">
+  <item name="default">h:mm a</item>
+  <item>h:mm:ss a</item>
+  <item>HH:mm</item>
+  <item>HH:mm:ss</item>
+  <item>HHmm</item>
+</string-array>
+
+<string-array name="quietTimeVisible">
+  <item>12:00am</item>
+  <item>12:30am</item>
+  <item>1:00am</item>
+  <item>1:30am</item>
+  <item>2:00am</item>
+  <item>2:30am</item>
+  <item>3:00am</item>
+  <item>3:30am</item>
+  <item>4:00am</item>
+  <item>4:30am</item>
+  <item>5:00am</item>
+  <item>5:30am</item>
+  <item>6:00am</item>
+  <item>6:30am</item>
+  <item>7:00am</item>
+  <item>7:30am</item>
+  <item>8:00am</item>
+  <item>8:30am</item>
+  <item>9:00am</item>
+  <item>9:30am</item>
+  <item>10:00am</item>
+  <item>10:30am</item>
+  <item>11:00am</item>
+  <item>11:30am</item>
+  <item>12:00pm (noon)</item>
+  <item>12:30pm</item>
+  <item>1:00pm</item>
+  <item>1:30pm</item>
+  <item>2:00pm</item>
+  <item>2:30pm</item>
+  <item>3:00pm</item>
+  <item>3:30pm</item>
+  <item>4:00pm</item>
+  <item>4:30pm</item>
+  <item>5:00pm</item>
+  <item>5:30pm</item>
+  <item>6:00pm</item>
+  <item>6:30pm</item>
+  <item>7:00pm</item>
+  <item>7:30pm</item>
+  <item>8:00pm</item>
+  <item>8:30pm</item>
+  <item>9:00pm</item>
+  <item>9:30pm</item>
+  <item name="default">10:00pm</item>
+  <item>10:30pm</item>
+  <item>11:00pm</item>
+  <item>11:30pm</item>
+  <item>12:00pm (midnight)</item>
+</string-array>
+<string-array name="quietTimeStored">
+  <item>0000</item>
+  <item>0030</item>
+  <item>0100</item>
+  <item>0130</item>
+  <item>0200</item>
+  <item>0230</item>
+  <item>0300</item>
+  <item>0330</item>
+  <item>0400</item>
+  <item>0430</item>
+  <item>0500</item>
+  <item>0530</item>
+  <item>0600</item>
+  <item>0630</item>
+  <item>0700</item>
+  <item>0830</item>
+  <item>0900</item>
+  <item>0930</item>
+  <item>1000</item>
+  <item>1030</item>
+  <item>1100</item>
+  <item>1130</item>
+  <item>1200</item>
+  <item>1230</item>
+  <item>1300</item>
+  <item>1330</item>
+  <item>1400</item>
+  <item>1430</item>
+  <item>1500</item>
+  <item>1530</item>
+  <item>1600</item>
+  <item>1630</item>
+  <item>1700</item>
+  <item>1730</item>
+  <item>1800</item>
+  <item>1830</item>
+  <item>1900</item>
+  <item>1930</item>
+  <item>2000</item>
+  <item>2030</item>
+  <item>2100</item>
+  <item>2130</item>
+  <item name="default">22:00</item>
+  <item>2230</item>
+  <item>2300</item>
+  <item>2330</item>
+  <item>0000</item>
+</string-array>
+
 <string-array name="alertIntervals">
   <item name="alertIntervalMonths">Month(s)</item>
   <item name="alertIntervalWeeks">Week(s)</item>

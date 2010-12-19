@@ -1,7 +1,6 @@
 package net.sosiouxme.logmylife.activity;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -22,6 +21,7 @@ import android.app.Dialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,8 +46,8 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private static final String TAG = "LML.LogEdit";
 	private static final int DIALOG_DATE = 0;
 	private static final int DIALOG_TIME = 1;
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	private DateFormat mDateFormat;
+	private DateFormat mTimeFormat;
 	private static final int DIALOG_HELP = 100;
 	private LogEntry mLogEntry = null;
 	private Tracker mTracker = null;
@@ -95,6 +95,10 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		if (mTracker == null)
 			throw new RuntimeException("couldn't find tracker id " + trackerId);
 
+		// set up the date/time formatters
+		mDateFormat = Settings.getDateFormat(this);
+		mTimeFormat = Settings.getTimeFormat(this);
+
 		// Set the layout for this activity.
 		setContentView(R.layout.a_log_edit);
 		
@@ -129,8 +133,8 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private void setDateTimeDisplay() {
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(mLogEntry.getLogDate());
-		mDateEditButton.setText(DATE_FORMAT.format(mLogEntry.getLogDate()));
-		mTimeEditButton.setText(TIME_FORMAT.format(mLogEntry.getLogDate()));
+		mDateEditButton.setText(mDateFormat.format(mLogEntry.getLogDate()));
+		mTimeEditButton.setText(mTimeFormat.format(mLogEntry.getLogDate()));
 	}
 
 	@Override
@@ -161,6 +165,9 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 			return true;
 		case R.id.delete:
 			deleteLog();
+			return true;
+		case R.id.settings:
+			startActivity(new Intent(this, Settings.class));
 			return true;
 		case R.id.help:
 			showDialog(DIALOG_HELP);
@@ -312,7 +319,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 			setButton(context.getText(android.R.string.ok), this);
 			setButton2(context.getText(android.R.string.cancel),
 					(OnClickListener) null);
-			setIcon(android.R.drawable.ic_dialog_alert);
+			setIcon(android.R.drawable.ic_dialog_info);
 
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -359,7 +366,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 			d.setHours(mHour);
 			d.setMinutes(mMinute);
 			d.setSeconds(mSecond);
-			setTitle(TIME_FORMAT.format(d));
+			setTitle(mTimeFormat.format(d));
 		}
 
 		@Override

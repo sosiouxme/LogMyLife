@@ -24,19 +24,20 @@
  android:orderInCategory="4" 
  android:icon="@android:drawable/ic_menu_save"
  />
- <item
- android:title="About" 
- android:id="@+id/about" 
- android:titleCondensed="About" 
- android:orderInCategory="5" 
- android:icon="@android:drawable/ic_menu_help"
- />
 <item
  android:titleCondensed="Settings" 
  android:title="Settings..." 
  android:id="@+id/settings" 
- android:alphabeticShortcut="P" 
+ android:alphabeticShortcut="S" 
  android:icon="@android:drawable/ic_menu_preferences" 
- android:orderInCategory="9"
+ android:orderInCategory="8"
+ />
+ <item
+ android:title="About" 
+ android:id="@+id/about" 
+ android:titleCondensed="About" 
+ android:alphabeticShortcut="A" 
+ android:orderInCategory="9" 
+ android:icon="@android:drawable/ic_menu_help"
  />
 </menu>

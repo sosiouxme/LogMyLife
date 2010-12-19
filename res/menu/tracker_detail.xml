@@ -28,10 +28,18 @@
     android:icon="@android:drawable/ic_menu_revert"
     android:id="@+id/done" />
   <item
+    android:titleCondensed="Settings" 
+    android:title="Settings..." 
+    android:id="@+id/settings" 
+    android:alphabeticShortcut="S" 
+    android:orderInCategory="5"
+    android:icon="@android:drawable/ic_menu_preferences" />
+  <item
     android:title="Help"
     android:id="@+id/help"
     android:titleCondensed="Help"
-    android:orderInCategory="5"
+    android:alphabeticShortcut="H" 
+    android:orderInCategory="6"
     android:icon="@android:drawable/ic_menu_help" />
 
 </menu>

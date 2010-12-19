@@ -12,6 +12,7 @@ import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
@@ -154,6 +155,9 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		case R.id.delete:
 			deleteTracker();
 			break;
+		case R.id.settings:
+			startActivity(new Intent(this, Settings.class));
+			return true;
 		case R.id.help:
 			showDialog(mTracker.isNew() ? DIALOG_CREATE_HELP : DIALOG_EDIT_HELP);
 		}

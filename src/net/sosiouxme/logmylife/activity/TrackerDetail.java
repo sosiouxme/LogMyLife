@@ -144,6 +144,9 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 		case R.id.done:
 			finish();
 			break;
+		case R.id.settings:
+			startActivity(new Intent(this, Settings.class));
+			return true;
 		case R.id.help:
 			showDialog(DIALOG_HELP);
 			break;

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+ <RingtonePreference android:title="Default reminder ringtone"
+ android:summary="What ringtone would you like to be the default for reminders?"
+ android:showSilent="true"
+ android:ringtoneType="notification"
+ android:defaultValue="Silent"
+ android:key="defaultReminderRingtone"
+ />
+
+<ListPreference android:title="Tracker click"
+ android:summary="What should happen when you click on a tracker?"
+ android:key="trackerClickBehavior"
+ android:entries="@array/trackerClickBehaviorVisible"
+ android:entryValues="@array/trackerClickBehaviorStored"
+ android:defaultValue="view"
+ />
+
+<ListPreference android:title="Date format"
+ android:summary="How should dates be presented to you?"
+ android:key="dateFormat"
+ android:entries="@array/dateFormatVisible"
+ android:entryValues="@array/dateFormatStored"
+ android:defaultValue="view"
+ />
+<ListPreference android:title="Time format"
+ android:summary="How should times be presented to you?"
+ android:key="timeFormat"
+ android:entries="@array/timeFormatVisible"
+ android:entryValues="@array/timeFormatStored"
+ android:defaultValue="view"
+ />
+
+<CheckBoxPreference android:title="Quiet hours"
+ android:summary="Would you like to set daily hours when reminders should be silent? (In case you forget to turn off sound.)"
+ android:key="enableQuietHours"
+ android:disableDependentsState="false"
+ android:defaultValue="false"
+/>
+<ListPreference android:title="Begin quiet hours"
+ android:key="beginQuietHours"
+ android:dependency="enableQuietHours"
+ android:entries="@array/quietTimeVisible"
+ android:entryValues="@array/quietTimeStored"
+ android:defaultValue="2200"
+ android:shouldDisableView="true"
+/>
+<ListPreference android:title="End quiet hours"
+ android:key="endQuietHours"
+ android:dependency="enableQuietHours"
+ android:entries="@array/quietTimeVisible"
+ android:entryValues="@array/quietTimeStored"
+ android:defaultValue="0800"
+ android:shouldDisableView="true"
+/>
+
+
+</PreferenceScreen>

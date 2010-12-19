@@ -64,6 +64,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		findViewById(R.id.group_info).setOnClickListener(this);
 		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_main_new, null));
 
+		Log.d(TAG, Settings.getDefaultRingtone(this));
 		mDba = new DbAdapter(this);
 		fillGroupSpinner();
 		fillTrackerList();
@@ -129,7 +130,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(TAG, "onMenuItemSelected");
+		Log.d(TAG, "onOptionsItemSelected");
 		switch (item.getItemId()) {
 		case R.id.new_tracker:
 			startActivity(new Intent(this, TrackerEdit.class));
@@ -141,7 +142,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			startActivity(new Intent(this, GroupsEdit.class));
 			return true;
 		case R.id.settings:
-			startActivity(new Intent(this, Prefs.class));
+			startActivity(new Intent(this, Settings.class));
 			return true;
 		case R.id.data:
 			startActivityForResult(new Intent(this, Data.class), RC_IMPEXP_DATA);
@@ -175,12 +176,33 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		if (v.getId() == R.id.add_new_tracker) {
 			startActivity(new Intent(this, TrackerEdit.class));
 		} else {
-			Intent intent = new Intent(this, TrackerDetail.class);
-			intent.setAction(Intent.ACTION_EDIT);
-			intent.putExtra(C.db_TRACKER_GROUP, mCurrentGroupId);
-			intent.putExtra(C.db_ID, itemId);
-			startActivity(intent);
+			switch (Settings.getTrackerClickBehavior(this)) {
+			case Settings.TRACKER_BEHAVIOR_LOG:
+				quickLog(itemId); break;
+			case Settings.TRACKER_BEHAVIOR_LOG_DETAIL:
+				detailLog(itemId); break;
+			case Settings.TRACKER_BEHAVIOR_VIEW:
+			default:
+				showTrackerDetail(itemId);
+			}
 		}
+	}
+
+
+	private void detailLog(long rowId) {
+		startActivity(new Intent(this, LogEdit.class).putExtra(C.db_LOG_TRACKER, rowId));
+	}
+
+	private void quickLog(long rowId) {
+		mDba.createLog(rowId);
+		((LogMyLife) getApplication()).showToast(C.TOAST_LOG_CREATED);
+		mAdapter.requery();
+	
+	
+	}
+
+	private void showTrackerDetail(long rowId) {
+		startActivity(new Intent(this, TrackerDetail.class).putExtra(C.db_ID, rowId));
 	}
 
 	@Override
@@ -201,13 +223,13 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			quickLog(rowId);
 			return true;
 		case R.id.detailed_log:
-			startActivity(new Intent(this, LogEdit.class).putExtra(C.db_LOG_TRACKER, rowId));
+			detailLog(rowId);
 			return true;
 		case R.id.delete:
 			showDeleteDialog(rowId);
 			return true;
 		case R.id.view:
-			startActivity(new Intent(this, TrackerDetail.class).putExtra(C.db_ID, rowId));
+			showTrackerDetail(rowId);
 			return true;
 		case R.id.edit:
 			startActivity(new Intent(this, TrackerEdit.class).putExtra(C.db_ID, rowId));
@@ -223,14 +245,6 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 			showDialog(DIALOG_GROUP_INFO);
 			break;
 		}
-	}
-
-	private void quickLog(long rowId) {
-		mDba.createLog(rowId);
-		((LogMyLife) getApplication()).showToast(C.TOAST_LOG_CREATED);
-		mAdapter.requery();
-
-
 	}
 
 	private void showDeleteDialog(final long itemId) {

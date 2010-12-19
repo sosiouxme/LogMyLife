@@ -9,7 +9,13 @@ package net.sosiouxme.logmylife;
 
 public final class R {
     public static final class array {
-        public static final int alertIntervals=0x7f050002;
+        public static final int alertIntervals=0x7f050008;
+        public static final int dateFormatStored=0x7f050003;
+        public static final int dateFormatVisible=0x7f050002;
+        public static final int quietTimeStored=0x7f050007;
+        public static final int quietTimeVisible=0x7f050006;
+        public static final int timeFormatStored=0x7f050005;
+        public static final int timeFormatVisible=0x7f050004;
         public static final int trackerClickBehaviorStored=0x7f050001;
         public static final int trackerClickBehaviorVisible=0x7f050000;
     }
@@ -43,59 +49,50 @@ public final class R {
         public static final int timepicker_up_selected=0x7f020013;
     }
     public static final class id {
-        public static final int Button01=0x7f0a0035;
-        public static final int Button02=0x7f0a0036;
-        public static final int Button03=0x7f0a0030;
-        public static final int Button04=0x7f0a0031;
-        public static final int LinearLayout01=0x7f0a002e;
-        public static final int RelativeLayout01=0x7f0a0033;
-        public static final int TextView01=0x7f0a0034;
-        public static final int TextView02=0x7f0a002f;
-        public static final int _to_button=0x7f0a0042;
-        public static final int _to_edit_text=0x7f0a0041;
-        public static final int about=0x7f0a0055;
+        public static final int _to_button=0x7f0a0039;
+        public static final int _to_edit_text=0x7f0a0038;
+        public static final int about=0x7f0a004d;
         public static final int add_new_alert=0x7f0a0014;
         public static final int add_new_group=0x7f0a0003;
         public static final int add_new_tracker=0x7f0a000f;
-        public static final int alertBody=0x7f0a0038;
+        public static final int alertBody=0x7f0a002f;
         public static final int alertContainer=0x7f0a0016;
-        public static final int alertFieldAddButton=0x7f0a0046;
-        public static final int alertFieldDropButton=0x7f0a0047;
-        public static final int alertInterval=0x7f0a0044;
-        public static final int alertIntervalType=0x7f0a0045;
-        public static final int alertWidget=0x7f0a0037;
+        public static final int alertFieldAddButton=0x7f0a003d;
+        public static final int alertFieldDropButton=0x7f0a003e;
+        public static final int alertInterval=0x7f0a003b;
+        public static final int alertIntervalType=0x7f0a003c;
+        public static final int alertWidget=0x7f0a002e;
         public static final int body=0x7f0a0009;
         public static final int cancel=0x7f0a000c;
-        public static final int cancel_existing=0x7f0a0051;
-        public static final int cancel_new=0x7f0a0050;
-        public static final int data=0x7f0a0054;
-        public static final int decrement=0x7f0a0040;
+        public static final int cancel_existing=0x7f0a0049;
+        public static final int cancel_new=0x7f0a0048;
+        public static final int data=0x7f0a004c;
+        public static final int decrement=0x7f0a0037;
         public static final int delete=0x7f0a002a;
-        public static final int delete_alert=0x7f0a004a;
+        public static final int delete_alert=0x7f0a0041;
         public static final int detailed_log=0x7f0a0018;
-        public static final int done=0x7f0a004c;
-        public static final int edit=0x7f0a004f;
+        public static final int done=0x7f0a0043;
+        public static final int edit=0x7f0a0047;
         public static final int editDate=0x7f0a0007;
         public static final int editTime=0x7f0a0008;
-        public static final int edit_alert=0x7f0a0048;
+        public static final int edit_alert=0x7f0a003f;
         public static final int editor=0x7f0a0026;
         public static final int enabled=0x7f0a0025;
         public static final int export_button=0x7f0a0000;
-        public static final int groupName=0x7f0a003d;
+        public static final int groupName=0x7f0a0034;
         public static final int group_info=0x7f0a000e;
         public static final int group_list_spinner=0x7f0a000d;
         public static final int group_spinner=0x7f0a0020;
-        public static final int help=0x7f0a004d;
+        public static final int help=0x7f0a0045;
         public static final int hours=0x7f0a002b;
         public static final int import_button=0x7f0a0001;
-        public static final int increment=0x7f0a003e;
+        public static final int increment=0x7f0a0035;
         public static final int info_alert=0x7f0a0015;
-        public static final int info_alert2=0x7f0a0032;
         public static final int info_group=0x7f0a0021;
         public static final int info_logs=0x7f0a0019;
         public static final int info_value=0x7f0a0022;
-        public static final int intervalList=0x7f0a0043;
-        public static final int interval_label=0x7f0a0039;
+        public static final int intervalList=0x7f0a003a;
+        public static final int interval_label=0x7f0a0030;
         public static final int lastLog=0x7f0a0011;
         public static final int listName=0x7f0a0004;
         public static final int logBody=0x7f0a001f;
@@ -107,31 +104,31 @@ public final class R {
         public static final int logValWidget=0x7f0a001c;
         public static final int logValue=0x7f0a000a;
         public static final int logValueLabel=0x7f0a0023;
-        public static final int manage_groups=0x7f0a0053;
+        public static final int manage_groups=0x7f0a004b;
         public static final int minutes=0x7f0a002c;
         public static final int name=0x7f0a0010;
-        public static final int new_alert=0x7f0a0059;
-        public static final int new_group=0x7f0a004b;
-        public static final int new_log=0x7f0a0058;
-        public static final int new_tracker=0x7f0a0052;
+        public static final int new_alert=0x7f0a0050;
+        public static final int new_group=0x7f0a0042;
+        public static final int new_log=0x7f0a004f;
+        public static final int new_tracker=0x7f0a004a;
         public static final int next_time=0x7f0a0028;
         public static final int ok=0x7f0a0024;
         public static final int quick_log=0x7f0a0017;
-        public static final int quicklog=0x7f0a0057;
+        public static final int quicklog=0x7f0a004e;
         public static final int result=0x7f0a0002;
         public static final int ringtone=0x7f0a0029;
         public static final int save=0x7f0a000b;
         public static final int seconds=0x7f0a002d;
-        public static final int settings=0x7f0a0056;
-        public static final int skip_next=0x7f0a003c;
-        public static final int time_label=0x7f0a003b;
-        public static final int timepicker_input=0x7f0a003f;
-        public static final int toggle_alert=0x7f0a0049;
+        public static final int settings=0x7f0a0044;
+        public static final int skip_next=0x7f0a0033;
+        public static final int time_label=0x7f0a0032;
+        public static final int timepicker_input=0x7f0a0036;
+        public static final int toggle_alert=0x7f0a0040;
         public static final int tracker_details=0x7f0a0006;
         public static final int tracker_name=0x7f0a0005;
         public static final int units=0x7f0a0027;
-        public static final int value=0x7f0a003a;
-        public static final int view=0x7f0a004e;
+        public static final int value=0x7f0a0031;
+        public static final int view=0x7f0a0046;
         public static final int z1=0x7f0a0013;
     }
     public static final class layout {
@@ -151,14 +148,13 @@ public final class R {
         public static final int d_generic_info=0x7f03000d;
         public static final int d_group_edit=0x7f03000e;
         public static final int d_timepicker=0x7f03000f;
-        public static final int test_stuff=0x7f030010;
-        public static final int w_alert=0x7f030011;
-        public static final int w_group_spinner_display=0x7f030012;
-        public static final int w_group_spinner_row=0x7f030013;
-        public static final int w_number_picker=0x7f030014;
-        public static final int w_text_ok=0x7f030015;
-        public static final int w_tracker_edit_alert=0x7f030016;
-        public static final int w_tracker_edit_alert_interval=0x7f030017;
+        public static final int w_alert=0x7f030010;
+        public static final int w_group_spinner_display=0x7f030011;
+        public static final int w_group_spinner_row=0x7f030012;
+        public static final int w_number_picker=0x7f030013;
+        public static final int w_text_ok=0x7f030014;
+        public static final int w_tracker_edit_alert=0x7f030015;
+        public static final int w_tracker_edit_alert_interval=0x7f030016;
     }
     public static final class menu {
         public static final int alert_widget_context=0x7f090000;
@@ -295,6 +291,6 @@ public final class R {
         public static final int verticalLL=0x7f070010;
     }
     public static final class xml {
-        public static final int prefs=0x7f040000;
+        public static final int settings=0x7f040000;
     }
 }

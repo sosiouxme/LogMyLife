@@ -37,9 +37,17 @@
     android:icon="@android:drawable/ic_menu_delete"
     android:id="@+id/delete" />
   <item
-	 android:title="Help" 
-	 android:id="@+id/help" 
-	 android:titleCondensed="Help" 
-	 android:orderInCategory="4" 
-	 android:icon="@android:drawable/ic_menu_help" />
+    android:titleCondensed="Settings" 
+    android:title="Settings..." 
+    android:id="@+id/settings" 
+    android:alphabeticShortcut="S" 
+    android:orderInCategory="5"
+    android:icon="@android:drawable/ic_menu_preferences" />
+  <item
+    android:title="Help" 
+    android:id="@+id/help" 
+    android:titleCondensed="Help" 
+    android:alphabeticShortcut="S" 
+    android:orderInCategory="6" 
+    android:icon="@android:drawable/ic_menu_help" />
 </menu>
