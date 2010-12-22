@@ -6,26 +6,30 @@
   android:orientation="vertical"
 >
   <RelativeLayout
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
   >
-  <ToggleButton
-  android:id="@+id/enabled"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content"
-  android:layout_alignParentLeft="true"
-  />
-  <TextView
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content"
-  android:text="Toggle reminder on and off"
-  android:layout_alignParentRight="true"
-  />    
+    <ToggleButton
+      android:id="@+id/enabled"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+    <TextView
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignBaseline="@id/enabled"
+      android:layout_toRightOf="@id/enabled"
+      android:text="Toggle reminder on and off" />
   </RelativeLayout>
+  <TextView
+    style="@style/LineLabel"
+    android:padding="5dip"
+    android:layout_marginTop="10dip"
+    android:layout_marginBottom="10dip"
+    android:text="Interval" />
   <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="This reminder will activate after the most recent log entry is this old:" />
+    android:text="Reminder after last log entry is this old:" />
   <LinearLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -36,8 +40,8 @@
       android:layout_height="wrap_content"
       android:inputType="number"
       android:maxLength="5"
-      android:layout_weight="1"
-      android:layout_width="wrap_content" />
+      android:layout_weight="0"
+      android:layout_width="100dip" />
     <Spinner
       android:entries="@array/alertIntervals"
       android:layout_width="wrap_content"
@@ -50,39 +54,37 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
   >
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Next notification: "
-    />
-  <TextView
-    android:id="@+id/next_time"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="(none)"
-    />
-  </LinearLayout>
-  <LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-  >
     <TextView
-      android:layout_height="wrap_content"
-      android:layout_width="wrap_content"
-      android:text="Notification ringtone:" 
-      />
-    <Button
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:id="@+id/ringtone"
-      android:text="Choose"       
-      />
+      android:text="Next reminder: " />
+    <TextView
+      android:id="@+id/next_time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="(none)" />
   </LinearLayout>
-  
+  <TextView
+    style="@style/LineLabel"
+    android:padding="5dip"
+    android:layout_marginTop="10dip"
+    android:layout_marginBottom="10dip"
+    android:text="Reminder ringtone" />
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/ringtone"
+    android:text="Choose" />
+  <LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:orientation="vertical"
+  />
   <LinearLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:layout_weight="0"
     android:orientation="horizontal"
   >
     <Button
@@ -104,5 +106,5 @@
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:layout_weight="1" />
- </LinearLayout>
+  </LinearLayout>
 </LinearLayout>

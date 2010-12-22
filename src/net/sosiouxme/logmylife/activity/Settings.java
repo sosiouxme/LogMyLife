@@ -51,19 +51,31 @@ public class Settings extends PreferenceActivity {
 	}
 
 	public static DateFormat getDateFormat(Context c) {
-		return new SimpleDateFormat(getPrefs(c).getString("dateFormat", "yyyy-MM-dd"));
+		try {
+			return new SimpleDateFormat(getPrefs(c).getString("dateFormat", "yyyy-MM-dd"));
+		} catch(Exception e) {
+			return new SimpleDateFormat( "yyyy-MM-dd");
+		}
 	}
 
 	public static DateFormat getTimeFormat(Context c) {
-		return new SimpleDateFormat(getPrefs(c).getString("timeFormat", "HH:mm:ss"));
+		try {
+			return new SimpleDateFormat(getPrefs(c).getString("timeFormat", "HH:mm:ss"));
+		} catch(Exception e) {
+			return new SimpleDateFormat( "HH:mm:ss");
+		}
 	}
 	
 	public static DateFormat getDateTimeFormat(Context c) {
 		
 		SharedPreferences prefs = getPrefs(c);
-		return new SimpleDateFormat( //"yyyy-MM-dd HH:mm:ss");
+		try {
+			return new SimpleDateFormat( //"yyyy-MM-dd HH:mm:ss");
 				prefs.getString("dateFormat", "yyyy-MM-dd") + " " +
 				prefs.getString("timeFormat", "HH:mm:ss"));
+		} catch(Exception e) {
+			return new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
+		}
 	}
 
 	public static QuietHours getQuietHours(Context c) {
