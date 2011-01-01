@@ -1,5 +1,5 @@
-*** Development underway, but still very alpha ***
-*** Issues not being tracked on github yet ***
+*** Development underway, but still alpha ***
+*** Issues tracked on github ***
 
 Eclipse project for an Android application. You'll probably need Eclipse
 and the Android SDK and ADT plugin to make sense of it. The code is

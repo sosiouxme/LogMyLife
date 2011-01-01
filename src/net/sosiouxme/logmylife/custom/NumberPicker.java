@@ -1,5 +1,6 @@
 /*
- *  Copyright (c) 2010  Luke Meyer  
+ *  This file is part of LogMyLife, an application for logging events.
+ *  Copyright (c) 2011  Luke Meyer  
  *  
  *  This file is free software: you may copy, redistribute and/or modify it  
  *  under the terms of the GNU General Public License as published by the  

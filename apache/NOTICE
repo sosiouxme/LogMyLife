@@ -1,5 +1,26 @@
 Apache license NOTICE file is relevant to the NumberPicker code that
-originated with the Android Open Source Project.
+originated with the Android Open Source Project, specifically these files:
+
+res/drawable/timepicker_down_pressed.9.png
+res/drawable/timepicker_down_btn.xml
+res/drawable/timepicker_up_disabled_focused.9.png
+res/drawable/timepicker_input.xml
+res/drawable/timepicker_input_selected.9.png
+res/drawable/timepicker_down_selected.9.png
+res/drawable/timepicker_input_pressed.9.png
+res/drawable/timepicker_up_pressed.9.png
+res/drawable/timepicker_down_disabled_focused.9.png
+res/drawable/timepicker_up_selected.9.png
+res/drawable/timepicker_down_disabled.9.png
+res/drawable/timepicker_up_normal.9.png
+res/drawable/timepicker_input_disabled.9.png
+res/drawable/timepicker_up_disabled.9.png
+res/drawable/timepicker_up_btn.xml
+res/drawable/timepicker_down_normal.9.png
+res/drawable/timepicker_input_normal.9.png
+res/layout/w_number_picker.xml
+src/net/sosiouxme/logmylife/custom/NumberPicker.java
+src/net/sosiouxme/logmylife/custom/NumberPickerButton.java
 
    =========================================================================
    ==  NOTICE file corresponding to the section 4 d of                    ==
@@ -189,4 +210,3 @@ The Android Open Source Project (http://source.android.com).
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
-
