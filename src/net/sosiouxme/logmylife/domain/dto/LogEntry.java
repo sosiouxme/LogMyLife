@@ -7,15 +7,31 @@ import net.sosiouxme.logmylife.C;
 
 public class LogEntry extends AbstractDTO implements Serializable {
 
-	private static final long serialVersionUID = 5259202378934469262L;
+	private static final long serialVersionUID = 1L;
 	public long trackerId;
-	public String body;
+	public String body = null;
 	public Date logDate;
-	public Integer value;
-	public boolean isBreak;
-	
+	public String value = null;
+	public boolean isBreak = false;
+	/** type of value to record with the log (types hardwired now, will be a table eventually */
+	public long valueType = 0;
+
 	public LogEntry(long id) {
 		super(id);
+	}
+	
+	public static LogEntry newLogFor(Tracker t) {
+		if(t == null || t.isNew()) 
+			throw new IllegalArgumentException("Can't create log entry before tracker is in DB");
+		LogEntry log = new LogEntry(-1);
+		log.setTrackerId(t.getId());
+		log.changed.put(C.db_LOG_BODY, log.body);
+		log.setLogDate(new Date());
+		log.changed.put(C.db_LOG_VALUE, log.value);
+		log.changed.put(C.db_LOG_IS_BREAK, log.isBreak);
+		log.setValueType(t.getLogValueType());
+		
+		return log;
 	}
 	
 	public long getId() {
@@ -34,12 +50,21 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		return logDate;
 	}
 	
-	public Integer getValue() {
+	public String getValue() {
 		return value;
 	}
 
 	public boolean isBreak() {
 		return isBreak;
+	}
+
+	public long getValueType() {
+		return valueType;
+	}
+
+	public void setValueType(long valueType) {
+		this.valueType = valueType;
+		changed.put(C.db_LOG_VALUE_TYPE, valueType);
 	}
 
 	public void setBody(String body) {
@@ -59,9 +84,9 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		changed.put(C.db_LOG_TRACKER, trackerId);
 	}
 
-	public void setValue(Integer value) {
+	public void setValue(String value) {
 		this.value = value;
-		changed.put(C.db_LOG_VALUE, value == null ? null : value);
+		changed.put(C.db_LOG_VALUE, value);
 	}
 
 	public void setBreak(boolean isBreak) {

@@ -8,6 +8,7 @@ import net.sosiouxme.logmylife.R;
 import net.sosiouxme.logmylife.Util;
 import net.sosiouxme.logmylife.custom.EventCursorAdapter;
 import net.sosiouxme.logmylife.custom.GroupSpinner;
+import net.sosiouxme.logmylife.custom.TrackerCursorAdapter;
 import net.sosiouxme.logmylife.custom.GroupSpinner.OnGroupSelectedListener;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
@@ -64,7 +65,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		findViewById(R.id.group_info).setOnClickListener(this);
 		getListView().addHeaderView(getLayoutInflater().inflate(R.layout.a_main_new, null));
 
-		Log.d(TAG, Settings.getDefaultRingtone(this));
+		//Log.d(TAG, Settings.getDefaultRingtone(this));
 		mDba = new DbAdapter(this);
 		fillGroupSpinner();
 		fillTrackerList();
@@ -93,7 +94,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 
 		Cursor cur = mDba.fetchTrackers(mCurrentGroupId, null);
 		startManagingCursor(cur);
-		mAdapter = new EventCursorAdapter(this,
+		mAdapter = new TrackerCursorAdapter(this,
 				R.layout.a_main_row,
 				cur, // Give the cursor to the list adapter
 				new String[] { C.db_TRACKER_NAME, C.db_LOG_TIME, C.db_LOG_TIME, C.db_LOG_BODY },
@@ -194,7 +195,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 	}
 
 	private void quickLog(long rowId) {
-		mDba.createLog(rowId);
+		mDba.createLog(mDba.fetchTracker(rowId));
 		((LogMyLife) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		mAdapter.requery();
 	
@@ -264,6 +265,7 @@ public class Main extends ListActivity implements OnItemClickListener, OnGroupSe
 		Log.d(TAG, "onResume");
 		super.onResume();
 		mSpinner.notifyDataSetChanged();
+		((EventCursorAdapter) getListAdapter()).refreshDateTimeFmt(this);
 		startUpdateThread();
 	}
 	

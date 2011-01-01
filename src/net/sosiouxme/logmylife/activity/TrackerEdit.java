@@ -19,9 +19,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
 Activity that presents the UI to edit a single tracker.
@@ -30,7 +35,7 @@ Activity that presents the UI to edit a single tracker.
 See LICENSE file for this file's GPLv3 distribution license.
 */
 
-public class TrackerEdit extends AlertEditActivity implements android.view.View.OnClickListener, OnGroupSelectedListener {
+public class TrackerEdit extends AlertEditActivity implements android.view.View.OnClickListener, OnGroupSelectedListener, OnItemSelectedListener {
 
 	private static final String TAG = "LML.TrackerEdit";
 	private static final int DIALOG_EDIT_HELP = 10;
@@ -47,6 +52,9 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 	private long mCurrentGroupId = 0;
 	/** set if changes made; back button will save any changes by default */
 	private boolean mSaveOnFinish = true;
+	private CheckBox metUseVal;
+	private ViewGroup metValueContainer;
+	private Spinner metValueType;
 
 /* *********************** lifecycle methods ************************ */	
 	
@@ -75,14 +83,20 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		// locate and fill the necessary elements of the layout
 		metName = (EditText) findViewById(R.id.name);
 		metBody = (EditText) findViewById(R.id.body);
+		metUseVal = (CheckBox) findViewById(R.id.useValue);
+		metValueContainer = (ViewGroup) findViewById(R.id.valueContainer);
+		metValueType = (Spinner) findViewById(R.id.valueType);
 		metValLabel = (EditText) findViewById(R.id.logValueLabel);
-
+		
 		if(!mTracker.isNew()) {			
 			// set the data in the views
 			metName.setText(mTracker.getName());
 			metBody.setText(mTracker.getBody());
 			metValLabel.setText(mTracker.getLogValueLabel());
 		}
+		metUseVal.setChecked(mTracker.getLogUseValue());
+		metValueContainer.setVisibility(metUseVal.isChecked() ? View.VISIBLE : View.GONE);
+		metValueType.setSelection((int) mTracker.getLogValueType());
 		
 		// wire up the buttons
 		Button cancelButton = (Button) findViewById(R.id.cancel);
@@ -90,6 +104,8 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		Button okButton = (Button) findViewById(R.id.ok);
 		metName.addTextChangedListener(new RequireTextFor(okButton, metName));
 		okButton.setOnClickListener(this);
+		metUseVal.setOnCheckedChangeListener(this);
+		metValueType.setOnItemSelectedListener(this);
 		findViewById(R.id.info_group).setOnClickListener(this);
 		findViewById(R.id.info_alert).setOnClickListener(this);
 		findViewById(R.id.info_value).setOnClickListener(this);
@@ -164,6 +180,14 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		return super.onOptionsItemSelected(item);
 	}
 	
+	public void onCheckedChanged(CompoundButton enabled, boolean checked) {
+		Log.d(TAG, "onCheckedChanged");
+		if(enabled == metUseVal) {
+			metValueContainer.setVisibility(checked ? View.VISIBLE : View.GONE);
+			mTracker.setLogUseValue(checked);
+		} else
+			super.onCheckedChanged(enabled, checked);
+	}
 
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -250,5 +274,17 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 	protected void onDestroy() {
 		mDba.close();
 		super.onDestroy();
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+		mTracker.setLogValueType(position);		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// TODO Auto-generated method stub
+		
 	}
 }

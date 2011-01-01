@@ -2,13 +2,13 @@
 <resources>
 
 <!-- Database level 1 (initial) -->
-  <string name="db_create_groups">
+  <string name="db_1_create_groups">
     CREATE TABLE Groups (
       _id INTEGER PRIMARY KEY,
       name TEXT NOT NULL
     );
   </string>
-  <string name="db_create_trackers">
+  <string name="db_1_create_trackers">
     CREATE TABLE Trackers (
       _id INTEGER PRIMARY KEY,
       group_id INTEGER NOT NULL,
@@ -18,7 +18,7 @@
       flag_skip_next_alert BOOLEAN DEFAULT 0
     );
   </string>
-  <string name="db_create_logs">
+  <string name="db_1_create_logs">
     CREATE TABLE TrackerLogs (
       _id INTEGER PRIMARY KEY,
       tracker_id INTEGER NOT NULL,
@@ -28,7 +28,7 @@
       is_break BOOLEAN default 0
     );
   </string>
-  <string name="db_create_alerts">
+  <string name="db_1_create_alerts">
     create table Alerts (
       _id INTEGER PRIMARY KEY,
       tracker_id INTEGER NOT NULL,
@@ -44,25 +44,48 @@
       next_time DATETIME
     );
   </string>
-  <string name="db_create_tracker_group_id_idx">
+  <string name="db_1_create_tracker_group_id_idx">
     create index tracker_group_id_idx on Trackers (group_id);
   </string>
-  <string name="db_create_log_tracker_time_idx">
+  <string name="db_1_create_log_tracker_time_idx">
     create index log_tracker_time_idx on TrackerLogs (tracker_id ASC, log_time DESC);
   </string>
-  <string name="db_create_alert_tracker_id_idx">
+  <string name="db_1_create_alert_tracker_id_idx">
     create index alert_tracker_id_idx on Alerts (tracker_id);
   </string>  
 <!-- Database level 2 -->
-  <string name="db_alter_tracker_add_value_label">
+  <string name="db_2_alter_tracker_add_value_label">
     alter table Trackers add value_label TEXT;
   </string>
-  <string name="db_alter_tracker_add_value_label_pos">
+  <string name="db_2_alter_tracker_add_value_label_pos">
     alter table Trackers add value_label_position BOOLEAN DEFAULT 1;
   </string>
+<!-- Database level 3 -->
+  <!-- introduce types so user can specify what format the value will have -->
+  <string name="db_3_alter_tracker_add_use_value">
+      alter table Trackers add use_value BOOLEAN default 0;
+  </string>
+  <!-- even if the value isn't in use, remember what it was set to before -->
+  <string name="db_3_alter_tracker_add_value_type">
+    alter table Trackers add value_type INTEGER DEFAULT 0;
+  </string>
+  <!-- logs record them too because the tracker type might change later -->
+  <string name="db_3_alter_logs_add_value_type">
+    alter table TrackerLogs add value_type INTEGER DEFAULT 0;
+  </string>
+  <string name="db_3_update_trackers_set_use_value">
+    update Trackers
+    set use_value = 1
+    where _id in (
+      select tracker_id
+      from TrackerLogs
+      where value is not null
+    );
+  </string>
+
 <!-- Database level ? - future -->
 
-  <string name="db_create_valuetypes">
+  <string name="db_x_create_valuetypes">
     create table ValueTypes (
       _id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,

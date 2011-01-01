@@ -40,7 +40,7 @@ public class DbAdapter implements C {
 	/**	 name of the file used for the sqlite DB */
 	private static final String DATABASE_NAME = "LogMyLife.db";
 	/** version of the DB (to determine if migration is needed) */
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	/** Logging tag for this class */
     private static final String TAG = "LML.DBAdapter";
 
@@ -172,7 +172,8 @@ public class DbAdapter implements C {
 
 	private static final String[] TRACKER_COLUMNS = new String[] { db_ID,
 			db_TRACKER_NAME, db_TRACKER_BODY, db_TRACKER_SKIP_NEXT_ALERT,
-			db_TRACKER_GROUP, db_TRACKER_LAST_LOG_ID, db_TRACKER_VALUE_LABEL,
+			db_TRACKER_GROUP, db_TRACKER_LAST_LOG_ID, db_TRACKER_USE_VALUE,
+			db_TRACKER_VALUE_TYPE, db_TRACKER_VALUE_LABEL,
 			db_TRACKER_VALUE_LABEL_POS };
 
 	public long createTracker(Tracker tr) {
@@ -213,9 +214,10 @@ public class DbAdapter implements C {
 			t.groupId = c.getLong(c.getColumnIndex(C.db_TRACKER_GROUP));
 			t.lastLogId = c.getLong(c.getColumnIndex(C.db_TRACKER_LAST_LOG_ID));
 			t.skipNextAlert = c.getInt(c.getColumnIndex(C.db_TRACKER_SKIP_NEXT_ALERT)) > 0;
+			t.logUseValue = c.getInt(c.getColumnIndex(C.db_TRACKER_USE_VALUE)) > 0;
+			t.logValueType = c.getInt(c.getColumnIndex(C.db_TRACKER_VALUE_TYPE));
 			t.logValueLabel = c.getString(c.getColumnIndex(C.db_TRACKER_VALUE_LABEL));
 			t.logValueLabelPos = c.getInt(c.getColumnIndex(C.db_TRACKER_VALUE_LABEL_POS));
-			
 			if(t.lastLogId > 0)
 				t.lastLog = fetchLog(t.lastLogId);
 		} finally {
@@ -279,14 +281,12 @@ public class DbAdapter implements C {
      * Handle TrackerLogs table
      */
     
-	private static final String[] LOG_COLUMNS = new String[] { db_ID,
-			db_LOG_TRACKER, db_LOG_TIME, db_LOG_BODY, db_LOG_VALUE,
+	private static final String[] LOG_COLUMNS = { db_ID, db_LOG_TRACKER,
+			db_LOG_TIME, db_LOG_BODY, db_LOG_VALUE_TYPE, db_LOG_VALUE,
 			db_LOG_IS_BREAK };
 
-	public long createLog(long trackerId) {
-		LogEntry le = new LogEntry(-1);
-		le.setTrackerId(trackerId);
-		return createLog(le);
+	public long createLog(Tracker tracker) {
+		return createLog(LogEntry.newLogFor(tracker));
 	}
     
     public long createLog(LogEntry log) {
@@ -319,7 +319,8 @@ public class DbAdapter implements C {
 			if (c.isNull(c.getColumnIndex(C.db_LOG_VALUE)))
 				le.value = null;
 			else
-				le.value = c.getInt(c.getColumnIndex(C.db_LOG_VALUE));
+				le.value = c.getString(c.getColumnIndex(C.db_LOG_VALUE));
+			le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
 		} catch (ParseException e) {
 			throw new RuntimeException("fetchLog couldn't parse date for " + logId, e);
 		} finally {
@@ -330,11 +331,14 @@ public class DbAdapter implements C {
 		return le;
 	}
 
-    public Cursor fetchLogs(long trackerId) {
+	private static final String[] LOG_CURSOR_COLUMNS = { db_ID, db_LOG_TIME,
+			db_LOG_BODY, db_LOG_VALUE, db_LOG_VALUE_TYPE };
+
+	public Cursor fetchLogs(long trackerId) {
         // @return Cursor positioned to matching log, if found
     	Log.d(TAG, "fetching logs for item " + trackerId);
         Cursor c = mDb.query(true, db_LOG_TABLE,
-				new String[] {db_ID, db_LOG_TIME, db_LOG_BODY, db_LOG_VALUE},
+				LOG_CURSOR_COLUMNS,
 				db_LOG_TRACKER + "=" + trackerId, null,
 		        null, null, db_LOG_TIME + " DESC", null);
         if (c != null)
@@ -573,30 +577,36 @@ public class DbAdapter implements C {
 			try {
 				switch(oldVersion) {
 				case 0:
-					db.execSQL(str(R.string.db_create_groups));
+					db.execSQL(str(R.string.db_1_create_groups));
 					Log.i(TAG, "Created table " + db_GROUP_TABLE);
 
 					ContentValues firstRow = new ContentValues();
 					firstRow.put(db_GROUP_NAME, str(R.string.db_first_list));
 					db.insertOrThrow(db_GROUP_TABLE, db_GROUP_NAME, firstRow);
 
-					db.execSQL(str(R.string.db_create_trackers));
+					db.execSQL(str(R.string.db_1_create_trackers));
 					Log.i(TAG, "Created table " + db_TRACKER_TABLE);
 
-					db.execSQL(str(R.string.db_create_logs));
+					db.execSQL(str(R.string.db_1_create_logs));
 					Log.i(TAG, "Created table " + db_LOG_TABLE);
 			
-					db.execSQL(str(R.string.db_create_alerts));
+					db.execSQL(str(R.string.db_1_create_alerts));
 					Log.i(TAG, "Created table " + db_ALERT_TABLE);
 					
-					db.execSQL(str(R.string.db_create_tracker_group_id_idx));
-					db.execSQL(str(R.string.db_create_log_tracker_time_idx));
-					db.execSQL(str(R.string.db_create_alert_tracker_id_idx));
+					db.execSQL(str(R.string.db_1_create_tracker_group_id_idx));
+					db.execSQL(str(R.string.db_1_create_log_tracker_time_idx));
+					db.execSQL(str(R.string.db_1_create_alert_tracker_id_idx));
 					Log.i(TAG, "Created indexes");
 				case 1:
-					db.execSQL(str(R.string.db_alter_tracker_add_value_label));
-					db.execSQL(str(R.string.db_alter_tracker_add_value_label_pos));
-					Log.i(TAG, "Added tracker value types");	
+					db.execSQL(str(R.string.db_2_alter_tracker_add_value_label));
+					db.execSQL(str(R.string.db_2_alter_tracker_add_value_label_pos));
+					Log.i(TAG, "Added tracker value labels");
+				case 2:
+					db.execSQL(str(R.string.db_3_alter_tracker_add_use_value));
+					db.execSQL(str(R.string.db_3_alter_tracker_add_value_type));
+					db.execSQL(str(R.string.db_3_alter_logs_add_value_type));
+					db.execSQL(str(R.string.db_3_update_trackers_set_use_value));
+					Log.i(TAG, "Added tracker value types");
 					
 /*					db.execSQL(str(R.string.db_create_valuetypes));
 					ContentValues firstRow = new ContentValues();

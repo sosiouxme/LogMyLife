@@ -6,6 +6,7 @@ import net.sosiouxme.logmylife.R;
 import net.sosiouxme.logmylife.Util;
 import net.sosiouxme.logmylife.custom.AlertEditActivity;
 import net.sosiouxme.logmylife.custom.EventCursorAdapter;
+import net.sosiouxme.logmylife.custom.LogCursorAdapter;
 import net.sosiouxme.logmylife.dialog.LogDeleteDialog;
 import net.sosiouxme.logmylife.dialog.TrackerDeleteDialog;
 import android.app.Dialog;
@@ -75,7 +76,7 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 	@Override
 	protected void onStart() {
 		// This is in onStart rather than onResume because
-		// it needs to proceed onPrepareDialog(reminder alert dialog) -
+		// it needs to precede onPrepareDialog(reminder alert dialog) -
 		// which requires mTracker.
 		//
 		// If there's ever a case where the activity's not stopped but only
@@ -83,7 +84,8 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 
 		Log.d(TAG, "Activity.onStart");
 		refreshTracker();
-		super.onStart();		
+		((EventCursorAdapter) getListAdapter()).refreshDateTimeFmt(this);
+		super.onStart();
 	}
 
 
@@ -114,7 +116,7 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 		Log.d(TAG, "fillLogList");
 		Cursor cur = mDba.fetchLogs(mTracker.id);
 		startManagingCursor(cur);
-		EventCursorAdapter adapter = new EventCursorAdapter(this,
+		LogCursorAdapter adapter = new LogCursorAdapter(this,
 				mTracker,
 				R.layout.a_tracker_detail_row,
 				cur, // Give the cursor to the list adapter
@@ -258,7 +260,7 @@ public class TrackerDetail extends AlertEditActivity implements  android.view.Vi
 	}
 	
 	private void createQuickLog() {
-		mDba.createLog(mTracker.getId());
+		mDba.createLog(mTracker);
 		mDba.requeryTracker(mTracker);
 		((LogMyLife) getApplication()).showToast(C.TOAST_LOG_CREATED);
 		requeryList();

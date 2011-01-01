@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -70,37 +71,19 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		
 		// get a DB handle
 		mDba = new DbAdapter(this);
-
-		// find existing log entry / tracker to work on
-		long logId = 0;
-		long trackerId = 0;
-		Bundle e = getIntent().getExtras();
-		if (e == null)
-			throw new RuntimeException("required intent extras not supplied");
-		logId = e.getLong(C.db_ID); //to edit existing log entry
-		trackerId = e.getLong(C.db_LOG_TRACKER); //for new log entry
-		// existing logId means we're going to edit it
-		if (logId > 0) {
-			mLogEntry = mDba.fetchLog(logId);
-			if (mLogEntry == null)
-				throw new RuntimeException("couldn't find log id " + logId);
-			trackerId = mLogEntry.getTrackerId();
-		} else {
-			mLogEntry = new LogEntry(-1);
-			mLogEntry.setTrackerId(trackerId);
-			mLogEntry.setLogDate(new GregorianCalendar().getTime());
-		}
-		// get the tracker to log against (whether new or existing log) 
-		mTracker = mDba.fetchTracker(trackerId);
-		if (mTracker == null)
-			throw new RuntimeException("couldn't find tracker id " + trackerId);
-
+		// Set the layout for this activity.
+		setContentView(R.layout.a_log_edit);
 		// set up the date/time formatters
 		mDateFormat = Settings.getDateFormat(this);
 		mTimeFormat = Settings.getTimeFormat(this);
 
-		// Set the layout for this activity.
-		setContentView(R.layout.a_log_edit);
+		// find existing log entry / tracker to work on
+		mLogEntry = findOrCreateLogEntry();
+
+		// get the tracker to log against (whether new or existing log) 
+		mTracker = mDba.fetchTracker(mLogEntry.getTrackerId());
+		if (mTracker == null)
+			throw new RuntimeException("couldn't find tracker id " + mLogEntry.getTrackerId());
 		
 		/* locate and fill the necessary elements of the layout */
 
@@ -110,11 +93,12 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		tvName.setText(mTracker.name);
 		tvBody.setText(mTracker.body);
 
-		// text and value for log
+		// find/set log text and value
 		metBody = (EditText) findViewById(R.id.body);
 		metBody.setText(mLogEntry.body);
 		metValue = (EditText) findViewById(R.id.logValue);
 		metValue.setText(Util.toString(mLogEntry.value));
+		adjustValueLayout(); // as needed depending on settings
 		
 		// log date/time
 		mDateEditButton = (Button) findViewById(R.id.editDate);
@@ -128,6 +112,53 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		cancelButton.setOnClickListener(this);
 		Button saveButton = (Button) findViewById(R.id.save);
 		saveButton.setOnClickListener(this);
+	}
+
+	private LogEntry findOrCreateLogEntry() {
+		long logId = 0;
+		long trackerId = 0;
+		LogEntry logEntry;
+		Bundle e = getIntent().getExtras();
+		if (e == null)
+			throw new RuntimeException("required intent extras not supplied");
+		logId = e.getLong(C.db_ID); //to edit existing log entry
+
+		if (logId <= 0) {
+			// no logId so create a new one
+			trackerId = e.getLong(C.db_LOG_TRACKER);
+			if (trackerId <= 0)
+				throw new RuntimeException("called without logId or trackerId");
+			logEntry = new LogEntry(-1);
+			logEntry.setTrackerId(trackerId);
+			logEntry.setLogDate(new GregorianCalendar().getTime());
+		} else {
+			// existing logId means we're going to edit it
+			logEntry = mDba.fetchLog(logId);
+			if (logEntry == null)
+				throw new RuntimeException("couldn't find log id " + logId);
+		}
+		return logEntry;
+	}
+
+	private void adjustValueLayout() {
+		// first, adjust log's valuetype if necessary
+		if(mLogEntry.getValue() == null) // new or no value recorded yet
+			mLogEntry.setValueType(mTracker.logValueType);
+		
+		// next, decide whether we'll display the value input at all
+		if(mLogEntry.value == null && !mTracker.logUseValue)
+			findViewById(R.id.valueContainer).setVisibility(View.GONE);
+		else {
+			// now, if we're displaying, decide what inputType to set on the editor
+			metValue.setInputType(getValueInputType(mLogEntry));
+		}		
+	}
+
+	private int getValueInputType(LogEntry logEntry) {
+		int inputType = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED;
+		if(logEntry.getValueType() > 0) // non-integer - money or freeform
+			inputType |= InputType.TYPE_NUMBER_FLAG_DECIMAL;
+		return inputType;
 	}
 
 	private void setDateTimeDisplay() {
@@ -266,7 +297,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 	private boolean saveLogEntry() {
 		mLogEntry.setBody(metBody.getText().toString());
 		String value = metValue.getText().toString();
-		mLogEntry.setValue(value.equals("") ? null : Integer.parseInt(value));
+		mLogEntry.setValue(value.equals("") ? null : value);
 		if (mLogEntry.isNew()) {
 			mDba.createLog(mLogEntry);
 			((LogMyLife) getApplication()).showToast(C.TOAST_LOG_CREATED);

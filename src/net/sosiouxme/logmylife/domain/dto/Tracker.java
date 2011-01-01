@@ -5,14 +5,24 @@ import net.sosiouxme.logmylife.C;
 public class Tracker extends AbstractDTO {
 
 	public long groupId;
+	/** The main visual identifier of the tracker */
 	public String name;
+	/** Random notes the user can add about the tracker */
 	public String body = null;
+	/** row id of the most recent log  against this tracker */
 	public long lastLogId;
+	/** log object for most recent log, if any */
 	public LogEntry lastLog = null;
+	/** when creating a log, do or don't associate a value with it */
+	public boolean logUseValue = false;
+	/** type of value to create logs with (hardwired now, will be a table eventually */
+	public long logValueType = 0; // integer by default
+	/** label for value to put in logs */
 	public String logValueLabel = null;
+	/** designate whether the label is displayed on the right or left of the value */
+	public int logValueLabelPos = LABEL_RIGHT;
 	public static final int LABEL_LEFT = 0;
 	public static final int LABEL_RIGHT = 1;
-	public int logValueLabelPos = LABEL_RIGHT;
 
 	/** A flag that can be set to skip the alert just once */
 	public boolean skipNextAlert;
@@ -54,6 +64,28 @@ public class Tracker extends AbstractDTO {
 	public int getLogValueLabelPos() {
 		return logValueLabelPos;
 	}
+
+	public long getLogValueType() {
+		return logValueType;
+	}
+
+	public boolean getLogUseValue() {
+		return logUseValue;
+	}
+
+	public void setLogUseValue(boolean logUseValue) {
+		if(logUseValue == this.logUseValue) return;
+		changed.put(C.db_TRACKER_USE_VALUE, logUseValue);
+		this.logUseValue = logUseValue;
+	}
+
+
+	public void setLogValueType(long logValueType) {
+		if(logValueType == this.logValueType) return;
+		this.logValueType = logValueType;
+		changed.put(C.db_TRACKER_VALUE_TYPE, logValueType);
+	}
+
 
 	public void setLogValueLabelPos(int logValueLabelPos) {
 		if (logValueLabelPos == this.logValueLabelPos) return;
@@ -104,6 +136,7 @@ public class Tracker extends AbstractDTO {
 		setBody(t.body);
 		lastLogId = t.lastLogId;
 		lastLog = t.lastLog;
+		setLogValueType(t.logValueType);
 		setLogValueLabel(t.logValueLabel);
 		setLogValueLabelPos(t.logValueLabelPos);
 		setSkipNextAlert(skipNextAlert);

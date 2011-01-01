@@ -22,6 +22,8 @@ public interface C {
 	public static final String db_TRACKER_NAME = "name";
 	public static final String db_TRACKER_BODY = "body";
 	public static final String db_TRACKER_LAST_LOG_ID = "last_log_id";
+	public static final String db_TRACKER_USE_VALUE = "use_value";
+	public static final String db_TRACKER_VALUE_TYPE = "value_type";
 	public static final String db_TRACKER_VALUE_LABEL = "value_label";
 	public static final String db_TRACKER_VALUE_LABEL_POS = "value_label_position";
 	public static final String db_TRACKER_SKIP_NEXT_ALERT = "flag_skip_next_alert";

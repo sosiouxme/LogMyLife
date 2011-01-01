@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.sosiouxme.logmylife.domain.DbAdapter;
 import net.sosiouxme.logmylife.receiver.AlertReceiver;
-
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -25,7 +24,7 @@ public class LogMyLife extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		this.mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		refreshPrefs();
 		
 		// as backup to the broadcast receivers, make sure the next
 		// reminder alert is set when starting the app.
@@ -86,6 +85,10 @@ public class LogMyLife extends Application {
 			// first time we ever checked - initialize
 			mPrefs.edit().putInt(STORED_CHANGE_VERSION, CHANGE_VERSION).commit();	
 		return false;
+	}
+
+	public void refreshPrefs() {
+		this.mPrefs = PreferenceManager.getDefaultSharedPreferences(this);		
 	}
 	
 }

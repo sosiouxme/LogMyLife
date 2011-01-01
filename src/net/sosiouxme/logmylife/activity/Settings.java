@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import net.sosiouxme.logmylife.LogMyLife;
 import net.sosiouxme.logmylife.R;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,6 +31,12 @@ public class Settings extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		((LogMyLife) getApplication()).refreshPrefs();
 	}
 	
 	private static SharedPreferences getPrefs(Context context) {

@@ -27,20 +27,20 @@
           android:id="@+id/info_group"
           style="@style/InfoButton" />
       </LinearLayout>
-        <TextView
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:layout_weight="9"
-          android:text="Name" />
+      <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="9"
+        android:text="Name" />
       <EditText
         android:id="@+id/name"
         style="@style/NameEditor"
         android:hint="Tracker name" />
-        <TextView
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:layout_weight="9"
-          android:text="Notes" />
+      <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="9"
+        android:text="Notes" />
       <EditText
         android:id="@+id/body"
         style="@style/BodyEditor"
@@ -63,19 +63,38 @@
           android:id="@+id/info_value"
           style="@style/InfoButton" />
       </RelativeLayout>
-      <TextView
+      <CheckBox
+        android:id="@+id/useValue"
+        android:text="Associate a value with this tracker?"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+      <LinearLayout
+        android:id="@+id/valueContainer"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Label: "
-        />
-      <EditText
-        android:id="@+id/logValueLabel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="25"
-        android:inputType="textShortMessage|text|textAutoComplete"
-        android:hint="Label text for the value"
-         />
+        android:orientation="vertical"
+      >
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Type of value: " />
+        <Spinner
+          android:id="@+id/valueType"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:entries="@array/logValueTypes" />
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Label: " />
+        <EditText
+          android:id="@+id/logValueLabel"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="25"
+          android:inputType="textShortMessage|text|textAutoComplete"
+          android:hint="Label text for the value" />
+      </LinearLayout>
       <RelativeLayout
         style="@style/LineLabel"
         android:orientation="horizontal"

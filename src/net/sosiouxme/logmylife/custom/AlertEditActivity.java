@@ -372,7 +372,7 @@ public class AlertEditActivity extends ListActivity implements OnClickListener, 
 		Log.d(TAG, "onCheckedChanged");
 		Alert alert = (Alert) enabled.getTag();
 		if(alert == null) return;
-		Log.d(TAG, "alert enablement set: " + alert.id + " " + checked);
+		//Log.d(TAG, "alert enablement set: " + alert.id + " " + checked);
 		alert.setIsEnabled(checked);
 	}
 

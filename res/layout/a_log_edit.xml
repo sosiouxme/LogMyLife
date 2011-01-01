@@ -1,91 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
+  android:orientation="vertical"
 >
-  <LinearLayout
+  <ScrollView
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
   >
-    <TextView
-      style="@style/Label"
-      android:text="Tracker" />
-    <TextView
-      android:text="Tracker text"
-      android:id="@+id/tracker_name"
-      android:layout_height="wrap_content"
-      android:layout_width="fill_parent" />
-    <TextView
-      style="@style/LineLabel"
-      android:text="Tracker Details" />
-    <TextView
-      android:text="Tracker details text"
-      android:id="@+id/tracker_details"
-      android:layout_height="wrap_content"
-      android:layout_width="fill_parent" />
-    <TextView
-      style="@style/LineLabel"
-      android:text="Log value" />
     <LinearLayout
-      style="@style/horizontalLL"
-    >
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date: " />
-      <Button
-        android:id="@+id/editDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit" />
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time: " />
-      <Button
-        android:id="@+id/editTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit" />
-    </LinearLayout>
-    <TextView
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
-      android:text="Notes" />
-    <EditText
-      android:id="@+id/body"
-      style="@style/BodyEditor"
-      android:hint="Log body" />
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Value: "
-        android:layout_weight="1" />
-      <EditText
-        android:id="@+id/logValue"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="number" />
-    <LinearLayout
-      style="@style/horizontalLL"
+      android:orientation="vertical"
     >
-      <Button
-        android:id="@+id/save"
+      <TextView
+        style="@style/Label"
+        android:text="Tracker" />
+      <TextView
+        android:text="Tracker text"
+        android:id="@+id/tracker_name"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent" />
+      <TextView
+        style="@style/LineLabel"
+        android:text="Tracker Details" />
+      <TextView
+        android:text="Tracker details text"
+        android:id="@+id/tracker_details"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent" />
+      <TextView
+        style="@style/LineLabel"
+        android:text="Log value" />
+      <LinearLayout
+        style="@style/horizontalLL"
+      >
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Date: " />
+        <Button
+          android:id="@+id/editDate"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Edit" />
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Time: " />
+        <Button
+          android:id="@+id/editTime"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Edit" />
+      </LinearLayout>
+      <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:padding="15sp"
-        android:text="Save" />
-      <Button
-        android:id="@+id/cancel"
-        android:layout_width="fill_parent"
+        android:text="Notes" />
+      <EditText
+        android:id="@+id/body"
+        style="@style/BodyEditor"
+        android:hint="Log body" />
+      <LinearLayout
+        android:id="@+id/valueContainer"
+        android:orientation="vertical"
         android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:padding="15sp"
-        android:text="Cancel" />
+        android:layout_width="fill_parent"
+      >
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Value: "
+          android:layout_weight="1" />
+        <EditText
+          android:id="@+id/logValue"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:inputType="numberDecimal" />
+      </LinearLayout>
     </LinearLayout>
+  </ScrollView>
+  <LinearLayout
+    style="@style/horizontalLL"
+    android:layout_weight="0"
+  >
+    <Button
+      android:id="@+id/save"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1.0"
+      android:padding="15sp"
+      android:text="Save" />
+    <Button
+      android:id="@+id/cancel"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1.0"
+      android:padding="15sp"
+      android:text="Cancel" />
   </LinearLayout>
-</ScrollView>
+</LinearLayout>
