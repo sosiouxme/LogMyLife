@@ -33,6 +33,7 @@ import net.sosiouxme.logmylife.dialog.LogDeleteDialog;
 import net.sosiouxme.logmylife.domain.DbAdapter;
 import net.sosiouxme.logmylife.domain.dto.LogEntry;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
+import net.sosiouxme.logmylife.domain.dto.ValueType;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -116,7 +117,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 		metBody = (EditText) findViewById(R.id.body);
 		metBody.setText(mLogEntry.body);
 		metValue = (EditText) findViewById(R.id.logValue);
-		metValue.setText(Util.toString(mLogEntry.value));
+		metValue.setText(ValueType.getById(mLogEntry.valueType).formatValue(mLogEntry.value));
 		adjustValueLayout(); // as needed depending on settings
 		
 		// log date/time
@@ -175,7 +176,7 @@ public class LogEdit extends Activity implements android.view.View.OnClickListen
 
 	private int getValueInputType(LogEntry logEntry) {
 		int inputType = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED;
-		if(logEntry.getValueType() > 0) // non-integer - money or freeform
+		if(ValueType.getById((int) logEntry.getValueType()).isDecimal()) // non-integer
 			inputType |= InputType.TYPE_NUMBER_FLAG_DECIMAL;
 		return inputType;
 	}

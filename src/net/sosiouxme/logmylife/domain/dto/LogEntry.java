@@ -30,7 +30,7 @@ public class LogEntry extends AbstractDTO implements Serializable {
 	public long trackerId;
 	public String body = null;
 	public Date logDate;
-	public String value = null;
+	public Number value = null;
 	public boolean isBreak = false;
 	/** type of value to record with the log (types hardwired now, will be a table eventually */
 	public long valueType = 0;
@@ -46,7 +46,7 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		log.setTrackerId(t.getId());
 		log.changed.put(C.db_LOG_BODY, log.body);
 		log.setLogDate(new Date());
-		log.changed.put(C.db_LOG_VALUE, log.value);
+		log.changed.putNull(C.db_LOG_VALUE); 
 		log.changed.put(C.db_LOG_IS_BREAK, log.isBreak);
 		log.setValueType(t.getLogValueType());
 		
@@ -69,7 +69,7 @@ public class LogEntry extends AbstractDTO implements Serializable {
 		return logDate;
 	}
 	
-	public String getValue() {
+	public Number getValue() {
 		return value;
 	}
 
@@ -104,8 +104,15 @@ public class LogEntry extends AbstractDTO implements Serializable {
 	}
 
 	public void setValue(String value) {
+		setValue(ValueType.getById(valueType).parseValue(value));
+	}
+
+	public void setValue(Number value) {
 		this.value = value;
-		changed.put(C.db_LOG_VALUE, value);
+		if(ValueType.getById(valueType).isDecimal())
+			changed.put(C.db_LOG_VALUE, (Double) value);
+		else
+			changed.put(C.db_LOG_VALUE, (Long) value);
 	}
 
 	public void setBreak(boolean isBreak) {

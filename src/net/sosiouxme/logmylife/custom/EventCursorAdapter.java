@@ -69,8 +69,13 @@ public abstract class EventCursorAdapter extends SimpleCursorAdapter {
 
 	protected abstract String formatDate(TextView v, Date d);
 
+	// hide the view if there won't be any text to display
 	public static void conditionallyHideView(View view, String text) {
-		view.setVisibility((text == null || text.length() == 0) ? View.GONE : View.VISIBLE);
+		conditionallyHideView(view, text == null || text.length() == 0);
+	}
+	
+	public static void conditionallyHideView(View view, boolean hide) {
+		view.setVisibility(hide ? View.GONE : View.VISIBLE);
 	}
 
 }

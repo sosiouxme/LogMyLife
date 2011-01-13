@@ -26,6 +26,7 @@ import net.sosiouxme.logmylife.domain.DbAdapter;
 import net.sosiouxme.logmylife.receiver.AlertReceiver;
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -110,4 +111,12 @@ public class LogMyLife extends Application {
 		this.mPrefs = PreferenceManager.getDefaultSharedPreferences(this);		
 	}
 	
+	public String getVersion() {
+		try {
+			return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+			return "0.0";
+		}
+	}
 }

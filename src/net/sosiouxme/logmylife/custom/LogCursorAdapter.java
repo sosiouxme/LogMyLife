@@ -24,10 +24,12 @@ import java.util.Date;
 import net.sosiouxme.logmylife.C;
 import net.sosiouxme.logmylife.R;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
+import net.sosiouxme.logmylife.domain.dto.ValueType;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class LogCursorAdapter extends EventCursorAdapter {
@@ -39,6 +41,7 @@ public class LogCursorAdapter extends EventCursorAdapter {
 	public LogCursorAdapter(Context context, Tracker tracker, int layout, Cursor c,
 			String[] from, int[] to) {
 		super(context, layout, c, from, to);
+		setViewBinder(new ValueBinder()); // special handling for value
 		mTracker = tracker;
 	}
 
@@ -58,9 +61,8 @@ public class LogCursorAdapter extends EventCursorAdapter {
 		}
 		// determine per item whether value needs showing at all
 		Cursor item = ((Cursor) getItem(position));
-		String value = item.getString(item.getColumnIndex(C.db_LOG_VALUE));
-		conditionallyHideView(v.findViewById(R.id.valueContainer), value);
-
+		conditionallyHideView(v.findViewById(R.id.valueContainer), 
+				item.isNull(item.getColumnIndex(C.db_LOG_VALUE)));
 		return v;
 	}
 
@@ -80,5 +82,21 @@ public class LogCursorAdapter extends EventCursorAdapter {
 			break;
 		}
 		super.setViewText(v, text);
+	}
+	
+	class ValueBinder implements SimpleCursorAdapter.ViewBinder {
+
+		@Override
+		public boolean setViewValue(View view, Cursor c, int columnIndex) {
+			if(view.getId() == R.id.logValue) {
+				ValueType type = ValueType.getById(c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE)));
+				Number value = type.getValueFromCursor(c, c.getColumnIndex(C.db_LOG_VALUE));
+				((TextView) view).setText(type.formatValue(value));
+				return true;
+			}
+			// otherwise let it be handled normally
+			return false;
+		}
+		
 	}
 }

@@ -34,6 +34,7 @@ import net.sosiouxme.logmylife.R;
 import net.sosiouxme.logmylife.domain.dto.Alert;
 import net.sosiouxme.logmylife.domain.dto.LogEntry;
 import net.sosiouxme.logmylife.domain.dto.Tracker;
+import net.sosiouxme.logmylife.domain.dto.ValueType;
 import net.sosiouxme.logmylife.receiver.AlertReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -88,7 +89,7 @@ public class DbAdapter implements C {
      * @param ctx 
      * 
      * @return this
-     * @throws SQLException if the database could be neither opened or created
+     * @throws SQLException if the database could be neither opened nor created
      */
     
     public DbAdapter open(Context ctx) throws SQLException {
@@ -335,11 +336,10 @@ public class DbAdapter implements C {
 			if (date != null)
 				le.logDate = dbDateFormat.parse(date);
 			le.isBreak = c.getInt(c.getColumnIndex(C.db_LOG_IS_BREAK)) > 0;
-			if (c.isNull(c.getColumnIndex(C.db_LOG_VALUE)))
-				le.value = null;
-			else
-				le.value = c.getString(c.getColumnIndex(C.db_LOG_VALUE));
 			le.valueType = c.getLong(c.getColumnIndex(C.db_LOG_VALUE_TYPE));
+			le.value = ValueType.getById(le.valueType)
+						.getValueFromCursor(c, c.getColumnIndex(C.db_LOG_VALUE));
+			
 		} catch (ParseException e) {
 			throw new RuntimeException("fetchLog couldn't parse date for " + logId, e);
 		} finally {

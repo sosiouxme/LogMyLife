@@ -126,9 +126,12 @@ public class Settings extends PreferenceActivity {
 		public QuietHours() {		} // quiet hours disabled
 
 		public QuietHours(String beginStr, String endStr) {
-			enabled = true;
 			begin = extractDateLimit(beginStr);
 			end = extractDateLimit(endStr);
+			if(begin == null || end == null)
+				return; // can't do anything with this; quiet hours disabled
+			
+			enabled = true;
 			if(endStr.compareTo(beginStr) <= 0) {
 				// end equal or before beginning = overnight quiet hours
 				if(begin.after(now)) // begin > now
@@ -139,11 +142,16 @@ public class Settings extends PreferenceActivity {
 		}
 
 		private GregorianCalendar extractDateLimit(String hhmmTime) {
-			GregorianCalendar limit = new GregorianCalendar();
-			limit.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hhmmTime.substring(0, 2)));
-			limit.set(Calendar.MINUTE, Integer.parseInt(hhmmTime.substring(2, 4)));
-			limit.set(Calendar.SECOND, 0);
-			return limit;
+			try {
+				GregorianCalendar limit = new GregorianCalendar();
+				limit.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hhmmTime.substring(0, 2)));
+				limit.set(Calendar.MINUTE, Integer.parseInt(hhmmTime.substring(2, 4)));
+				limit.set(Calendar.SECOND, 0);
+				return limit;
+			} catch (Exception e) {
+				// bad date (probably null)
+				return null;
+			}
 		}
 		
 		public boolean isQuietTime() {

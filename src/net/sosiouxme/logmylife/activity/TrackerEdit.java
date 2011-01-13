@@ -45,6 +45,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
@@ -74,6 +75,7 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 	private CheckBox metUseVal;
 	private ViewGroup metValueContainer;
 	private Spinner metValueType;
+	private ToggleButton metValLabelPos;
 
 /* *********************** lifecycle methods ************************ */	
 	
@@ -106,12 +108,14 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 		metValueContainer = (ViewGroup) findViewById(R.id.valueContainer);
 		metValueType = (Spinner) findViewById(R.id.valueType);
 		metValLabel = (EditText) findViewById(R.id.logValueLabel);
+		metValLabelPos = (ToggleButton) findViewById(R.id.logValLabelPos);
 		
 		if(!mTracker.isNew()) {			
 			// set the data in the views
 			metName.setText(mTracker.getName());
 			metBody.setText(mTracker.getBody());
 			metValLabel.setText(mTracker.getLogValueLabel());
+			metValLabelPos.setChecked(mTracker.getLogValueLabelPos() == Tracker.LABEL_RIGHT);
 		}
 		metUseVal.setChecked(mTracker.getLogUseValue());
 		metValueContainer.setVisibility(metUseVal.isChecked() ? View.VISIBLE : View.GONE);
@@ -274,6 +278,7 @@ public class TrackerEdit extends AlertEditActivity implements android.view.View.
 			mTracker.setName(name);
 			mTracker.setBody(metBody.getText().toString());
 			mTracker.setLogValueLabel(metValLabel.getText().toString());
+			mTracker.setLogValueLabelPos(metValLabelPos.isChecked() ? Tracker.LABEL_RIGHT : Tracker.LABEL_LEFT);
 			mTracker.setGroupId(mCurrentGroupId);
 			mTracker.setSkipNextAlert(false);
 			if(mTracker.isNew()) {
