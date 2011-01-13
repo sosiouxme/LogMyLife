@@ -112,6 +112,17 @@
           android:layout_weight="25"
           android:inputType="textShortMessage|text|textAutoComplete"
           android:hint="Label text for the value" />
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Label position: " />
+        <ToggleButton
+          android:id="@+id/logValLabelPos"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textOn="Right side"
+          android:textOff="Left side"
+          />
       </LinearLayout>
       <RelativeLayout
         style="@style/LineLabel"
